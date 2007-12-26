@@ -233,7 +233,7 @@
   (setf *tablero* (make-array '(5 5))))
 
 (defparameter *fila* 4)
-(defparameter *culumna* 4)
+(defparameter *columna* 4)
 ;(crea-tablero-en-blanco)
 
 ;Función que imprime el tablero
@@ -284,3 +284,25 @@
 	  minimize i
 	  until(posicion-vacia tablero i columna)))
 ;(primera-posicion-vacia *tablero* 1)
+
+;Funciones de contar
+;-------------------------------
+(defun mismo-color (tablero i j color)
+  (if (eq (aref tablero i j) color)
+      t
+    nil))
+;(mismo-color *tablero* 1 1 'r)
+
+(defun cuenta-lineas (tablero
+
+;devuelve un rango de 3 posicion con centro f
+(defun seccion-fila (tablero f)
+  (let ((inicio (max (- f 3) 0))
+	(fin (min (+ f 3) *columna*)))
+    (loop for i from inicio to fin collect (list f i))))
+(defun seccion-columna (tablero c)
+  (let ((inicio (max (- f 3) 0))
+	(fin (min (+ f 3) *fila*))) 
+    (loop for i from inicio to fin collect (list i c))))
+(seccion-fila tablero 3)
+(defun seccion-diagonal-
