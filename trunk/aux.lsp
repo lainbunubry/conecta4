@@ -1,5 +1,4 @@
 ;;Madre Mía.
-(load "aux.lsp")
 
 ;Estructura que representa el tablero con las fichas
 (defstruct (juego (:constructor crea-tablero)
