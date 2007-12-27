@@ -1,5 +1,4 @@
 (load "funciones-auxiliares.lsp")
-(load "conecta4.lsp")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Representacion de estados
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -37,13 +36,71 @@
                  :jugador jugador)))
 
 ;(crea-nodo-j-inicial '(rojo))
-;(crea-nodo-j-inicial '(*jugador-humano*))
+;(crea-nodo-j-inicial *jugador-humano*)
 
 ;Función que crea un nodo
-(defun crea-nodo-j (jugador estado valor)
-    (crea-nodo-j :estado estado
-                 :jugador jugador
-		:valor valor))
+(defun crea-nodo-j (jugador)
+    (crea-nodo-j :estado *estado-inicial*
+                 :jugador jugador))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Funciones Heuristicas
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;Primera funcion heuristica, cuenta el numero de puizas del mismo
+;color que hay en un rango de 3 posiciones
+(defun funcion-heuristica-1 (tablero lista-valores jugador)
+(loop for pos in lista-valores count (igual tablero pos color)))
+
+(defun igual (tablero pos color)
+(eq (aref tablero (first pos) (second pos)) color))
+
+;;Funciones de rangos de valores.
+;;genera el rango de valores de la matriz donde vamos a contar
+;;las fichas que esten consecutivas
+;;f y c representan la el numero de fila y de columna (f,c)
+
+;Devuelve una lista de listas de posiciones filas,columnas y diagonales
+(defun rango-posiciones (f c)
+(list (seccion-fila f) (seccion-columna c) (seccion-diagonal-izq f c) (seccion-diagonal-der f c)))
+
+;fila con un rango + - 3
+(defun seccion-fila (f)
+  (let ((inicio (max (- f 3) 0))
+	(fin (min (+ f 3) *columnas*)))
+    (loop for i from inicio to fin collect (list f i))))
+
+;columna con un rango de + - 3
+(defun seccion-columna (c)
+  (let ((inicio (max (- c 3) 0))
+	(fin (min (+ c 3) *filas*))) 
+    (loop for i from inicio to fin collect (list i c))))
+
+;diagonal izquierda con un rango de + - 3
+(defun seccion-diagonal-izq (f c) 
+    (list
+	(loop for i from 3 downto 0 when (and (> (- f i) -1) (> (- c i) -1)) collect
+	(list (- f i) (- c i)))
+	(loop for i from 1 to 3 when (and (< (+ f i) *filas*) (< (+ c i) *columnas*)) collect
+	(list (+ f i) (+ c i)))))
+
+;diagonal derecha con un rango de + - 3
+(defun seccion-diagonal-der (f c) 
+    (list
+	(loop for i from 3 downto 0 when (and (> (- f i) -1) (< (+ c i) *columnas*)) collect
+	(list (- f i) (+ c i)))
+	(loop for i from 1 to 3 when (and (< (+ f i) *filas*) (> (- c i) -1)) collect
+	(list (+ f i) (- c i)))))
+
+
+;Ejemplo
+;; (rango-posiciones 2 2)
+;; (((2 0) (2 1) (2 2) (2 3) (2 4) (2 5)) ((0 2) (1 2) (2 2) (3 2) (4 2) (5 2)) (((0 0) (1 1) (2 2)) ((3 3) (4 4) (5 5)))
+;;  (((0 4) (1 3) (2 2)) ((3 1) (4 0))))
+
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Restricciones
