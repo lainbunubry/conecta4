@@ -39,6 +39,7 @@
 ;(crea-nodo-j-inicial *jugador-humano*)
 
 ;Función que crea un nodo
+;;me la he cargado no se como va
 (defun crea-nodo-j (jugador)
     (crea-nodo-j :estado *estado-inicial*
                  :jugador jugador))
