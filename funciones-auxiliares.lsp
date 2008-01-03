@@ -69,7 +69,7 @@
                (cond (nuevo-estado
                       (let ((siguiente (crea-nodo-j
                                         :estado nuevo-estado
-                                        :jugador ’max)))
+                                        :jugador 'max)))
                         (if (es-estado-final nuevo-estado)
                             (analiza-final siguiente)
                           (jugada-maquina siguiente))))
