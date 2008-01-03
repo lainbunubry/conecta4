@@ -4,31 +4,31 @@
 ;?
 (defvar *procedimiento*)
 
-;Establece los turnos de juego
+;; Gestiona un único turno de juego
 (defun juego (&key (empieza-la-maquina? nil)
-                   (procedimiento ’(minimax 5)))
+                   (procedimiento (list 'minimax '5)))
   (setf *procedimiento* procedimiento)
-  (cond (empieza-la-maquina? (crea-nodo-j-inicial ’max)
+  (cond (empieza-la-maquina? (crea-nodo-j-inicial 'max)
                              (if (es-estado-final *estado-inicial*)
                                  (analiza-final *nodo-j-inicial*)
                                  (jugada-maquina *nodo-j-inicial*)))
-        (t (crea-nodo-j-inicial ’min)
+        (t (crea-nodo-j-inicial 'min)
            (if (es-estado-final *estado-inicial*)
                (analiza-final *nodo-j-inicial*)
                (jugada-humana *nodo-j-inicial*)))))
 
-; Comprueba el resultado de la partida
+;; Comprueba el resultado de la partida
 (defun analiza-final (nodo-j-final)
   (escribe-nodo-j nodo-j-final)
   (cond ((es-estado-ganador (estado nodo-j-final)
-                            (jugador nodo-j-final) ’max)
+                            (jugador nodo-j-final) 'max)
          (format t "~&La maquina ha ganado"))
         ((es-estado-ganador (estado nodo-j-final)
-                            (jugador nodo-j-final) ’min)
+                            (jugador nodo-j-final) 'min)
          (format t "~&El humano ha ganado"))
         (t (format t "~&Empate"))))
 
-;Función llamada cuando es el turno de la máquina
+;; Función llamada cuando es el turno de la máquina
 (defun jugada-maquina (nodo-j)
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
@@ -91,7 +91,7 @@
         (if (null sucesores)
             (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                               (jugador nodo-j)))
-            (if (eq (jugador nodo-j) ’max)
+            (if (eq (jugador nodo-j) 'max)
                 (maximizador sucesores profundidad)
                 (minimizador sucesores profundidad))))))
 
@@ -112,7 +112,7 @@
 
 ;Devuelve el jugador contrario al dado
 (defun contrario (jugador)
-  (if (eq jugador ’max) ’min ’max))
+  (if (eq jugador 'max) 'min 'max))
 
 ;Función que busca maximizar (MAX) la puntuación
 (defun maximizador (sucesores profundidad)
@@ -150,14 +150,14 @@
         (if (null sucesores)
             (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                               (jugador nodo-j)))
-          (if (eq (jugador nodo-j) ’max)
+          (if (eq (jugador nodo-j) 'max)
               (maximizador-a-b
-               (sort sucesores #’>
-                     :key (lambda (nodo) (f-e-estatica (estado nodo) ’min)))
+               (sort sucesores #'>
+                     :key (lambda (nodo) (f-e-estatica (estado nodo) 'min)))
                profundidad alfa beta)
             (minimizador-a-b
-             (sort sucesores #’<
-                   :key (lambda (nodo) (f-e-estatica (estado nodo) ’max)))
+             (sort sucesores #'<
+                   :key (lambda (nodo) (f-e-estatica (estado nodo) 'max)))
              profundidad alfa beta))))))
 
 ;Función que busca maximizar (MAX) la puntuación con ALFA-BETA
