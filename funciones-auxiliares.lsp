@@ -17,6 +17,7 @@
                (analiza-final *nodo-j-inicial*)
                (jugada-humana *nodo-j-inicial*)))))
 
+; Comprueba el resultado de la partida
 (defun analiza-final (nodo-j-final)
   (escribe-nodo-j nodo-j-final)
   (cond ((es-estado-ganador (estado nodo-j-final)
@@ -138,27 +139,26 @@
     mejor-sucesor))
 
 ;Algoritmo MINIMAX con poda ALFA-BETA
-;Peta y no se porque
-;(defun minimax-a-b (nodo-j profundidad
-;                           &optional (alfa *minimo-valor*)
-;                           (beta *maximo-valor*))
-;  (if (or (es-estado-final (estado nodo-j))
-;          (= profundidad 0))
-;      (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
-;                                        (jugador nodo-j)))
-;      (let ((sucesores (sucesores nodo-j)))
-;        (if (null sucesores)
-;            (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
-;                                              (jugador nodo-j)))
-;          (if (eq (jugador nodo-j) ’max)
-;              (maximizador-a-b
-;               (sort sucesores #’>
-;                     :key (lambda (nodo) (f-e-estatica (estado nodo) ’min)))
-;               profundidad alfa beta)
-;            (minimizador-a-b
-;             (sort sucesores #’<
-;                   :key (lambda (nodo) (f-e-estatica (estado nodo) ’max)))
-;             profundidad alfa beta))))))
+(defun minimax-a-b (nodo-j profundidad
+                           &optional (alfa *minimo-valor*)
+                           (beta *maximo-valor*))
+  (if (or (es-estado-final (estado nodo-j))
+          (= profundidad 0))
+      (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
+                                        (jugador nodo-j)))
+      (let ((sucesores (sucesores nodo-j)))
+        (if (null sucesores)
+            (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
+                                              (jugador nodo-j)))
+          (if (eq (jugador nodo-j) ’max)
+              (maximizador-a-b
+               (sort sucesores #’>
+                     :key (lambda (nodo) (f-e-estatica (estado nodo) ’min)))
+               profundidad alfa beta)
+            (minimizador-a-b
+             (sort sucesores #’<
+                   :key (lambda (nodo) (f-e-estatica (estado nodo) ’max)))
+             profundidad alfa beta))))))
 
 ;Función que busca maximizar (MAX) la puntuación con ALFA-BETA
 (defun maximizador-a-b (sucesores profundidad alfa beta)
