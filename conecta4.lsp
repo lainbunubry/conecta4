@@ -50,10 +50,10 @@
 ;;Primera funcion heuristica, cuenta el numero de puizas del mismo
 ;color que hay en un rango de 3 posiciones
 (defun funcion-heuristica-1 (tablero lista-valores jugador)
-(loop for pos in lista-valores count (igual tablero pos color)))
+	(loop for pos in lista-valores count (igual tablero pos color)))
 
 (defun igual (tablero pos color)
-(eq (aref tablero (first pos) (second pos)) color))
+	(eq (aref tablero (first pos) (second pos)) color))
 
 ;;Funciones de rangos de valores.
 ;;genera el rango de valores de la matriz donde vamos a contar
@@ -62,7 +62,7 @@
 
 ;Devuelve una lista de listas de posiciones filas,columnas y diagonales
 (defun rango-posiciones (f c)
-(list (seccion-fila f) (seccion-columna c) (seccion-diagonal-izq f c) (seccion-diagonal-der f c)))
+	(list (seccion-fila f) (seccion-columna c) (seccion-diagonal-izq f c) (seccion-diagonal-der f c)))
 
 ;fila con un rango + - 3
 (defun seccion-fila (f)
