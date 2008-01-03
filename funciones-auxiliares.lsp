@@ -1,7 +1,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ARBITRACIÓN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;?
+
+;; Variable con la información del algoritmo a usar
 (defvar *procedimiento*)
 
 ;; Gestiona un único turno de juego
@@ -43,7 +44,7 @@
         when (aplica-movimiento m estado)
         collect m))
 
-;?
+;Muestra por pantalla los movimientos permitidos obtenidos con movimientos-legales
 (defun escribe-movimientos (movimientos)
   (format t "~%Los movimientos permitidos son:")
   (let ((numero 0))
@@ -155,10 +156,10 @@
                (sort sucesores #'>
                      :key (lambda (nodo) (f-e-estatica (estado nodo) 'min)))
                profundidad alfa beta)
-            (minimizador-a-b
-             (sort sucesores #'<
-                   :key (lambda (nodo) (f-e-estatica (estado nodo) 'max)))
-             profundidad alfa beta))))))
+              (minimizador-a-b
+               (sort sucesores #'<
+                     :key (lambda (nodo) (f-e-estatica (estado nodo) 'max)))
+               profundidad alfa beta))))))
 
 ;Función que busca maximizar (MAX) la puntuación con ALFA-BETA
 (defun maximizador-a-b (sucesores profundidad alfa beta)
@@ -189,3 +190,12 @@
                 (return)))
     (setf (valor mejor-sucesor) beta)
     mejor-sucesor))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; FUNCIONES QUE FALTAN POR IMPLEMENTAR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; es-estado-final
+;; es-estado-ganador
+;; aplica-decision
+;; aplica-movimiento
