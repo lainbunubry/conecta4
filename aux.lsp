@@ -21,6 +21,13 @@
 ;ariscosn@us.es
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar *T-prueba* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(x nil nil nil nil nil nil)
+		(x nil x nil nil nil nil)
+		(x o x o o x o)
+		(o x o x o x o)
+		(x x x o o o x))))
 
 ;Estructura que representa el tablero con las fichas
 (defstruct (juego (:constructor crea-tablero)
@@ -93,4 +100,13 @@
     nil))
 ;(mismo-color *tablero* 1 1 'r)
 
-(defun cuenta-lineas (tablero
+(defun cuenta-fichas-consecutivas (tablero posiciones color)
+	(let ((cont 0))
+		(loop for x in posiciones do
+;; 			maximize cont
+			(if (mismo-color tablero (first x) (second x) color)
+				(setf cont (+ cont 1))
+				(setf cont 0))))))
+
+;(cuenta-fichas-consecutivas *T-prueba* '((5 0)(5 1)(5 2)) 'x)
+
