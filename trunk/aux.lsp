@@ -94,20 +94,11 @@
 
 ;Funciones de contar
 ;-------------------------------
-(defun mismo-color (tablero i j color)
-  (if (eq (aref tablero i j) color)
-      t
-    nil))
+;; (defun mismo-color (tablero i j color)
+;;   (if (eq (aref tablero i j) color)
+;;       t
+;;     nil))
 ;(mismo-color *tablero* 1 1 'r)
-
-;; Cuenta el numero de fichas consecutivas del mismo colo y devuelve la secuencia mas larga
-(defun cuenta-fichas-consecutivas (secuencia color)
-	(let ((cont 0))
-		(loop for x in secuencia do
-;; 			maximize cont
-			(if (eq x color)
-				(setf cont (+ cont 1))
-				(setf cont 0)))))
 
 
 (defun fichas-consecutivas (tablero lista color)
