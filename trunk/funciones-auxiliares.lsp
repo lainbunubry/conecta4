@@ -9,7 +9,7 @@
 
 ;; Da comienzo a la partida y establece el primer turno de juego
 (defun juego (&key (empieza-la-maquina? nil)
-                   (procedimiento (list 'minimax '5)))
+                   (procedimiento (list 'minimax-a-b '5)))
   (setf *procedimiento* procedimiento)
   (cond (empieza-la-maquina? (crea-nodo-j-inicial 'max)
                              (if (es-estado-final *estado-inicial*)
@@ -90,6 +90,7 @@
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
 		(escribe-nodo-j siguiente)))							;; TODO - Analizar como se imprime esto
 														;; y dar la información adecuadamente
+														;; Funciona pero no es estético
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
@@ -120,7 +121,7 @@
 			collect (> x 3))))
 
 ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
-(defun cuenta-4-en-diagonal (tablero color)
+(defun cuenta-4-en-diagonal (tablero color)			;; TODO - Ha de comprobar si hay alguna secuencia de 4 en diagonal
 	)
 
 ;; Determina si ha ganado el jugador dado
@@ -129,8 +130,8 @@
 	)
 
 ;; Devuelve el nodo siguiente según una jugada de la IA
-(defun aplica-decision (procedimiento nodo-j)		;; TODO - Debe llamar al MINIMAX y dar un nuevo nodo
-	)
+(defun aplica-decision (procedimiento nodo-j)
+	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento))))) ;; TODO - Apply mal seguro XD
 
 ;; Devuelve el nodo siguiente según el movimiento dado por el jugador
 (defun aplica-movimiento (movimiento tablero)		;; TODO - Se echa la ficha en la columna dicha y amén XD
@@ -139,6 +140,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Valores máximos y mínimos para las variables alfa y beta
+(defvar *minimo-valor* -9999)		;; TODO - Revisar estas dos vbles
+(defvar *maximo-valor* 9999)
 
 ;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
@@ -210,3 +215,7 @@
                 (return)))
     (setf (valor mejor-sucesor) beta)
     mejor-sucesor))
+
+;; Devuelve una valoración heurística para un nodo (jugada)
+(defun f-e-estatica (estado jugador)
+	)								;; TODO - Esto es la muerte :'(
