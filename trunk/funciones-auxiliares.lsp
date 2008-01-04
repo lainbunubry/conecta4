@@ -1,3 +1,5 @@
+(load "aux.lsp")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ARBITRACIÓN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -90,8 +92,10 @@
 														;; y dar la información adecuadamente
 
 ;; Determina si el juego ha llegado a su final
-(defun es-estado-final (tablero)		;; TODO - Ha de buscar 4 fichas consecutivas del
-								;; mismo color, o no se pueden poner más fichas
+(defun es-estado-final (tablero)
+	(or (movimientos-legales tablero) (cuenta-4-en-raya tablero)))
+
+(defun cuenta-4-en-raya (tablero)
 	)
 
 ;; Determina si ha ganado el jugador dado
