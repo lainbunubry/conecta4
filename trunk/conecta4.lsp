@@ -81,7 +81,7 @@
 
 ;; Diagonal izquierda con un rango de + - 3
 (defun seccion-diagonal-izq (f c) 
-    (list
+    (append
 	(loop for i from 3 downto 0 when (and (> (- f i) -1) (> (- c i) -1)) collect
 	(list (- f i) (- c i)))
 	(loop for i from 1 to 3 when (and (< (+ f i) *filas*) (< (+ c i) *columnas*)) collect
@@ -89,7 +89,7 @@
 
 ;; diagonal derecha con un rango de + - 3
 (defun seccion-diagonal-der (f c) 
-    (list
+    (append
 	(loop for i from 3 downto 0 when (and (> (- f i) -1) (< (+ c i) *columnas*)) collect
 	(list (- f i) (+ c i)))
 	(loop for i from 1 to 3 when (and (< (+ f i) *filas*) (> (- c i) -1)) collect
