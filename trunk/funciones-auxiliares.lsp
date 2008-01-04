@@ -96,7 +96,7 @@
 	(or (movimientos-legales tablero) (cuenta-4-en-raya tablero)))
 
 (defun cuenta-4-en-raya (tablero)
-	)
+	(loop from 0 to 5 )
 
 ;; Determina si ha ganado el jugador dado
 (defun es-estado-ganador (tablero jugador turno)		;; TODO - Ha de comprobar si el jugador
@@ -114,20 +114,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Algoritmo MINIMAX
-(defun minimax (nodo-j profundidad)
-  (if (or (es-estado-final (estado nodo-j))
-          (= profundidad 0))
-      (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
-                                        (jugador nodo-j)))
-      (let ((sucesores (sucesores nodo-j)))
-        (if (null sucesores)
-            (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
-                                              (jugador nodo-j)))
-            (if (eq (jugador nodo-j) 'max)
-                (maximizador sucesores profundidad)
-                (minimizador sucesores profundidad))))))
 
 ;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
@@ -147,30 +133,6 @@
 ;; Devuelve el jugador contrario al dado
 (defun contrario (jugador)
   (if (eq jugador 'max) 'min 'max))
-
-;; Función que busca maximizar (MAX) la puntuación
-(defun maximizador (sucesores profundidad)
-  (let ((mejor-sucesor (first sucesores))
-        (mejor-valor *minimo-valor*))
-    (loop for sucesor in sucesores do
-          (setf valor (valor (minimax sucesor (1- profundidad))))
-          (when (> valor mejor-valor)
-                (setf mejor-valor valor)
-                (setf mejor-sucesor sucesor)))
-    (setf (valor mejor-sucesor) mejor-valor)
-    mejor-sucesor))
-
-;; Función que busca minimizar (MIN) la puntuación
-(defun minimizador (sucesores profundidad)
-  (let ((mejor-sucesor (first sucesores))
-        (mejor-valor *maximo-valor*))
-    (loop for sucesor in sucesores do
-          (setf valor (valor (minimax sucesor (1- profundidad))))
-          (when (< valor mejor-valor)
-                (setf mejor-valor valor)
-                (setf mejor-sucesor sucesor)))
-    (setf (valor mejor-sucesor) mejor-valor)
-    mejor-sucesor))
 
 ;; Algoritmo MINIMAX con poda ALFA-BETA
 (defun minimax-a-b (nodo-j profundidad
