@@ -17,6 +17,8 @@
 (defvar *jugador-humano-1* 'humano2)
 (defvar *jugador-maquina* 'maquina1)
 (defvar *jugador-maquina-1* 'maquina2)
+(defvar *colora* 'X)
+(defvar *colorb* 'O)
 
 ;; Estructura que representa un nodo del árbol de búsqueda
 (defstruct (nodo-j (:constructor crea-nodo-j)
