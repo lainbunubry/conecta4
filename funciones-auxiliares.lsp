@@ -38,13 +38,13 @@
         (analiza-final siguiente)
         (jugada-humana siguiente))))
 
-;Devuelve para un determinado estado qué movimientos son posibles
+;; Devuelve para un determinado estado qué movimientos son posibles
 (defun movimientos-legales (estado)
   (loop for m in *movimientos*
         when (aplica-movimiento m estado)
         collect m))
 
-;Muestra por pantalla los movimientos permitidos obtenidos con movimientos-legales
+;; Muestra por pantalla los movimientos permitidos obtenidos con movimientos-legales
 (defun escribe-movimientos (movimientos)
   (format t "~%Los movimientos permitidos son:")
   (let ((numero 0))
@@ -63,9 +63,9 @@
     (escribe-movimientos movimientos)
     (format t "~%Tu turno (escribe <<consejo>> si quieres una sugerencia): ")
     (let ((m (read)))
-	 (cond ((equal m 'consejo)
+	 (cond ((equal m 'consejo)				;; En el caso de que quiera pedir consejo
 			(solicitar-consejo nodo-j)
-			(format t "~%Tu turno : ")
+			(format t "~%Tu turno : ")		;; Hay que volver a leer la m una vez dado el consejo
 			(setf m (read))))
       (cond ((and (integerp m) (< -1 m (length movimientos)))
 	             (let ((nuevo-estado
@@ -93,7 +93,7 @@
 ;;; ALGORITMO MINIMAX
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;Algoritmo MINIMAX
+;; Algoritmo MINIMAX
 (defun minimax (nodo-j profundidad)
   (if (or (es-estado-final (estado nodo-j))
           (= profundidad 0))
@@ -107,7 +107,7 @@
                 (maximizador sucesores profundidad)
                 (minimizador sucesores profundidad))))))
 
-;Para un posible nodo del árbol devuelve sus hijos
+;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
   (let ((resultado ()))
     (loop for movimiento in *movimientos* do
@@ -122,11 +122,11 @@
             resultado))))
     (nreverse resultado)))
 
-;Devuelve el jugador contrario al dado
+;; Devuelve el jugador contrario al dado
 (defun contrario (jugador)
   (if (eq jugador 'max) 'min 'max))
 
-;Función que busca maximizar (MAX) la puntuación
+;; Función que busca maximizar (MAX) la puntuación
 (defun maximizador (sucesores profundidad)
   (let ((mejor-sucesor (first sucesores))
         (mejor-valor *minimo-valor*))
@@ -138,7 +138,7 @@
     (setf (valor mejor-sucesor) mejor-valor)
     mejor-sucesor))
 
-;Función que busca minimizar (MIN) la puntuación
+;; Función que busca minimizar (MIN) la puntuación
 (defun minimizador (sucesores profundidad)
   (let ((mejor-sucesor (first sucesores))
         (mejor-valor *maximo-valor*))
@@ -150,7 +150,7 @@
     (setf (valor mejor-sucesor) mejor-valor)
     mejor-sucesor))
 
-;Algoritmo MINIMAX con poda ALFA-BETA
+;; Algoritmo MINIMAX con poda ALFA-BETA
 (defun minimax-a-b (nodo-j profundidad
                            &optional (alfa *minimo-valor*)
                            (beta *maximo-valor*))
@@ -172,7 +172,7 @@
                      :key (lambda (nodo) (f-e-estatica (estado nodo) 'max)))
                profundidad alfa beta))))))
 
-;Función que busca maximizar (MAX) la puntuación con ALFA-BETA
+;; Función que busca maximizar (MAX) la puntuación con ALFA-BETA
 (defun maximizador-a-b (sucesores profundidad alfa beta)
   (let ((mejor-sucesor (first sucesores))
         (valor 0))
@@ -187,7 +187,7 @@
     (setf (valor mejor-sucesor) alfa)
     mejor-sucesor))
 
-;Función que busca minimizar (MIN) la puntuación con ALFA-BETA
+;; Función que busca minimizar (MIN) la puntuación con ALFA-BETA
 (defun minimizador-a-b (sucesores profundidad alfa beta)
   (let ((mejor-sucesor (first sucesores))
         (valor 0))
