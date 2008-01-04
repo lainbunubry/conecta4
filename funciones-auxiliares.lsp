@@ -5,7 +5,7 @@
 ;; Variable con la información del algoritmo a usar
 (defvar *procedimiento*)
 
-;; Gestiona un único turno de juego
+;; Da comienzo a la partida y establece el primer turno de juego
 (defun juego (&key (empieza-la-maquina? nil)
                    (procedimiento (list 'minimax '5)))
   (setf *procedimiento* procedimiento)

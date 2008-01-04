@@ -21,6 +21,10 @@
   jugador
   valor) 		;; Valor heuristico de la nueva jugada
 
+;; Crea un nuevo nodo del árbol de búsqueda
+(defun crea-nodo-j (estado jugador)
+	)
+
 ;; Funcion que muestra por pantalla el nodo por el canal t (pantalla) y profundidad
 (defun escribe-nodo-j (nodo-j &optional (canal t) profundidad)
   (format canal "~%Estado : ~a~%Jugador : ~a"
@@ -37,11 +41,6 @@
 
 ;; (crea-nodo-j-inicial '(rojo))
 ;; (crea-nodo-j-inicial *jugador-humano*)
-
-;; Función que crea un nodo
-(defun crea-nodo-j (jugador)					;; TODO - Arreglar, ya no funciona
-    (crea-nodo-j :estado *estado-inicial*
-                 :jugador jugador))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Funciones Heuristicas
