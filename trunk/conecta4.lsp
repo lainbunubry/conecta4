@@ -8,10 +8,10 @@
 (defvar *columnas* 7)
 (defvar *nodo-j-inicial*)
 (defvar *estado-inicial* (make-array '(6 7)))
-(defvar *jugador-humano* 'humano)
-(defvar *jugador-humano-1* 'humano-1)
-(defvar *jugador-maquina* 'maquina)
-(defvar *jugador-maquina-1* 'maquina-1)
+(defvar *jugador-humano* 'humano1)
+(defvar *jugador-humano-1* 'humano2)
+(defvar *jugador-maquina* 'maquina1)
+(defvar *jugador-maquina-1* 'maquina2)
 
 ;; Estructura que representa un nodo del árbol de búsqueda
 (defstruct (nodo-j (:constructor crea-nodo-j)
@@ -19,11 +19,7 @@
                    (:print-function escribe-nodo-j))
   estado 		;; Tablero modificado
   jugador
-  valor) 		;; Valor heuristico de la nueva jugada
-
-;; Crea un nuevo nodo del árbol de búsqueda
-(defun crea-nodo-j (estado jugador)
-	)
+  valor) 		;; Valor heurístico de la nueva jugada
 
 ;; Funcion que muestra por pantalla el nodo por el canal t (pantalla) y profundidad
 (defun escribe-nodo-j (nodo-j &optional (canal t) profundidad)
@@ -43,14 +39,13 @@
 ;; (crea-nodo-j-inicial *jugador-humano*)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Funciones Heuristicas
+;;; Funciones Heurísticas
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Primera funcion heuristica, cuenta el numero de piezas del mismo
-;; color que hay en un rango de 3 posiciones
+;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
 (defun funcion-heuristica-1 (tablero lista-valores jugador)
-	(loop for pos in lista-valores count (igual tablero pos color)))
+	(loop for pos in lista-valores count (igual-color tablero pos color)))
 
-(defun igual (tablero pos color)
+(defun igual-color (tablero pos color)
 	(eq (aref tablero (first pos) (second pos)) color))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
