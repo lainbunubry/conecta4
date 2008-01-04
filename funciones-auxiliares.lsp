@@ -103,20 +103,23 @@
 		(cuenta-4-en-diagonal tablero *colorb*)
 		))
 
+;; Busca alguna secuencia horizontal del color dado de longitud mayor o igual a 4 en el tablero
 (defun cuenta-4-en-horizontal (tablero color)
 	(apply #'or
 		(loop for x in
 			(loop for i from 0 to 5 collect
 				(cuenta-fichas-consecutivas (loop for j from 0 to 6 collect (aref tablero i j)) color))
-			collect (> x 4))))
+			collect (> x 3))))
 
+;; Busca alguna secuencia vertical del color dado de longitud mayor o igual a 4 en el tablero
 (defun cuenta-4-en-vertical (tablero color)
 	(apply #'or
 		(loop for x in
 			(loop for j from 0 to 6 collect
 				(cuenta-fichas-consecutivas (loop for i from 0 to 5 collect (aref tablero i j)) color))
-			collect (> x 4))))
+			collect (> x 3))))
 
+;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
 (defun cuenta-4-en-diagonal (tablero color)
 	)
 
