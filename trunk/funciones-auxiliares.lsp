@@ -34,7 +34,7 @@
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-    (if (es-estado-final (estado siguiente))						;; TODO - (estado siguiente) no tiene sentido :S
+    (if (es-estado-final (estado siguiente))
         (analiza-final siguiente)
         (jugada-humana siguiente))))
 
@@ -89,7 +89,22 @@
 		(escribe-nodo-j siguiente)))							;; TODO - Analizar como se imprime esto
 														;; y dar la información adecuadamente
 
-(defun es-estado-final (estado)		;; Ha de buscar 4 fichas consecutivas del mismo color
+;; Determina si el juego ha llegado a su final
+(defun es-estado-final (tablero)		;; TODO - Ha de buscar 4 fichas consecutivas del
+								;; mismo color, o no se pueden poner más fichas
+	)
+
+;; Determina si ha ganado el jugador dado
+(defun es-estado-ganador (tablero jugador turno)		;; TODO - Ha de comprobar si el jugador
+											;; que ha ganado es el del turno
+	)
+
+;; Devuelve el nodo siguiente según una jugada de la IA
+(defun aplica-decision (procedimiento nodo-j)		;; TODO - Debe llamar al MINIMAX y dar un nuevo nodo
+	)
+
+;; Devuelve el nodo siguiente según el movimiento dado por el jugador
+(defun aplica-movimiento (movimiento tablero)		;; TODO - Se echa la ficha en la columna dicha y amén XD
 	)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -204,12 +219,3 @@
                 (return)))
     (setf (valor mejor-sucesor) beta)
     mejor-sucesor))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; FUNCIONES QUE FALTAN POR IMPLEMENTAR
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; es-estado-final
-;; es-estado-ganador
-;; aplica-decision
-;; aplica-movimiento
