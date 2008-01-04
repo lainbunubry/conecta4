@@ -34,7 +34,7 @@
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-    (if (es-estado-final (estado siguiente))
+    (if (es-estado-final (estado siguiente))						;; TODO - (estado siguiente) no tiene sentido :S
         (analiza-final siguiente)
         (jugada-humana siguiente))))
 
@@ -88,6 +88,9 @@
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
 		(escribe-nodo-j siguiente)))							;; TODO - Analizar como se imprime esto
 														;; y dar la información adecuadamente
+
+(defun es-estado-final (estado)		;; Ha de buscar 4 fichas consecutivas del mismo color
+	)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
