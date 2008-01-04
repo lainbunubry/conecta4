@@ -55,28 +55,39 @@
               (format t "      ~a (~a)" m numero))
           (setf numero (+ numero 1)))))
 
-;Función llamada cuando es el turno del humano
+;; Función llamada cuando es el turno del humano
+;; Modificado para permitir al humano solicitar consejo
 (defun jugada-humana (nodo-j)
   (escribe-nodo-j nodo-j)
   (let ((movimientos (movimientos-legales (estado nodo-j))))
     (escribe-movimientos movimientos)
-    (format t "~%Tu turno: ")
+    (format t "~%Tu turno (escribe <<consejo>> si quieres una sugerencia): ")
     (let ((m (read)))
-      (cond ((and (integerp m)
-                  (< -1 m (length movimientos)))
-             (let ((nuevo-estado
-                    (aplica-movimiento (nth m movimientos) (estado nodo-j))))
-               (cond (nuevo-estado
-                      (let ((siguiente (crea-nodo-j
-                                        :estado nuevo-estado
-                                        :jugador 'max)))
-                        (if (es-estado-final nuevo-estado)
-                            (analiza-final siguiente)
-                          (jugada-maquina siguiente))))
-                     (t (format t "~&   El movimiento ~a no se puede usar. " m)
-                        (jugada-humana nodo-j)))))
+	 (cond ((equal m 'consejo)
+			(solicitar-consejo nodo-j)
+			(format t "~%Tu turno : ")
+			(setf m (read))))
+      (cond ((and (integerp m) (< -1 m (length movimientos)))
+	             (let ((nuevo-estado
+     	               (aplica-movimiento (nth m movimientos) (estado nodo-j))))
+          	     (cond (nuevo-estado
+               	       (let ((siguiente (crea-nodo-j
+                    	                    :estado nuevo-estado
+                         	               :jugador 'max)))
+	                        (if (es-estado-final nuevo-estado)
+     	                       (analiza-final siguiente)
+          	                (jugada-maquina siguiente))))
+               	      (t (format t "~&   El movimiento ~a no se puede usar. " m)
+                    	    (jugada-humana nodo-j)))))
             (t (format t "~&   ~a es ilegal. " m)
                (jugada-humana nodo-j))))))
+
+;; Función que se llama cuando se pide consejo a la máquina
+(defun solicitar-consejo (nodo-j)
+  (format t "~%Mi recomendación:~&")
+  (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
+		(escribe-nodo-j siguiente)))							;; TODO - Analizar como se imprime esto
+														;; y dar la información adecuadamente
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
