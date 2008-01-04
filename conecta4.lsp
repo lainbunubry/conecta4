@@ -55,6 +55,35 @@
 (defun igual-color (tablero pos color)
 	(eq (aref tablero (first pos) (second pos)) color))
 
+;;Funciones auxliares de la Heuristica
+
+;; Dada una posicione (x y) devuelve el numero maximo de veces consecutivas que serepite el color
+
+(defun fichas-consecutivas (tablero posicion color)
+(maximo (loop for x in 
+(rango-posiciones (first posicion) (second posicion)) 
+collect 
+	(cuenta-fichas-consecutivas 
+		(recorre-posiciones tablero x) color))))
+
+;; Devuelve en una lista los valores contenidos en el tablero
+;; que esten en las posciones definidas por lista
+(defun recorre-posiciones (tablero lista)
+	(loop for x in lista collect 
+		(aref tablero (first x) (second x))))
+
+;; Cuenta el numero de fichas consecutivas del mismo colo y devuelve la longitud de la secuencia mas larga
+(defun cuenta-fichas-consecutivas (secuencia color)
+(let ((cont 0))	
+	(loop for x in secuencia
+		maximize
+		(if (eq x color)
+		(setf cont (+ 1 cont))
+		(setf cont 0)))))
+;; devuelve el maximo entero de la lista
+
+(defun maximo (lista)
+	(apply #'max lista))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Funciones de rangos de valores
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -65,34 +94,34 @@
 
 ;; Devuelve una lista de listas de posiciones filas,columnas y diagonales
 (defun rango-posiciones (f c)
-	(list (seccion-fila f) (seccion-columna c) (seccion-diagonal-izq f c) (seccion-diagonal-der f c)))
+	(list (seccion-fila f c) (seccion-columna f c) (seccion-diagonal-izq f c) (seccion-diagonal-der f c)))
 
 ;; Fila con un rango + - 3
-(defun seccion-fila (f)
-  (let ((inicio (max (- f 3) 0))
-	(fin (min (+ f 3) *columnas*)))
+(defun seccion-fila (f c)
+  (let ((inicio (max (- c 3) 0))
+	(fin (min (+ c 3) *columnas*)))
     (loop for i from inicio to fin collect (list f i))))
 
 ;; Columna con un rango de + - 3
-(defun seccion-columna (c)
-  (let ((inicio (max (- c 3) 0))
-	(fin (min (+ c 3) *filas*))) 
+(defun seccion-columna (f c)
+  (let ((inicio (max (- f 3) 0))
+	(fin (min (+ f 3) *filas*))) 
     (loop for i from inicio to fin collect (list i c))))
 
 ;; Diagonal izquierda con un rango de + - 3
 (defun seccion-diagonal-izq (f c) 
     (append
-	(loop for i from 3 downto 0 when (and (> (- f i) -1) (> (- c i) -1)) collect
+	(loop for i from 3 downto 0 when (and (>= (- f i) 0) (>= (- c i) -1)) collect
 	(list (- f i) (- c i)))
-	(loop for i from 1 to 3 when (and (< (+ f i) *filas*) (< (+ c i) *columnas*)) collect
+	(loop for i from 1 to 3 when (and (<= (+ f i) *filas*) (<= (+ c i) *columnas*)) collect
 	(list (+ f i) (+ c i)))))
 
 ;; diagonal derecha con un rango de + - 3
 (defun seccion-diagonal-der (f c) 
     (append
-	(loop for i from 3 downto 0 when (and (> (- f i) -1) (< (+ c i) *columnas*)) collect
+	(loop for i from 3 downto 0 when (and (>= (- f i) 0) (<= (+ c i) *columnas*)) collect
 	(list (- f i) (+ c i)))
-	(loop for i from 1 to 3 when (and (< (+ f i) *filas*) (> (- c i) -1)) collect
+	(loop for i from 1 to 3 when (and (<= (+ f i) *filas*) (>= (- c i) -1)) collect
 	(list (+ f i) (- c i)))))
 
 ;; Ejemplo
