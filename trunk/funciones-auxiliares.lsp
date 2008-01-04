@@ -97,6 +97,10 @@
 		(movimientos-legales tablero)
 		(cuenta-4-en-horizontal tablero *colora*)
 		(cuenta-4-en-horizontal tablero *colorb*)
+		(cuenta-4-en-vertical tablero *colora*)
+		(cuenta-4-en-vertical tablero *colorb*)
+		(cuenta-4-en-diagonal tablero *colora*)
+		(cuenta-4-en-diagonal tablero *colorb*)
 		))
 
 (defun cuenta-4-en-horizontal (tablero color)
@@ -104,6 +108,12 @@
 		(loop for i from 0 to 5 collect
 			(cuenta-fichas-consecutivas (loop for j from 0 to 6 collect (aref tablero i j)) color))
 		4))
+
+(defun cuenta-4-en-vertical (tablero color)
+	)
+
+(defun cuenta-4-en-diagonal (tablero color)
+	)
 
 ;; Determina si ha ganado el jugador dado
 (defun es-estado-ganador (tablero jugador turno)		;; TODO - Ha de comprobar si el jugador
