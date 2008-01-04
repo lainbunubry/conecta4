@@ -39,7 +39,7 @@
 ; Constructor del tablero
 ;------------------------------
 (defun crea-tablero-en-blanco ()
-  (setf *tablero* (make-array '(7 6))))
+  (setf *tablero* (make-array '(6 7))))
 
 ;(crea-tablero-en-blanco)
 
@@ -71,7 +71,7 @@
 ;------------------------------------
 ;inserta una ficha correctamente en la columna que tu quieras
 ;notas: Si la columna esta llena no peta
-(defun inserta-ficha-en-fila (tablero columna color)
+(defun inserta-ficha-en-columna (tablero columna color)
   (setf (aref tablero 
 	      (primera-posicion-vacia tablero columna)
 	      columna)
@@ -100,13 +100,36 @@
     nil))
 ;(mismo-color *tablero* 1 1 'r)
 
-(defun cuenta-fichas-consecutivas (tablero posiciones color)
+;; Cuenta el numero de fichas consecutivas del mismo colo y devuelve la secuencia mas larga
+(defun cuenta-fichas-consecutivas (secuencia color)
 	(let ((cont 0))
-		(loop for x in posiciones do
+		(loop for x in secuencia do
 ;; 			maximize cont
-			(if (mismo-color tablero (first x) (second x) color)
+			(if (eq x color)
 				(setf cont (+ cont 1))
-				(setf cont 0))))))
+				(setf cont 0)))))
 
-;(cuenta-fichas-consecutivas *T-prueba* '((5 0)(5 1)(5 2)) 'x)
 
+(defun fichas-consecutivas (tablero lista color)
+(maximo (loop for x in lista collect 
+	(cuenta-fichas-consecutivas 
+		(recorre-posiciones tablero x) color))))	
+
+;; Devuelve en una lista los valores contenidos en el tablero
+;; que esten en las posciones definidas por lista
+(defun recorre-posiciones (tablero lista)
+	(loop for x in lista collect 
+		(aref tablero (first x) (second x))))
+
+;; Cuenta el numero de fichas consecutivas del mismo colo y devuelve la longitud de la secuencia mas larga
+(defun cuenta-fichas-consecutivas (secuencia color)
+(let ((cont 0))	
+	(loop for x in secuencia
+		maximize
+		(if (eq x color)
+		(setf cont (+ 1 cont))
+		(setf cont 0)))))
+;; devuelve el maximo entero de la lista
+
+(defun maximo (lista)
+	(loop for x in lista maximize x))
