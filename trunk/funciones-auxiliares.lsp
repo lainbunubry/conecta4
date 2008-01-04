@@ -107,14 +107,14 @@
 	(apply #'or
 		(loop for x in
 			(loop for i from 0 to 5 collect
-				(cuenta-fichas-consecutivas (loop for j from 0 to 6 collect (aref tablero j i)) color))
+				(cuenta-fichas-consecutivas (loop for j from 0 to 6 collect (aref tablero i j)) color))
 			collect (> x 4))))
 
 (defun cuenta-4-en-vertical (tablero color)
 	(apply #'or
 		(loop for x in
-			(loop for i from 0 to 5 collect
-				(cuenta-fichas-consecutivas (loop for j from 0 to 6 collect (aref tablero i j)) color))
+			(loop for j from 0 to 6 collect
+				(cuenta-fichas-consecutivas (loop for i from 0 to 5 collect (aref tablero i j)) color))
 			collect (> x 4))))
 
 (defun cuenta-4-en-diagonal (tablero color)
