@@ -100,11 +100,18 @@
 ;;     nil))
 ;(mismo-color *tablero* 1 1 'r)
 
+;; Dada una lista de posiciones devuelve el numero maximo de veces que se repite en la lista
+;; (defun fichas-consecutivas (tablero lista color)
+;; (maximo (loop for x in lista collect 
+;; 	(cuenta-fichas-consecutivas 
+;; 		(recorre-posiciones tablero x) color))))	
 
-(defun fichas-consecutivas (tablero lista color)
-(maximo (loop for x in lista collect 
+(defun fichas-consecutivas (tablero posicion color)
+(maximo (loop for x in 
+(rango-posiciones (first posicion) (second posicion)) 
+collect 
 	(cuenta-fichas-consecutivas 
-		(recorre-posiciones tablero x) color))))	
+		(recorre-posiciones tablero x) color))))
 
 ;; Devuelve en una lista los valores contenidos en el tablero
 ;; que esten en las posciones definidas por lista
