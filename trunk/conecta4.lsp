@@ -3,6 +3,10 @@
 ;;; Representacion de estados
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Se ha elegido una representación a partir de una matriz, en donde las fichas
+;; de cada bando se representan por X u O respectivamente, y las casillas vacías
+;; mediante NIL
+
 ;; Definicion de variables
 (defvar *filas* 6)
 (defvar *columnas* 7)
