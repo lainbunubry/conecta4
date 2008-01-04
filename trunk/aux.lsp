@@ -123,4 +123,4 @@
 ;; devuelve el maximo entero de la lista
 
 (defun maximo (lista)
-	(loop for x in lista maximize x))
+	(apply #'max lista))
