@@ -57,29 +57,48 @@
 
 ;;Funciones auxliares de la Heuristica
 
-;; Dada una posicione (x y) devuelve el numero maximo de veces consecutivas que serepite el color
+;; Dada una posicion (x y) devuelve el numero maximo de veces consecutivas que se repite el color
 
 (defun fichas-consecutivas (tablero posicion color)
-(maximo (loop for x in 
-(rango-posiciones (first posicion) (second posicion)) 
-collect 
-	(cuenta-fichas-consecutivas 
-		(recorre-posiciones tablero x) color))))
+(maximo 
+	(loop for x in 
+		(rango-posiciones (first posicion) (second posicion)) 
+		collect 
+			(cuenta-fichas-consecutivas 
+				(recorre-posiciones tablero x) color))))
 
-;; Devuelve en una lista los valores contenidos en el tablero
+;; (defun recorre-posiciones (tablero lista)
+;; lista tiene una doble lista con los las posiciones del array ordenadas de tal modo que el primer elemento es la parte derecha y el segundo es la parate izquierda sin incluir la posicion inicial
+
+;; Devuelve en una doble lista los valores contenidos en el tablero
 ;; que esten en las posciones definidas por lista
 (defun recorre-posiciones (tablero lista)
-	(loop for x in lista collect 
-		(aref tablero (first x) (second x))))
+	(list 
+	(loop for x in (first lista) collect 
+		(aref tablero (first x) (second x)))
+	(loop for x in (second lista) collect 
+		(aref tablero (first x) (second x)))
+	))
 
 ;; Cuenta el numero de fichas consecutivas del mismo colo y devuelve la longitud de la secuencia mas larga
-(defun cuenta-fichas-consecutivas (secuencia color)
-(let ((cont 0))	
-	(loop for x in secuencia
-		maximize
-		(if (eq x color)
-		(setf cont (+ 1 cont))
-		(setf cont 0)))))
+;; (defun cuenta-fichas-consecutivas (secuencia color)
+;; (let ((cont 0))	
+;; 	(loop for x in secuencia
+;; 		maximize
+;; 		(if (eq x color)
+;; 		(setf cont (+ 1 cont))
+;; 		(setf cont 0)))))
+
+;; (defun cuenta-fichas-consecutivas (secuencias color)
+;; Secuencias es una doble lista de valores, el primer miembro es la primera parte de la lista de valores y el segundo miembro es la segunda parte de la lista
+;; Se han ordenado de esta manera para facilitar contar las fichas consecutivas partiendo de la posicion inicial que se presupone nil
+;; Devuelve el numero de fichas del mismo color consecutivas 
+(defun cuenta-fichas-consecutivas (secuencias color)
+(+
+(loop for x in (first secuencias) count (eq x color) until (not(eq x color)))
+(loop for x in (second secuencias) count (eq x color) until (not(eq x color)))))
+
+
 ;; devuelve el maximo entero de la lista
 
 (defun maximo (lista)
@@ -92,7 +111,7 @@ collect
 ;; las fichas que esten consecutivas
 ;; f y c representan la el numero de fila y de columna (f,c)
 
-;; Devuelve una lista de listas de posiciones filas,columnas y diagonales
+;; Devuelve una lista de listas de listas(iz der) de posiciones filas,columnas y diagonales ordenas desde el centro y sin incluir la posicion
 (defun rango-posiciones (f c)
 	(list (seccion-fila f c) (seccion-columna f c) (seccion-diagonal-izq f c) (seccion-diagonal-der f c)))
 
@@ -100,34 +119,43 @@ collect
 (defun seccion-fila (f c)
   (let ((inicio (max (- c 3) 0))
 	(fin (min (+ c 3) *columnas*)))
-    (loop for i from inicio to fin collect (list f i))))
+	(list
+    	(reverse ; tiene que estar al reves
+		(loop for i from inicio to (- c 1) collect (list f i)))
+	(loop for i from (+ 1 c) to fin collect (list f i)))))
 
 ;; Columna con un rango de + - 3
 (defun seccion-columna (f c)
   (let ((inicio (max (- f 3) 0))
-	(fin (min (+ f 3) *filas*))) 
-    (loop for i from inicio to fin collect (list i c))))
+	(fin (min (+ f 3) *filas*)))
+	(list 
+    	(reverse ; tiene que estar al reves
+		(loop for i from inicio to (- f 1) collect (list i c)))
+	(loop for i from (+ 1 f) to fin collect (list i c)))))
 
-;; Diagonal izquierda con un rango de + - 3
+;; Diagonal izquierda con un rango de + - 3 
 (defun seccion-diagonal-izq (f c) 
-    (append
-	(loop for i from 3 downto 0 when (and (>= (- f i) 0) (>= (- c i) -1)) collect
-	(list (- f i) (- c i)))
+    (list
+	(reverse ;tiene que estar al reves
+	(loop for i from 3 downto 1 when (and (>= (- f i) 0) (>= (- c i) 0)) collect
+	(list (- f i) (- c i))))
 	(loop for i from 1 to 3 when (and (<= (+ f i) *filas*) (<= (+ c i) *columnas*)) collect
 	(list (+ f i) (+ c i)))))
 
 ;; diagonal derecha con un rango de + - 3
 (defun seccion-diagonal-der (f c) 
-    (append
-	(loop for i from 3 downto 0 when (and (>= (- f i) 0) (<= (+ c i) *columnas*)) collect
-	(list (- f i) (+ c i)))
-	(loop for i from 1 to 3 when (and (<= (+ f i) *filas*) (>= (- c i) -1)) collect
+    (list
+	(reverse ; tiene que estar al reves
+	(loop for i from 3 downto 1 when (and (>= (- f i) 0) (<= (+ c i) *columnas*)) collect
+	(list (- f i) (+ c i))))
+	(loop for i from 1 to 3 when (and (<= (+ f i) *filas*) (>= (- c i) 0)) collect
 	(list (+ f i) (- c i)))))
 
 ;; Ejemplo
 ;; (rango-posiciones 2 2)
-;; (((2 0) (2 1) (2 2) (2 3) (2 4) (2 5)) ((0 2) (1 2) (2 2) (3 2) (4 2) (5 2)) (((0 0) (1 1) (2 2)) ((3 3) (4 4) (5 5)))
-;;  (((0 4) (1 3) (2 2)) ((3 1) (4 0))))
+;; ((((2 1) (2 0)) ((2 3) (2 4) (2 5))) (((1 2) (0 2)) ((3 2) (4 2) (5 2)))
+;;  (((1 1) (0 0)) ((3 3) (4 4) (5 5))) (((1 3) (0 4)) ((3 1) (4 0))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Restricciones
