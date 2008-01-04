@@ -9,8 +9,8 @@
 ;; mediante NIL
 
 ;; Definicion de variables
-(defvar *filas* 6)
-(defvar *columnas* 7)
+(defvar *filas* 5)		;; Los arrays comienzan en cero
+(defvar *columnas* 6)
 (defvar *nodo-j-inicial*)
 (defvar *estado-inicial* (make-array '(6 7)))
 (defvar *jugador-humano* 'humano1)
