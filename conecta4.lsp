@@ -27,7 +27,7 @@
 
 ;; Funcion que muestra por pantalla el nodo por el canal t (pantalla) y profundidad
 (defun escribe-nodo-j (nodo-j &optional (canal t) profundidad)
-  (format canal "~%Estado : ~a~%Jugador : ~a"
+  (format canal "~%Estado : ~a~%Jugador : ~a"		;; TODO - Hay que cambiar esto para que use imprime-tablero
           (estado nodo-j)
           (jugador nodo-j)))
 
