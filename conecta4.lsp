@@ -73,14 +73,13 @@
 (loop for i from *filas* downto (first posicion) count
 (eq (aref tablero i (second posicion)) nil)))
 
-
 ;; (defun cuatro-en-linea-posible (tablero posicion color)
 ;; devuelve una lista de listas de posiciones posibles en las que colocando una ficha del color apropiado se podria hacer cuatro en linea
 (defun cuatro-en-linea-posible (tablero posicion color)
 (loop for x in (todas-posiciones-posibles tablero posicion color)
 	when (< 2 (length x)) collect x))
 
-;; |(defun todas-posiciones-posibles (tablero posicion color)
+;; (defun todas-posiciones-posibles (tablero posicion color)
 ;; devuelve una lista de posiciones posibles en las que insertar una ficha de nuestro color incrementaria el numero de fichas consecutivas
 (defun todas-posiciones-posibles (tablero posicion color)
 (loop for x in (rango-posiciones (first posicion) (second posicion))
@@ -143,11 +142,10 @@
 (loop for x in (first secuencias) count (eq x color) until (not(eq x color)))
 (loop for x in (second secuencias) count (eq x color) until (not(eq x color)))))
 
-
-
-;; devuelve el maximo entero de la lista
+;; Devuelve el maximo entero de la lista
 (defun maximo (lista)
 	(apply #'max lista))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Funciones de rangos de valores
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
