@@ -30,9 +30,9 @@
 		(x x x o o o x))))
 
 ;Estructura que representa el tablero con las fichas
-(defstruct (juego (:constructor crea-tablero)
-                   (:conc-name nil)
-                   (:print-function muestra-tablero))
+(defstruct (partida (:constructor crea-tablero)
+                    (:conc-name nil)
+                    (:print-function muestra-tablero))
   fichas
   posiciones)
 
