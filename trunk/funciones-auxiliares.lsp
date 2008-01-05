@@ -1,5 +1,3 @@
-;; (load "aux.lsp")
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ARBITRACIÓN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -109,7 +107,7 @@
 	(apply #'or
 		(loop for x in
 			(loop for i from 0 to 5 collect
-				(cuenta-fichas-consecutivas (loop for j from 0 to 6 collect (aref tablero i j)) color))
+				(cuenta-fichas-consecutivas-en-secuencia (loop for j from 0 to 6 collect (aref tablero i j)) color))
 			collect (> x 3))))
 
 ;; Busca alguna secuencia vertical del color dado de longitud mayor o igual a 4 en el tablero
@@ -117,7 +115,7 @@
 	(apply #'or
 		(loop for x in
 			(loop for j from 0 to 6 collect
-				(cuenta-fichas-consecutivas (loop for i from 0 to 5 collect (aref tablero i j)) color))
+				(cuenta-fichas-consecutivas-en-secuencia (loop for i from 0 to 5 collect (aref tablero i j)) color))
 			collect (> x 3))))
 
 ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
