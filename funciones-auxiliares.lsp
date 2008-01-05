@@ -1,9 +1,12 @@
+(load "aux.lsp")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ARBITRACIÓN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Variable con la información del algoritmo a usar
 (defvar *procedimiento*)
+(defvar *movimientos* '(0 1 2 3 4 5 6))		;; Lista con las columnas en las que echar una ficha
 
 ;; Da comienzo a la partida y establece el primer turno de juego
 (defun juego (&key (empieza-la-maquina? nil)
@@ -94,12 +97,12 @@
 (defun es-estado-final (tablero)
 	(or
 		(movimientos-legales tablero)
-		(cuenta-4-en-horizontal tablero *colora*)
-		(cuenta-4-en-horizontal tablero *colorb*)
-		(cuenta-4-en-vertical tablero *colora*)
-		(cuenta-4-en-vertical tablero *colorb*)
-		(cuenta-4-en-diagonal tablero *colora*)
-		(cuenta-4-en-diagonal tablero *colorb*)
+		(cuenta-4-en-horizontal tablero *color-maquina*)
+		(cuenta-4-en-horizontal tablero *color-humano*)
+		(cuenta-4-en-vertical tablero *color-maquina*)
+		(cuenta-4-en-vertical tablero *color-humano*)
+		(cuenta-4-en-diagonal tablero *color-maquina*)
+		(cuenta-4-en-diagonal tablero *color-humano*)
 		))
 
 ;; Busca alguna secuencia horizontal del color dado de longitud mayor o igual a 4 en el tablero
@@ -131,9 +134,9 @@
 (defun aplica-decision (procedimiento nodo-j)
 	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento))))) ;; TODO - Apply mal seguro XD
 
-;; Devuelve el nodo siguiente según el movimiento dado por el jugador
-(defun aplica-movimiento (movimiento tablero)		;; TODO - Se echa la ficha en la columna dicha y amén XD
-	)
+;; Devuelve el estado siguiente según el movimiento dado por el jugador
+(defun aplica-movimiento (movimiento tablero)
+	(inserta-ficha-en-columna tablero movimiento *color-humano*))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
