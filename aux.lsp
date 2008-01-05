@@ -50,7 +50,7 @@
   (let* ((dim (array-dimensions a))
 	 (f (first dim))
 	 (c (second dim)))
-    (format t "~%")
+    (format t "~% 0 1 2 3 4 5 6 ~%")
     (escribe-linea-aux c)
     (loop for i from 0 to (- f 1)
 	  do (loop for j from 0 to (- c 1)
@@ -91,17 +91,3 @@
 	  minimize i
 	  until(posicion-vacia tablero i columna)))
 ;(primera-posicion-vacia *tablero* 1)
-
-(defun recorre-posiciones (tablero lista)
-	(loop for x in lista collect 
-		(aref tablero (first x) (second x))))
-
-;; Cuenta el numero de fichas consecutivas del mismo colo y devuelve la longitud de la secuencia mas larga
-(defun cuenta-fichas-consecutivas (secuencia color)
-(let ((cont 0))	
-	(loop for x in secuencia
-		maximize
-		(if (eq x color)
-		(setf cont (+ 1 cont))
-		(setf cont 0)))))
-

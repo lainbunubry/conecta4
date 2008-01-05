@@ -48,17 +48,62 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Funciones Heurísticas
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
 (defun funcion-heuristica-1 (tablero lista-valores jugador)
 	(loop for pos in lista-valores count (igual-color tablero pos color)))
 
-(defun igual-color (tablero pos color)
-	(eq (aref tablero (first pos) (second pos)) color))
+;; (defun igual-color (tablero pos color)
+;; 	(eq (aref tablero (first pos) (second pos)) color))
 
+;;Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
+(defun funcion-heuristica-2 (tablero posicion color)
+(- 
+(fichas-consecutivas tablero posicion color)
+(minimo-turnos-ocupar-posicion tablero posicion)))
+
+;; (defun mejor-eleccion (tablero heuristica posiciones color)
+;; (loop for x in 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;Funciones auxliares de la Heuristica
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; minimo de turnos que necesitaremos para ocupar esa posicion
+(defun minimo-turnos-ocupar-posicion (tablero posicion)
+(loop for i from *filas* downto (first posicion) count
+(eq (aref tablero i (second posicion)) nil)))
+
+
+;; (defun cuatro-en-linea-posible (tablero posicion color)
+;; devuelve una lista de listas de posiciones posibles en las que colocando una ficha del color apropiado se podria hacer cuatro en linea
+(defun cuatro-en-linea-posible (tablero posicion color)
+(loop for x in (todas-posiciones-posibles tablero posicion color)
+	when (< 2 (length x)) collect x))
+
+;; |(defun todas-posiciones-posibles (tablero posicion color)
+;; devuelve una lista de posiciones posibles en las que insertar una ficha de nuestro color incrementaria el numero de fichas consecutivas
+(defun todas-posiciones-posibles (tablero posicion color)
+(loop for x in (rango-posiciones (first posicion) (second posicion))
+	collect
+	(posiciones-posibles tablero x color)))
+
+;; (defun posiciones-posibles (tablero rango color)
+;; Rango de valores fila, columna, ....
+;; devuelve un solo las posiciones consecutivas accesibles que conectan con nuestro color
+(defun posiciones-posibles (tablero rango color)
+	(loop for posiciones in rango
+	append
+	(loop for x in posiciones 
+		until (not (or 
+			(eq (aref tablero (first x) (second x)) color) 
+			(eq (aref tablero (first x) (second x)) nil)))
+	collect
+	(if (eq (aref tablero (first x) (second x)) nil)
+		x
+		nil
+	)))))
 
 ;; Dada una posicion (x y) devuelve el numero maximo de veces consecutivas que se repite el color
-
 (defun fichas-consecutivas (tablero posicion color)
 (maximo 
 	(loop for x in 
@@ -69,7 +114,6 @@
 
 ;; (defun recorre-posiciones (tablero lista)
 ;; lista tiene una doble lista con los las posiciones del array ordenadas de tal modo que el primer elemento es la parte derecha y el segundo es la parate izquierda sin incluir la posicion inicial
-
 ;; Devuelve en una doble lista los valores contenidos en el tablero
 ;; que esten en las posciones definidas por lista
 (defun recorre-posiciones (tablero lista)
@@ -93,14 +137,15 @@
 ;; Secuencias es una doble lista de valores, el primer miembro es la primera parte de la lista de valores y el segundo miembro es la segunda parte de la lista
 ;; Se han ordenado de esta manera para facilitar contar las fichas consecutivas partiendo de la posicion inicial que se presupone nil
 ;; Devuelve el numero de fichas del mismo color consecutivas 
+
 (defun cuenta-fichas-consecutivas (secuencias color)
 (+
 (loop for x in (first secuencias) count (eq x color) until (not(eq x color)))
 (loop for x in (second secuencias) count (eq x color) until (not(eq x color)))))
 
 
-;; devuelve el maximo entero de la lista
 
+;; devuelve el maximo entero de la lista
 (defun maximo (lista)
 	(apply #'max lista))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
