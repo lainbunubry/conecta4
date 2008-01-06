@@ -43,7 +43,9 @@
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Función heurística definitiva
+;; Front-End para las heurísticas, sirve para que f-e-estatica no tenga que preocuparse
+;; sobre qué heurística es la más avanzada, siempre llama a esta función y es aquí donde
+;; se escoje la mejor heurística
 (defun funcion-heuristica (tablero jugador)
 	(cond
 		((equal jugador *jugador-maquina)
