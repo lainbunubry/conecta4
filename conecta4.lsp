@@ -13,10 +13,9 @@
 (defvar *columnas* 6)
 (defvar *nodo-j-inicial*)
 (defvar *estado-inicial* (make-array '(6 7)))
-(defvar *jugador-humano* 'humano1)
-(defvar *jugador-humano-1* 'humano2)
-(defvar *jugador-maquina* 'maquina1)
-(defvar *jugador-maquina-1* 'maquina2)
+(defvar *jugador-humano* 'humano)
+(defvar *jugador-maquina* 'maquina)
+(defvar *jugador-maquina-2* 'maquina2)
 (defvar *color-maquina* 'M)
 (defvar *color-humano* 'H)
 

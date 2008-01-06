@@ -102,8 +102,7 @@
 		(cuenta-4-en-vertical tablero *color-maquina*)
 		(cuenta-4-en-vertical tablero *color-humano*)
 		(cuenta-4-en-diagonal tablero *color-maquina*)
-		(cuenta-4-en-diagonal tablero *color-humano*)
-		))
+		(cuenta-4-en-diagonal tablero *color-humano*)))
 
 ;; Busca alguna secuencia horizontal del color dado de longitud mayor o igual a 4 en el tablero
 (defun cuenta-4-en-horizontal (tablero color)
@@ -126,13 +125,19 @@
 	)
 
 ;; Determina si ha ganado el jugador dado
-(defun es-estado-ganador (tablero jugador turno)		;; TODO - Ha de comprobar si el jugador
-											;; que ha ganado es el del turno
-	)
+(defun es-estado-ganador (tablero jugador turno)
+	(cond
+		((not (movimientos-legales tablero))
+			nil) ;; Empate
+		((and (equal jugador *jugador-maquina*) (equal turno 'max))
+			t)
+		((and (equal jugador *jugador-humano*) (equal turno 'min))
+			t)
+		(t nil))) ;; En principio inalcanzable
 
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
-	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento))))) ;; TODO - Apply mal seguro XD
+	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento))))) ;; TODO - Apply mal seguro XD (revisar)
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador
 (defun aplica-movimiento (movimiento tablero)
