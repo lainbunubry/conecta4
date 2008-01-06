@@ -54,9 +54,9 @@
 ;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
 ;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
 (defun funcion-heuristica-2 (tablero posicion color)
-(- 
-(fichas-consecutivas tablero posicion color)
-(minimo-turnos-ocupar-posicion tablero posicion)))
+	(-
+		(fichas-consecutivas tablero posicion color)
+		(minimo-turnos-ocupar-posicion tablero posicion)))
 
 ;; (defun mejor-eleccion (tablero heuristica posiciones color)
 ;; (loop for x in 
@@ -67,35 +67,35 @@
 
 ;; Mínimo de turnos que necesitaremos para ocupar esa posición
 (defun minimo-turnos-ocupar-posicion (tablero posicion)
-(loop for i from *filas* downto (first posicion) count
-(eq (aref tablero i (second posicion)) nil)))
+	(loop for i from *filas* downto (first posicion) count
+		(eq (aref tablero i (second posicion)) nil)))
 
 ;; Devuelve una lista de listas de posiciones posibles en las que colocando
 ;; una ficha del color apropiado se podria hacer cuatro en linea
 (defun cuatro-en-linea-posible (tablero posicion color)
-(loop for x in (todas-posiciones-posibles tablero posicion color)
-	when (< 2 (length x)) collect x))
+	(loop for x in (todas-posiciones-posibles tablero posicion color)
+		when (< 2 (length x)) collect x))
 
 ;; Devuelve una lista de posiciones posibles en las que insertar una ficha de
 ;; nuestro color incrementaria el numero de fichas consecutivas
 (defun todas-posiciones-posibles (tablero posicion color)
-(loop for x in (rango-posiciones (first posicion) (second posicion))
-	collect
-	(posiciones-posibles tablero x color)))
+	(loop for x in (rango-posiciones (first posicion) (second posicion))
+		collect
+			(posiciones-posibles tablero x color)))
 
+;; TODO - Esta función falla
 ;; Devuelve sólo las posiciones consecutivas accesibles que conectan con nuestro color
-(defun posiciones-posibles (tablero rango color)
-	(loop for posiciones in rango
-	append
-	(loop for x in posiciones 
-		until (not (or 
-			(eq (aref tablero (first x) (second x)) color) 
-			(eq (aref tablero (first x) (second x)) nil)))
-	collect
-	(if (eq (aref tablero (first x) (second x)) nil)
-		x
-		nil
-	)))))
+;; (defun posiciones-posibles (tablero rango color)
+;; 	(loop for posiciones in rango
+;; 		append
+;; 			(loop for x in posiciones 
+;; 				until (not (or 
+;; 							(eq (aref tablero (first x) (second x)) color) 
+;; 							(eq (aref tablero (first x) (second x)) nil)))
+;; 				collect
+;; 					(if (eq (aref tablero (first x) (second x)) nil)
+;; 						x
+;; 						nil)))))
 
 ;; Dada una posicion (x y) devuelve el numero maximo de veces consecutivas que se repite el color
 (defun fichas-consecutivas (tablero posicion color)
@@ -113,11 +113,10 @@
 ;; que esten en las posciones definidas por lista
 (defun recorre-posiciones (tablero lista)
 	(list 
-	(loop for x in (first lista) collect 
-		(aref tablero (first x) (second x)))
-	(loop for x in (second lista) collect 
-		(aref tablero (first x) (second x)))
-	))
+		(loop for x in (first lista) collect 
+			(aref tablero (first x) (second x)))
+		(loop for x in (second lista) collect 
+			(aref tablero (first x) (second x)))))
 
 ;; Secuencias es una doble lista de valores, el primer miembro es la primera
 ;; parte de la lista de valores y el segundo miembro es la segunda parte de la lista
@@ -125,9 +124,9 @@
 ;; partiendo de la posicion inicial que se presupone nil
 ;; Devuelve el numero de fichas del mismo color consecutivas
 (defun cuenta-fichas-consecutivas (secuencias color)
-(+
-(loop for x in (first secuencias) count (eq x color) until (not(eq x color)))
-(loop for x in (second secuencias) count (eq x color) until (not(eq x color)))))
+	(+
+		(loop for x in (first secuencias) count (eq x color) until (not(eq x color)))
+		(loop for x in (second secuencias) count (eq x color) until (not(eq x color)))))
 
 ;; Devuelve el maximo entero de la lista
 (defun maximo (lista)
@@ -140,8 +139,8 @@
 	(loop for x in secuencia
 		maximize
 		(if (eq x color)
-		(setf cont (+ 1 cont))
-		(setf cont 0)))))
+			(setf cont (+ 1 cont))
+			(setf cont 0)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES DE RANGOS DE VALORES
