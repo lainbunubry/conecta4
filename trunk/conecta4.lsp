@@ -53,6 +53,11 @@
 		(t
 			(loop for mov in (movimientos-legales tablero) maximize
 				(heuristica-2 tablero mov *color-humano*)))))
+				
+;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
+;; resulta si MIN utiliza la primera heurística y MAX la segunda
+(defun compara_heurs (heuristica1 heuristica2)		;; TODO - Bufff XD
+	)
 
 ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
 (defun heuristica-1 (tablero lista-valores jugador)
