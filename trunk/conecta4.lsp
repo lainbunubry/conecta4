@@ -41,10 +41,20 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Función heurística definitiva
+(defun funcion-heuristica (tablero jugador)
+	(cond
+		((equal jugador *jugador-maquina)
+			(loop for mov in (movimientos-legales tablero) maximize
+				(subfuncion-heuristica-2 tablero mov *color-maquina*)))
+		(t
+			(loop for mov in (movimientos-legales tablero) maximize
+				(subfuncion-heuristica-2 tablero mov *color-humano*)))))
 
 ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
-(defun funcion-heuristica-1 (tablero lista-valores jugador)
+(defun subfuncion-heuristica-1 (tablero lista-valores jugador)
 	(loop for pos in lista-valores count (igual-color tablero pos color)))
 
 ;; (defun igual-color (tablero pos color)
@@ -52,7 +62,7 @@
 
 ;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
 ;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
-(defun funcion-heuristica-2 (tablero posicion color)
+(defun subfuncion-heuristica-2 (tablero posicion color)
 	(-
 		(fichas-consecutivas tablero posicion color)
 		(minimo-turnos-ocupar-posicion tablero posicion)))
