@@ -15,7 +15,6 @@
 (defvar *estado-inicial* (make-array '(6 7)))
 (defvar *jugador-humano* 'humano)
 (defvar *jugador-maquina* 'maquina)
-(defvar *jugador-maquina-2* 'maquina2)
 (defvar *color-maquina* 'M)
 (defvar *color-humano* 'H)
 
@@ -50,13 +49,13 @@
 	(cond
 		((equal jugador *jugador-maquina)
 			(loop for mov in (movimientos-legales tablero) maximize
-				(subfuncion-heuristica-2 tablero mov *color-maquina*)))
+				(heuristica-2 tablero mov *color-maquina*)))
 		(t
 			(loop for mov in (movimientos-legales tablero) maximize
-				(subfuncion-heuristica-2 tablero mov *color-humano*)))))
+				(heuristica-2 tablero mov *color-humano*)))))
 
 ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
-(defun subfuncion-heuristica-1 (tablero lista-valores jugador)
+(defun heuristica-1 (tablero lista-valores jugador)
 	(loop for pos in lista-valores count (igual-color tablero pos color)))
 
 ;; (defun igual-color (tablero pos color)
@@ -64,7 +63,7 @@
 
 ;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
 ;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
-(defun subfuncion-heuristica-2 (tablero posicion color)
+(defun heuristica-2 (tablero posicion color)
 	(-
 		(fichas-consecutivas tablero posicion color)
 		(minimo-turnos-ocupar-posicion tablero posicion)))

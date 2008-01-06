@@ -87,11 +87,22 @@
 
 ;; Función que se llama cuando se pide consejo a la máquina
 (defun solicitar-consejo (nodo-j)
-  (format t "~%Mi recomendación:~&")
+  (format t "~%Mi recomendación: ")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-		(escribe-nodo-j siguiente)))							;; TODO - Analizar como se imprime esto
-														;; y dar la información adecuadamente
-														;; Funciona pero no es estético
+	(format t "~a" (compara-tableros
+				(estado nodo-j)
+				(estado siguiente)))))
+
+;; Compara dos tableros, tales que el segundo es el mismo que el primero pero con una jugada más,
+;; y devuelve el movimiento que lleva del primer tablero al segundo
+(defun compara-tableros (viejo nuevo)
+	(let ((resultado nil))
+		(loop for i from 0 to *filas* do
+			(loop for j from 0 to *columnas* do
+				(if (not (equal (aref i j viejo) (aref i j nuevo)))
+					(setf resultado (aref i j nuevo))
+					nil)))
+		resultado))
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
@@ -108,16 +119,16 @@
 (defun cuenta-4-en-horizontal (tablero color)
 	(apply #'or
 		(loop for x in
-			(loop for i from 0 to 5 collect
-				(cuenta-fichas-consecutivas-en-secuencia (loop for j from 0 to 6 collect (aref tablero i j)) color))
+			(loop for i from 0 to *filas* collect
+				(cuenta-fichas-consecutivas-en-secuencia (loop for j from 0 to *columnas* collect (aref tablero i j)) color))
 			collect (> x 3))))
 
 ;; Busca alguna secuencia vertical del color dado de longitud mayor o igual a 4 en el tablero
 (defun cuenta-4-en-vertical (tablero color)
 	(apply #'or
 		(loop for x in
-			(loop for j from 0 to 6 collect
-				(cuenta-fichas-consecutivas-en-secuencia (loop for i from 0 to 5 collect (aref tablero i j)) color))
+			(loop for j from 0 to *columnas* collect
+				(cuenta-fichas-consecutivas-en-secuencia (loop for i from 0 to *filas* collect (aref tablero i j)) color))
 			collect (> x 3))))
 
 ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
@@ -148,7 +159,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Valores máximos y mínimos para las variables alfa y beta
-(defvar *minimo-valor* -9999)		;; TODO - Revisar estas dos vbles
+(defvar *minimo-valor* -9999)
 (defvar *maximo-valor* 9999)
 
 ;; Para un posible nodo del árbol devuelve sus hijos
