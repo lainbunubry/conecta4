@@ -124,7 +124,7 @@
 (defun cuenta-4-en-diagonal (tablero color)			;; TODO - Ha de comprobar si hay alguna secuencia de 4 en diagonal
 	)
 
-;; Determina si ha ganado el jugador dado
+;; Determina si ha ganado algún jugador la partida
 (defun es-estado-ganador (tablero jugador turno)
 	(cond
 		((not (movimientos-legales tablero))
@@ -223,5 +223,5 @@
     mejor-sucesor))
 
 ;; Devuelve una valoración heurística para un nodo (jugada)
-(defun f-e-estatica (estado jugador)
-	)								;; TODO - Esto es la muerte :'(
+(defun f-e-estatica (tablero jugador)
+	(funcion-heuristica tablero jugador))
