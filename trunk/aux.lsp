@@ -43,30 +43,6 @@
 
 ;(crea-tablero-en-blanco)
 
-;Función que imprime el tablero
-;------------------------------
-
-(defun imprime-tablero (a)
-  (let* ((dim (array-dimensions a))
-	 (f (first dim))
-	 (c (second dim)))
-    (format t "~% 0 1 2 3 4 5 6 ~%")
-    (escribe-linea-aux c)
-    (loop for i from 0 to (- f 1)
-	  do (loop for j from 0 to (- c 1)
-		   do (if (equal (aref a i j) NIL)
-			  (format t "| ")
-			(format t "|~a" (aref a i j))))
-	  (format t "|~%")
-	  (escribe-linea-aux c))))
-
-(defun escribe-linea-aux (col)
-       (loop for i from 0 to (- col 1)
-               do (format t "+-"))
-       (format t "+~%"))
-
-;(imprime-tablero *tablero*)
-
 ;Funcion de inserción de las fichas
 ;------------------------------------
 ;inserta una ficha correctamente en la columna que tu quieras

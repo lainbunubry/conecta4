@@ -38,6 +38,27 @@
     (crea-nodo-j :estado *estado-inicial*
                  :jugador jugador)))
 
+;; Muestra por pantalla el contenido de un tablero
+(defun imprime-tablero (a)
+  (let* ((dim (array-dimensions a))
+	 (f (first dim))
+	 (c (second dim)))
+    (format t "~% 0 1 2 3 4 5 6 ~%")
+    (escribe-linea-aux c)
+    (loop for i from 0 to (- f 1)
+	  do (loop for j from 0 to (- c 1)
+		   do (if (equal (aref a i j) NIL)
+			  (format t "| ")
+			(format t "|~a" (aref a i j))))
+	  (format t "|~%")
+	  (escribe-linea-aux c))))
+
+;; Genera una línea del tablero a mostrar
+(defun escribe-linea-aux (col)
+       (loop for i from 0 to (- col 1)
+               do (format t "+-"))
+       (format t "+~%"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ARBITRACIÓN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -146,6 +167,25 @@
 					nil)))
 		resultado))
 
+;; Determina si ha ganado algún jugador la partida
+(defun es-estado-ganador (tablero jugador turno)
+	(cond
+		((not (movimientos-legales tablero))
+			nil) ;; Empate
+		((and (equal jugador *jugador-maquina*) (equal turno 'max))
+			t)
+		((and (equal jugador *jugador-humano*) (equal turno 'min))
+			t)
+		(t nil))) ;; En principio inalcanzable
+
+;; Devuelve el nodo siguiente según una jugada de la IA
+(defun aplica-decision (procedimiento nodo-j)
+	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento))))) ;; TODO - Apply mal seguro XD (revisar)
+
+;; Devuelve el estado siguiente según el movimiento dado por el jugador
+(defun aplica-movimiento (movimiento tablero)
+	(inserta-ficha-en-columna tablero movimiento *color-humano*))
+
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
 	(or
@@ -177,24 +217,15 @@
 (defun cuenta-4-en-diagonal (tablero color)			;; TODO - Ha de comprobar si hay alguna secuencia de 4 en diagonal
 	)
 
-;; Determina si ha ganado algún jugador la partida
-(defun es-estado-ganador (tablero jugador turno)
-	(cond
-		((not (movimientos-legales tablero))
-			nil) ;; Empate
-		((and (equal jugador *jugador-maquina*) (equal turno 'max))
-			t)
-		((and (equal jugador *jugador-humano*) (equal turno 'min))
-			t)
-		(t nil))) ;; En principio inalcanzable
-
-;; Devuelve el nodo siguiente según una jugada de la IA
-(defun aplica-decision (procedimiento nodo-j)
-	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento))))) ;; TODO - Apply mal seguro XD (revisar)
-
-;; Devuelve el estado siguiente según el movimiento dado por el jugador
-(defun aplica-movimiento (movimiento tablero)
-	(inserta-ficha-en-columna tablero movimiento *color-humano*))
+;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
+;; de la secuencia más larga
+(defun cuenta-fichas-consecutivas-en-secuencia (secuencia color)
+(let ((cont 0))	
+	(loop for x in secuencia
+		maximize
+		(if (eq x color)
+			(setf cont (+ 1 cont))
+			(setf cont 0)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
@@ -387,16 +418,6 @@
 ;; Devuelve el maximo entero de la lista
 (defun maximo (lista)
 	(apply #'max lista))
-
-;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
-;; de la secuencia más larga
-(defun cuenta-fichas-consecutivas-en-secuencia (secuencia color)
-(let ((cont 0))	
-	(loop for x in secuencia
-		maximize
-		(if (eq x color)
-			(setf cont (+ 1 cont))
-			(setf cont 0)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES DE RANGOS DE VALORES
