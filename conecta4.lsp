@@ -366,6 +366,19 @@
 ;; (defun mejor-eleccion (tablero heuristica posiciones color)
 ;; (loop for x in 
 
+(defun heuristica-3  (tablero posicion color)
+(let ((listas (cuatro-en-linea-posible tablero posicion color)))
+(+
+	1 2)))
+
+(defun heuristica-3-aux-consecutivas (listas)
+(maximo 
+	(loop for x in listas collect
+		(if (eq (length x) (mas-posibles-conecta-4))
+			*maximo-valor*
+			(mas-posibles-conecta-4)))))
+	
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -401,26 +414,38 @@
 	(loop for x in (todas-posiciones-posibles tablero posicion color)
 		when (< 2 (length x)) collect x))
 
+;; Nos indica el numero de fichas del mismo color que ya hay en una lista, lista es una de las listas resultantes de cuantro-en-linea-posible
+(defun mas-posibilidades-conecta-4 (lista)
+(- (length lista)
+(loop for x in lista count (not (null x)))))
+
 ;; Devuelve una lista de posiciones posibles en las que insertar una ficha de
 ;; nuestro color incrementaria el numero de fichas consecutivas
 (defun todas-posiciones-posibles (tablero posicion color)
 	(loop for x in (rango-posiciones (first posicion) (second posicion))
 		collect
-			(posiciones-posibles tablero x color)))
+			(posiciones-cuatro-en-linea tablero x color)))
 
-;; TODO - Esta función falla
+;; TODO echo - (posiciones-posibles)
+;; devuelve todas las posiciones no ocupadas del tablero
+(defun posiciones-posibles (tablero)
+(loop for i from 0 to *columnas*
+append (loop for j from 0 to *filas* until (not (null (aref tablero j i)))
+collect (list j i))))
+
 ;; Devuelve sólo las posiciones consecutivas accesibles que conectan con nuestro color
-;; (defun posiciones-posibles (tablero rango color)
-;; 	(loop for posiciones in rango
-;; 		append
-;; 			(loop for x in posiciones 
-;; 				until (not (or 
-;; 							(eq (aref tablero (first x) (second x)) color) 
-;; 							(eq (aref tablero (first x) (second x)) nil)))
-;; 				collect
-;; 					(if (eq (aref tablero (first x) (second x)) nil)
-;; 						x
-;; 						nil)))))
+;; accesibles significa libres y no cortadas por otro color
+(defun posiciones-cuatro-en-linea (tablero rango color)
+	(loop for posiciones in rango
+		append
+			(loop for x in posiciones 
+				until (not (or 
+							(eq (aref tablero (first x) (second x)) color) 
+							(eq (aref tablero (first x) (second x)) nil)))
+				collect
+					(if (eq (aref tablero (first x) (second x)) nil)
+						x
+						nil)))))
 
 ;; Dada una posicion (x y) devuelve el numero maximo de veces consecutivas que se repite el color
 (defun fichas-consecutivas (tablero posicion color)
