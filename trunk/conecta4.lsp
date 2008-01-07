@@ -379,10 +379,10 @@
 ;; NOTA: No se puede aplicar sobre posiciones ya ocupadas, eso aparte de ser inutil provocaría una division por 0
 (defun heuristica-3  (tablero posicion color)
 (let* ((listas (cuatro-en-linea-posible tablero posicion color))
-	(valor-heuristico-consecutivas (heuristica-3-aux-consecutivas listas))
+	(valor-heuristico-consecutivas (heuristica-3-aux-consecutivas listas tablero posicion color))
 	(valor-heuristico-multiplicador (length listas))
 	(valor-heuristico-divisor (minimo-turnos-ocupar-posicion tablero posicion)))
-		(if (and (eq 1 valor-heuristico-divisor) (eq valor-heuristico-consecutivas *valor-maximo*))
+		(if (eq valor-heuristico-consecutivas *valor-maximo*)
 ;; significa que si ponemos aqui una ficha ganamos
 			*valor-maximo*
 ;; significa que multiplicaremos el numero de posibles lineas completas que podemos tener y lo dividiremos por el numero de turnos que tardaríamos en llegar nosotros a esa posicion
@@ -392,12 +392,13 @@
 ;; detecta cuando solo hay que insertar una ficha para ganar y devuelve el maximo valor heuristico para ese nodo
 ;; si no devuelve un numero que será mayor mientras menos fichas tengamos que insertar para conseguir 4 en linea
 ;; devuelve un numero
-(defun heuristica-3-aux-consecutivas (listas)
+(defun heuristica-3-aux-consecutivas (listas tablero posicion color)
+if(= 3 (fichas-consecutivas tablero poscion color)
+;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
+*valor-maximo*
 (maximo 
 	(loop for x in listas collect
-		(if (eq (length x) (mas-posibles-conecta-4))
-			*maximo-valor*
-			(mas-posibles-conecta-4)))))
+		(mas-posibilidades-conecta-4 x)))))
 	
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
