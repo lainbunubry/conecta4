@@ -186,6 +186,14 @@
 (defun aplica-movimiento (movimiento tablero)
 	(inserta-ficha-en-columna tablero movimiento *color-humano*))
 
+;; Inserta una ficha correctamente en la columna dicha
+;; Nota: Si la columna esta llena no falla
+(defun inserta-ficha-en-columna (tablero columna color)
+  (setf (aref tablero 
+	      (primera-posicion-vacia tablero columna)
+	      columna)
+	color))
+
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
 	(or
@@ -313,6 +321,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar *heuristica1*)
+(defvar *heuristica2*)
 
 ;; Front-End para las heurísticas, sirve para que f-e-estatica no tenga que preocuparse
 ;; sobre qué heurística es la más avanzada, siempre llama a esta función y es aquí donde
@@ -328,8 +338,14 @@
 				
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
-(defun compara_heurs (heuristica1 heuristica2)		;; TODO - Bufff XD
-	)
+(defun compara_heurs (heuristica1 heuristica2)
+	(setf *procedimiento* heuristica1)
+	(setf *procedimiento2* heuristica2)
+	(crea-nodo-j-inicial 'max)
+	(es-estado-final *estado-inicial*)
+	(analiza-final *nodo-j-inicial*)
+	(jugada-maquina-compara_heurs-2 *nodo-j-inicial*)) ;; MAX usa la segunda heurística
+;; TODO - Falta que se escriba en un fichero de texto
 
 ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
 (defun heuristica-1 (tablero lista-valores jugador)
@@ -351,6 +367,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defvar *procedimiento2*)
+
+;; Función llamada cuando es el turno de la máquina de la heurística 1 en compara_heurs
+(defun jugada-maquina-compara_heurs-1 (nodo-j)
+	(escribe-nodo-j nodo-j)
+	(format t "~%Turno heurística 1.~&")
+	(let ((siguiente (aplica-decision *procedimiento* nodo-j)))
+		(if (es-estado-final (estado siguiente))
+			(analiza-final siguiente)
+			(jugada-maquina-compara_heurs-2 siguiente))))
+
+;; Función llamada cuando es el turno de la máquina de la heurística 2 en compara_heurs
+(defun jugada-maquina-compara_heurs-2 (nodo-j)
+	(escribe-nodo-j nodo-j)
+	(format t "~%Turno heurística 2.~&")
+	(let ((siguiente (aplica-decision *procedimiento2* nodo-j)))
+		(if (es-estado-final (estado siguiente))
+			(analiza-final siguiente)
+			(jugada-maquina-compara_heurs-1 siguiente))))
 
 ;; Mínimo de turnos que necesitaremos para ocupar esa posición
 (defun minimo-turnos-ocupar-posicion (tablero posicion)

@@ -43,16 +43,6 @@
 
 ;(crea-tablero-en-blanco)
 
-;Funcion de inserción de las fichas
-;------------------------------------
-;inserta una ficha correctamente en la columna que tu quieras
-;notas: Si la columna esta llena no peta
-(defun inserta-ficha-en-columna (tablero columna color)
-  (setf (aref tablero 
-	      (primera-posicion-vacia tablero columna)
-	      columna)
-	color))
-
 ;(inserta-ficha-en-fila *tablero* 1 'R)
 ;(imprime-tablero *tablero*)
 
