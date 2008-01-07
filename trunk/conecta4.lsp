@@ -351,6 +351,7 @@
 (defun heuristica-1 (tablero lista-valores jugador)
 	(loop for pos in lista-valores count (igual-color tablero pos color)))
 
+;; TODO
 ;; (defun igual-color (tablero pos color)
 ;; 	(eq (aref tablero (first pos) (second pos)) color))
 
@@ -361,6 +362,7 @@
 		(fichas-consecutivas tablero posicion color)
 		(minimo-turnos-ocupar-posicion tablero posicion)))
 
+;; TODO
 ;; (defun mejor-eleccion (tablero heuristica posiciones color)
 ;; (loop for x in 
 
