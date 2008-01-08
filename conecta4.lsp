@@ -181,7 +181,6 @@
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
 	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento))))) ;; TODO - Apply mal seguro XD (revisar)
-;; lin dice no se que es esto
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador
 (defun aplica-movimiento (movimiento tablero)
@@ -353,10 +352,6 @@
 (defun heuristica-1 (tablero lista-valores jugador)
 	(loop for pos in lista-valores count (igual-color tablero pos color)))
 
-;; TODO no necesario
-;; (defun igual-color (tablero pos color)
-;; 	(eq (aref tablero (first pos) (second pos)) color))
-
 ;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
 ;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
 (defun heuristica-2 (tablero posicion color)
@@ -364,9 +359,8 @@
 		(fichas-consecutivas tablero posicion color)
 		(minimo-turnos-ocupar-posicion tablero posicion)))
 
-;; TODO exho.
-;; devuelve la primera posicion de la lista de posiciones con una heuristica mayor
-;; NOTA: quizas se pudiera mejorar para que devolviera una lista con las mejores, pero no le veo utilidad
+;; Devuelve la primera posicion de la lista de posiciones con una heuristica mayor
+;; TODO - quizas se pudiera mejorar para que devolviera una lista con las mejores, pero no le veo utilidad
 (defun mejor-eleccion (tablero heuristica posiciones color)
 (let ((posicion-valor (list nil *valor-minimo*))
 	(aux nil))
@@ -449,8 +443,7 @@ if(= 3 (fichas-consecutivas tablero poscion color)
 		collect
 			(posiciones-cuatro-en-linea tablero x color)))
 
-;; TODO echo - (posiciones-posibles)
-;; devuelve todas las posiciones no ocupadas del tablero
+;; Devuelve todas las posiciones no ocupadas del tablero
 (defun posiciones-posibles (tablero)
 	(loop for i from 0 to *columnas*
 		append 
