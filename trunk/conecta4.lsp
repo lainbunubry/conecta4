@@ -82,15 +82,15 @@
                (jugada-humana *nodo-j-inicial*)))))
 
 ;; Comprueba el resultado de la partida
-(defun analiza-final (nodo-j-final)
-  (escribe-nodo-j nodo-j-final)*fichero-compara_heurs*
+(defun analiza-final (nodo-j-final &optional (canal t))
+  (escribe-nodo-j nodo-j-final)
   (cond ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'max)
-         (format t "~&La maquina ha ganado"))*fichero-compara_heurs*
+         (format canal "~&La maquina ha ganado"))
         ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'min)
-         (format t "~&El humano ha ganado"))
-        (t (format t "~&Empate"))))
+         (format canal "~&El humano ha ganado"))
+        (t (format canal "~&Empate"))))
 
 ;; Función llamada cuando es el turno de la máquina
 (defun jugada-maquina (nodo-j)
@@ -417,36 +417,21 @@ if(= 3 (fichas-consecutivas tablero poscion color)
 
 ;; Función llamada cuando es el turno de la máquina de la heurística 1 en compara_heurs
 (defun jugada-maquina-compara_heurs-1 (nodo-j)
-	(escribe-nodo-j nodo-j)
+	(escribe-nodo-j *fichero-compara_heurs* nodo-j)
 	(format *fichero-compara_heurs* "~%Turno heurística 1.~&")
 	(let ((siguiente (aplica-decision *procedimiento* nodo-j)))
 		(if (es-estado-final (estado siguiente))
-			(analiza-final siguiente)
+			(analiza-final siguiente *fichero-compara_heurs*)
 			(jugada-maquina-compara_heurs-2 siguiente))))
 
 ;; Función llamada cuando es el turno de la máquina de la heurística 2 en compara_heurs
 (defun jugada-maquina-compara_heurs-2 (nodo-j)
-	(escribe-nodo-j nodo-j)
+	(escribe-nodo-j *fichero-compara_heurs* nodo-j)
 	(format *fichero-compara_heurs* "~%Turno heurística 2.~&")
 	(let ((siguiente (aplica-decision *procedimiento2* nodo-j)))
 		(if (es-estado-final (estado siguiente))
-			(analiza-final siguiente)
+			(analiza-final siguiente *fichero-compara_heurs*)
 			(jugada-maquina-compara_heurs-1 siguiente))))
-
-;; TODO
-(defun escribe-nodo-j-compara_heurs (nodo-j)
-	)
-
-;; TODO
-(defun analiza-final-compara_heurs (nodo-j-final)
-	)
-
-;; Abrir un fichero.
-;;       (setq fichero (open “nombre-fichero” :direction :input))
-;; Escribir en un fichero.
-;;       (format fichero “el cuadrado de ~d es ~d ~&” 3 (* 3 3))
-;; Cerrar fichero
-;;       (close fichero)
 
 ;; Mínimo de turnos que necesitaremos para ocupar esa posición
 (defun minimo-turnos-ocupar-posicion (tablero posicion)
