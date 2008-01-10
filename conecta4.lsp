@@ -181,7 +181,7 @@
 
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
-	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento))))) ;; TODO - Apply mal seguro XD (revisar)
+	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento)))))
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador
 (defun aplica-movimiento (movimiento tablero)
@@ -373,7 +373,6 @@
 		(minimo-turnos-ocupar-posicion tablero posicion)))
 
 ;; Devuelve la primera posicion de la lista de posiciones con una heuristica mayor
-;; TODO - quizas se pudiera mejorar para que devolviera una lista con las mejores, pero no le veo utilidad
 (defun mejor-eleccion (tablero heuristica posiciones color)
 (let ((posicion-valor (list nil *valor-minimo*))
 	(aux nil))
@@ -467,7 +466,6 @@
 
 ;; Devuelve sólo las posiciones consecutivas accesibles que conectan con nuestro color
 ;; accesibles significa libres y no cortadas por otro color
-
 (defun posiciones-cuatro-en-linea (tablero rango color)
 	(loop for posiciones in rango
 	append
