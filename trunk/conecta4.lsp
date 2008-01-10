@@ -333,21 +333,21 @@
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Variables para compara_heurs
 (defvar *heuristica1*)
 (defvar *heuristica2*)
 
 ;; Front-End para las heurísticas, sirve para que f-e-estatica no tenga que preocuparse
 ;; sobre qué heurística es la más avanzada, siempre llama a esta función y es aquí donde
 ;; se escoje la mejor heurística
-;; NOTA: Actualizado a heuristica-3
 (defun funcion-heuristica (tablero jugador)
 	(cond
 		((equal jugador *jugador-maquina)
 			(loop for mov in (movimientos-legales tablero) maximize
-				(heuristica-3 tablero mov *color-maquina*)))
+				(heuristica-3 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
 		(t
 			(loop for mov in (movimientos-legales tablero) maximize
-				(heuristica-3 tablero mov *color-humano*)))))
+				(heuristica-3 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
 				
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
@@ -514,6 +514,12 @@
 	(apply #'max 
 ;; tenemos que filtrar los nil ya que max no los reconoce
 	(loop for x in lista when (not (null x)) collect x)))
+
+;; Devuelve la fila de la primera casilla vacía de la columna
+(defun primera-posicion-vacia (tablero columna)
+    (loop for i from *fila* downto 0
+	  minimize i
+	  until (posicion-vacia tablero i columna)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES DE RANGOS DE VALORES
