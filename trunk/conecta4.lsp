@@ -17,6 +17,7 @@
 (defvar *jugador-maquina* 'maquina)
 (defvar *color-maquina* 'M)
 (defvar *color-humano* 'H)
+(defvar *profundidad* '5)
 
 ;; Estructura que representa un nodo del árbol de búsqueda
 (defstruct (nodo-j (:constructor crea-nodo-j)
@@ -82,10 +83,10 @@
 
 ;; Comprueba el resultado de la partida
 (defun analiza-final (nodo-j-final)
-  (escribe-nodo-j nodo-j-final)
+  (escribe-nodo-j nodo-j-final)*fichero-compara_heurs*
   (cond ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'max)
-         (format t "~&La maquina ha ganado"))
+         (format t "~&La maquina ha ganado"))*fichero-compara_heurs*
         ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'min)
          (format t "~&El humano ha ganado"))
@@ -331,6 +332,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defvar *heuristica1*)
 (defvar *heuristica2*)
 
@@ -350,13 +352,14 @@
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
 (defun compara_heurs (heuristica1 heuristica2)
-	(setf *procedimiento* heuristica1)
-	(setf *procedimiento2* heuristica2)
+	(setf *procedimiento* (list 'heuristica1 *profundidad*))
+	(setf *procedimiento2* (list 'heuristica2 *profundidad*))
+	(setq *fichero-compara_heurs* (open "compara_heurs.txt" :direction :input))
 	(crea-nodo-j-inicial 'max)
 	(es-estado-final *estado-inicial*)
 	(analiza-final *nodo-j-inicial*)
-	(jugada-maquina-compara_heurs-2 *nodo-j-inicial*)) ;; MAX usa la segunda heurística
-;; TODO - Falta que se escriba en un fichero de texto
+	(jugada-maquina-compara_heurs-2 *nodo-j-inicial*)
+	(close *fichero-compara_heurs*)) ;; MAX usa la segunda heurística
 
 ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
 (defun heuristica-1 (tablero lista-valores jugador)
@@ -409,12 +412,13 @@ if(= 3 (fichas-consecutivas tablero poscion color)
 ;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defvar *fichero-compara_heurs*)
 (defvar *procedimiento2*)
 
 ;; Función llamada cuando es el turno de la máquina de la heurística 1 en compara_heurs
 (defun jugada-maquina-compara_heurs-1 (nodo-j)
 	(escribe-nodo-j nodo-j)
-	(format t "~%Turno heurística 1.~&")
+	(format *fichero-compara_heurs* "~%Turno heurística 1.~&")
 	(let ((siguiente (aplica-decision *procedimiento* nodo-j)))
 		(if (es-estado-final (estado siguiente))
 			(analiza-final siguiente)
@@ -423,11 +427,26 @@ if(= 3 (fichas-consecutivas tablero poscion color)
 ;; Función llamada cuando es el turno de la máquina de la heurística 2 en compara_heurs
 (defun jugada-maquina-compara_heurs-2 (nodo-j)
 	(escribe-nodo-j nodo-j)
-	(format t "~%Turno heurística 2.~&")
+	(format *fichero-compara_heurs* "~%Turno heurística 2.~&")
 	(let ((siguiente (aplica-decision *procedimiento2* nodo-j)))
 		(if (es-estado-final (estado siguiente))
 			(analiza-final siguiente)
 			(jugada-maquina-compara_heurs-1 siguiente))))
+
+;; TODO
+(defun escribe-nodo-j-compara_heurs (nodo-j)
+	)
+
+;; TODO
+(defun analiza-final-compara_heurs (nodo-j-final)
+	)
+
+;; Abrir un fichero.
+;;       (setq fichero (open “nombre-fichero” :direction :input))
+;; Escribir en un fichero.
+;;       (format fichero “el cuadrado de ~d es ~d ~&” 3 (* 3 3))
+;; Cerrar fichero
+;;       (close fichero)
 
 ;; Mínimo de turnos que necesitaremos para ocupar esa posición
 (defun minimo-turnos-ocupar-posicion (tablero posicion)
