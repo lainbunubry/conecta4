@@ -50,10 +50,4 @@
   (if (eq nil (aref tablero f c))
       t ;vacia
     nil))
-;(posicion-vacia *tablero* 1 1)      
-
-(defun primera-posicion-vacia (tablero columna)
-    (loop for i from *fila* downto 0
-	  minimize i
-	  until(posicion-vacia tablero i columna)))
-;(primera-posicion-vacia *tablero* 1)
+;(posicion-vacia *tablero* 1 1)
