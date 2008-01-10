@@ -224,15 +224,15 @@
 ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
 (defun cuenta-4-en-diagonal (tablero color)
 	(or
-		(diagonales-izquierdas tablero color)
-		(diagonales-derechas tablero color)))
+		(cuenta-4-en-diagonales-izquierdas tablero color)
+		(cuenta-4-en-diagonales-derechas tablero color)))
 
 ;; TODO
-(defun diagonales-izquierdas (tablero color)
+(defun cuenta-4-en-diagonales-izquierdas (tablero color)
 	(let ((i 0) (j 0))))
 
 ;; TODO
-(defun diagonales-derechas (tablero color)
+(defun cuenta-4-en-diagonales-derechas (tablero color)
 	)
 
 ;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
