@@ -389,9 +389,9 @@
 	(valor-heuristico-consecutivas (heuristica-3-aux-consecutivas listas tablero posicion color))
 	(valor-heuristico-multiplicador (length listas))
 	(valor-heuristico-divisor (minimo-turnos-ocupar-posicion tablero posicion)))
-		(if (eq valor-heuristico-consecutivas *valor-maximo*)
+		(if (eq valor-heuristico-consecutivas *maximo-valor*)
 ;; significa que si ponemos aqui una ficha ganamos
-			*valor-maximo*
+			*maximo-valor*
 ;; significa que multiplicaremos el numero de posibles lineas completas que podemos tener y lo dividiremos por el numero de turnos que tardaríamos en llegar nosotros a esa posicion
 			(/ (* valor-heuristico-consecutivas valor-heuristico-multiplicador) 
 				valor-heuristico-divisor))))
@@ -400,9 +400,9 @@
 ;; si no devuelve un numero que será mayor mientras menos fichas tengamos que insertar para conseguir 4 en linea
 ;; devuelve un numero
 (defun heuristica-3-aux-consecutivas (listas tablero posicion color)
-if(= 3 (fichas-consecutivas tablero poscion color)
+(if(= 3 (fichas-consecutivas tablero posicion color))
 ;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
-*valor-maximo*
+*maximo-valor*
 (maximo 
 	(loop for x in listas collect
 		(mas-posibilidades-conecta-4 x)))))
@@ -467,17 +467,18 @@ if(= 3 (fichas-consecutivas tablero poscion color)
 
 ;; Devuelve sólo las posiciones consecutivas accesibles que conectan con nuestro color
 ;; accesibles significa libres y no cortadas por otro color
+
 (defun posiciones-cuatro-en-linea (tablero rango color)
 	(loop for posiciones in rango
-		append
-			(loop for x in posiciones 
-				until (not (or 
-							(eq (aref tablero (first x) (second x)) color) 
-							(eq (aref tablero (first x) (second x)) nil)))
-				collect
-					(if (eq (aref tablero (first x) (second x)) nil)
-						x
-						nil))))) 
+	append
+	(loop for x in posiciones
+		until (not (or
+			(eq (aref tablero (first x) (second x)) color)
+			(eq (aref tablero (first x) (second x)) nil)))
+		collect
+		(if (eq (aref tablero (first x)(second x)) nil)
+		x
+		nil))))
 
 ;; Dada una posicion (x y) devuelve el numero maximo de veces consecutivas que se repite el color
 (defun fichas-consecutivas (tablero posicion color)
