@@ -228,13 +228,61 @@
 		(cuenta-4-en-diagonales-izquierdas tablero color)
 		(cuenta-4-en-diagonales-derechas tablero color)))
 
-;; TODO
+;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
 (defun cuenta-4-en-diagonales-izquierdas (tablero color)
-	(let ((i 0) (j 0))))
+	(let ((i 0) (j 0) (x *filas*) (y *columnas*) (res '()) (enc nil))
+		(loop for y from *columnas* downto 0 do
+			(setf i x)
+			(setf j y)
+			(loop while (and (>= i 0) (<= j *columnas*)) do
+				(cons (aref tablero i j) res)
+				(setf i (- i 1))
+				(setf j (+ j 1)))
+			(if (> (cuenta-fichas-consecutivas-en-secuencia res color) 3)
+				(setf enc t)
+				nil)
+			(setf res '()))
+		(setf y 0)
+		(loop for x from *filas* downto 0 do
+			(setf i x)
+			(setf j y)
+			(loop while (and (<= i *filas*) (<= j *columnas*)) do
+				(cons (aref tablero i j) res)
+				(setf i (- i 1))
+				(setf j (+ j 1)))
+			(if (> (cuenta-fichas-consecutivas-en-secuencia res color) 3)
+				(setf enc t)
+				nil)
+			(setf res '()))
+		enc))
 
-;; TODO
+;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
 (defun cuenta-4-en-diagonales-derechas (tablero color)
-	)
+	(let ((i 0) (j 0) (x *filas*) (y 0) (res '()) (enc nil))
+		(loop for y from 0 to *columnas* do
+			(setf i x)
+			(setf j y)
+			(loop while (and (>= i 0) (>= j 0)) do
+				(cons (aref tablero i j) res)
+				(setf i (- i 1))
+				(setf j (- j 1)))
+			(if (> (cuenta-fichas-consecutivas-en-secuencia res color) 3)
+				(setf enc t)
+				nil)
+			(setf res '()))
+		(setf y *columnas*)
+		(loop for x from *filas* downto 0 do
+			(setf i x)
+			(setf j y)
+			(loop while (and (>= i 0) (>= j 0)) do
+				(cons (aref tablero i j) res)
+				(setf i (- i 1))
+				(setf j (- j 1)))
+			(if (> (cuenta-fichas-consecutivas-en-secuencia res color) 3)
+				(setf enc t)
+				nil)
+			(setf res '()))
+		enc))
 
 ;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
 ;; de la secuencia más larga
