@@ -565,7 +565,7 @@
 
 ;; Devuelve la fila de la primera casilla vacía de la columna
 (defun primera-posicion-vacia (tablero columna)
-    (loop for i from *fila* downto 0
+    (loop for i from *filas* downto 0
 	  minimize i
 	  until (posicion-vacia tablero i columna)))
 
