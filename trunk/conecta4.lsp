@@ -12,7 +12,7 @@
 (defvar *filas* 5)		;; Los arrays comienzan en cero
 (defvar *columnas* 6)
 (defvar *nodo-j-inicial*)
-(defvar *estado-inicial* (make-array '(6 7)))
+(defvar *estado-inicial*)
 (defvar *jugador-humano* 'humano)
 (defvar *jugador-maquina* 'maquina)
 (defvar *color-maquina* 'M)
@@ -35,6 +35,7 @@
 
 ;; Función que inicializa *nodo-j-inicial*
 (defun crea-nodo-j-inicial (jugador)
+  (setf *estado-inicial* (make-array '(6 7)))
   (setf *nodo-j-inicial*
     (crea-nodo-j :estado *estado-inicial*
                  :jugador jugador)))
