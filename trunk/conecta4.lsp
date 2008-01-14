@@ -424,15 +424,6 @@
 		(fichas-consecutivas tablero posicion color)
 		(minimo-turnos-ocupar-posicion tablero posicion)))
 
-;; Devuelve la primera posicion de la lista de posiciones con una heuristica mayor
-(defun mejor-eleccion (tablero heuristica posiciones color)
-(let ((posicion-valor (list nil *valor-minimo*))
-	(aux nil))
-	(loop for x in posiciones do
-		(if (< (second posicion-valor) (setf aux (apply #' heuristica tablero x color)))
-			(setf posicion-valor (list x aux))))
-	(first posicion-valor)))
-
 ;; Esta es la heuristica definitiva :D
 ;; NOTA: No se puede aplicar sobre posiciones ya ocupadas, eso aparte de ser inutil provocaría una division por 0
 (defun heuristica-3  (tablero posicion color)

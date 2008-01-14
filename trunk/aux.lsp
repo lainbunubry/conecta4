@@ -36,6 +36,15 @@
   fichas
   posiciones)
 
+;; Devuelve la primera posicion de la lista de posiciones con una heuristica mayor
+(defun mejor-eleccion (tablero heuristica posiciones color)
+(let ((posicion-valor (list nil *valor-minimo*))
+	(aux nil))
+	(loop for x in posiciones do
+		(if (< (second posicion-valor) (setf aux (apply #'heuristica tablero x color)))
+			(setf posicion-valor (list x aux))))
+	(first posicion-valor)))
+
 ; Constructor del tablero
 ;------------------------------
 (defun crea-tablero-en-blanco ()
