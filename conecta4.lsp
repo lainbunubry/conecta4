@@ -200,37 +200,34 @@
 (defun es-estado-final (tablero)
 	(or
 		(movimientos-legales tablero)
-		(cuenta-4-en-horizontal tablero *color-maquina*)
-		(cuenta-4-en-horizontal tablero *color-humano*)
-		(cuenta-4-en-vertical tablero *color-maquina*)
-		(cuenta-4-en-vertical tablero *color-humano*)
-		(cuenta-4-en-diagonal tablero *color-maquina*)
-		(cuenta-4-en-diagonal tablero *color-humano*)))
+		(cuenta-4-en-horizontal tablero)
+		(cuenta-4-en-vertical tablero)
+		(cuenta-4-en-diagonal tablero)))
 
 ;; Busca alguna secuencia horizontal del color dado de longitud mayor o igual a 4 en el tablero
-(defun cuenta-4-en-horizontal (tablero color)
+(defun cuenta-4-en-horizontal (tablero)
 	(apply #'or
 		(loop for x in
 			(loop for i from 0 to *filas* collect
-				(cuenta-fichas-consecutivas-en-secuencia (loop for j from 0 to *columnas* collect (aref tablero i j)) color))
+				(cuenta-fichas-consecutivas-en-secuencia-sin-color (loop for j from 0 to *columnas* collect (aref tablero i j))))
 			collect (> x 3))))
 
 ;; Busca alguna secuencia vertical del color dado de longitud mayor o igual a 4 en el tablero
-(defun cuenta-4-en-vertical (tablero color)
+(defun cuenta-4-en-vertical (tablero)
 	(apply #'or
 		(loop for x in
 			(loop for j from 0 to *columnas* collect
-				(cuenta-fichas-consecutivas-en-secuencia (loop for i from 0 to *filas* collect (aref tablero i j)) color))
+				(cuenta-fichas-consecutivas-en-secuencia-sin-color (loop for i from 0 to *filas* collect (aref tablero i j))))
 			collect (> x 3))))
 
 ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
-(defun cuenta-4-en-diagonal (tablero color)
+(defun cuenta-4-en-diagonal (tablero)
 	(or
-		(cuenta-4-en-diagonales-izquierdas tablero color)
-		(cuenta-4-en-diagonales-derechas tablero color)))
+		(cuenta-4-en-diagonales-izquierdas tablero)
+		(cuenta-4-en-diagonales-derechas tablero)))
 
 ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
-(defun cuenta-4-en-diagonales-izquierdas (tablero color)
+(defun cuenta-4-en-diagonales-izquierdas (tablero)
 	(let ((i 0) (j 0) (x *filas*) (y *columnas*) (res '()) (enc nil))
 		(loop for y from *columnas* downto 0 do
 			(setf i x)
@@ -239,7 +236,7 @@
 				(cons (aref tablero i j) res)
 				(setf i (- i 1))
 				(setf j (+ j 1)))
-			(if (> (cuenta-fichas-consecutivas-en-secuencia res color) 3)
+			(if (> (cuenta-fichas-consecutivas-en-secuencia-sin-color res) 3)
 				(setf enc t)
 				nil)
 			(setf res '()))
@@ -251,14 +248,14 @@
 				(cons (aref tablero i j) res)
 				(setf i (- i 1))
 				(setf j (+ j 1)))
-			(if (> (cuenta-fichas-consecutivas-en-secuencia res color) 3)
+			(if (> (cuenta-fichas-consecutivas-en-secuencia-sin-color res) 3)
 				(setf enc t)
 				nil)
 			(setf res '()))
 		enc))
 
 ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
-(defun cuenta-4-en-diagonales-derechas (tablero color)
+(defun cuenta-4-en-diagonales-derechas (tablero)
 	(let ((i 0) (j 0) (x *filas*) (y 0) (res '()) (enc nil))
 		(loop for y from 0 to *columnas* do
 			(setf i x)
@@ -267,7 +264,7 @@
 				(cons (aref tablero i j) res)
 				(setf i (- i 1))
 				(setf j (- j 1)))
-			(if (> (cuenta-fichas-consecutivas-en-secuencia res color) 3)
+			(if (> (cuenta-fichas-consecutivas-en-secuencia-sin-color res) 3)
 				(setf enc t)
 				nil)
 			(setf res '()))
@@ -279,11 +276,17 @@
 				(cons (aref tablero i j) res)
 				(setf i (- i 1))
 				(setf j (- j 1)))
-			(if (> (cuenta-fichas-consecutivas-en-secuencia res color) 3)
+			(if (> (cuenta-fichas-consecutivas-en-secuencia-sin-color res) 3)
 				(setf enc t)
 				nil)
 			(setf res '()))
 		enc))
+
+;; Llama a cuenta-fichas-consecutivas-en-secuencia con ambos colores
+(defun cuenta-fichas-consecutivas-en-secuencia-sin-color (secuencia)
+   (max
+      (cuenta-fichas-consecutivas-en-secuencia secuencia *color-humano*)
+      (cuenta-fichas-consecutivas-en-secuencia secuencia *color-maquina*)))
 
 ;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
 ;; de la secuencia más larga
