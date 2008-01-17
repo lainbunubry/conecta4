@@ -197,7 +197,7 @@
 	      (primera-posicion-vacia tablero columna)
 	      columna)
 	color)
-	tablero)
+	tablero) ;; TODO Debería devolver NIL si el tablero está lleno (en la columna dicha)
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
