@@ -166,8 +166,8 @@
 	(let ((resultado nil))
 		(loop for i from 0 to *filas* do
 			(loop for j from 0 to *columnas* do
-				(if (not (equal (aref i j viejo) (aref i j nuevo)))
-					(setf resultado (aref i j nuevo))
+				(if (not (equal (aref viejo i j) (aref nuevo i j)))
+					(setf resultado (aref nuevo i j))
 					nil)))
 		resultado))
 
