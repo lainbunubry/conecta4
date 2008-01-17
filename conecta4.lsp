@@ -18,7 +18,7 @@
 (defvar *color-maquina* 'M)
 (defvar *color-humano* 'H)
 (defvar *profundidad* '5)
-(defvar *ultimo-movimiento*) ;; Última columna donde se ha echado una ficha
+(defvar *ultimo-movimiento* 0) ;; Última columna donde se ha echado una ficha
 
 ;; Estructura que representa un nodo del árbol de búsqueda
 (defstruct (nodo-j (:constructor crea-nodo-j)
@@ -76,12 +76,12 @@
   (setf *procedimiento* procedimiento)
   (cond (empieza-la-maquina? (crea-nodo-j-inicial 'max)
 (format t "~&Juega la máquina (MIN)") ;; TODO
-                             (if  nil ;; TODO (es-estado-final *estado-inicial*)
+                             (if (es-estado-final *estado-inicial*)
                                  (analiza-final *nodo-j-inicial*)
                                  (jugada-maquina *nodo-j-inicial*)))
         (t (crea-nodo-j-inicial 'min)
 (format t "~&Juega el humano (MIN)") ;; TODO
-           (if  nil ;; TODO (es-estado-final *estado-inicial*)
+           (if (es-estado-final *estado-inicial*)
                (analiza-final *nodo-j-inicial*)
                (jugada-humana *nodo-j-inicial*)))))
 
@@ -143,7 +143,7 @@
 	:estado nuevo-estado
 	:jugador 'max)))
 						(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
-	                        (if  nil ;; TODO (es-estado-final nuevo-estado)
+	                        (if (es-estado-final nuevo-estado)
      	                       (analiza-final siguiente)
           	                (jugada-maquina siguiente))))
                	      (t (format t "~&   El movimiento ~a no se puede usar. " m)
@@ -201,12 +201,12 @@
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
 	(let* ((columna *ultimo-movimiento*)
-		 (aux (primera-posicion-vacia))
-		 (fila (if (null aux)
-					0)
-					aux))
+		 (fila (primera-posicion-vacia tablero columna)))
+		 (if (null fila)
+			(setf fila 0)
+			nil)
 			(or
-				(movimientos-legales tablero)
+				(> (length (movimientos-legales tablero)) 0)
 				(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-humano*) 3)
 				(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-maquina*) 3))))
 
