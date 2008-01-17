@@ -29,6 +29,13 @@
 		(o x o x o x o)
 		(x x x o o o x))))
 
+(defvar *T-bprueba* (make-array '(6 7) :initial-contents
+             '((nil nil hola nil nil nil nil)
+		(o nil x x nil nil nil)
+		(x nil x o o nil nil)
+		(x o x o o x o)
+		(o x o x o x o)
+		(x x x o o o x))))
 ;Estructura que representa el tablero con las fichas
 (defstruct (partida (:constructor crea-tablero)
                     (:conc-name nil)
@@ -37,14 +44,22 @@
   posiciones)
 
 ;; Devuelve la primera posicion de la lista de posiciones con una heuristica mayor
-(defun mejor-eleccion (tablero heuristica posiciones color)
-(let ((posicion-valor (list nil *valor-minimo*))
+(defun mejor-eleccion (tablero heuristica color)
+(let ((posicion-valor (list nil *minimo-valor*))
 	(aux nil))
-	(loop for x in posiciones do
-		(if (< (second posicion-valor) (setf aux (apply #'heuristica tablero x color)))
+	(loop for x in (posiciones-pos tablero) do
+		(if (< (second posicion-valor) (setf aux (funcall (symbol-function heuristica) tablero x color)))
 			(setf posicion-valor (list x aux))))
 	(first posicion-valor)))
 
+;; (mejor-eleccion *t-prueba* 'heuristica-3 'x)
+
+(defun posiciones-pos (tablero)
+(let ((fila nil))
+(loop for x in (movimientos-legales tablero) 
+	when (not (null (setf fila (primera-posicion-vacia tablero x))))
+	collect (list fila x))))
+;; (posiciones-pos *t-prueba*)
 ;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
 ;; de la secuencia más larga
 (defun cuenta-fichas-consecutivas-en-secuencia (secuencia color)
