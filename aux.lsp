@@ -45,6 +45,16 @@
 			(setf posicion-valor (list x aux))))
 	(first posicion-valor)))
 
+;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
+;; de la secuencia más larga
+(defun cuenta-fichas-consecutivas-en-secuencia (secuencia color)
+(let ((cont 0))	
+	(loop for x in secuencia
+		maximize
+		(if (eq x color)
+			(setf cont (+ 1 cont))
+			(setf cont 0)))))
+
 ; Constructor del tablero
 ;------------------------------
 (defun crea-tablero-en-blanco ()
