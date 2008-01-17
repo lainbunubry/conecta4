@@ -198,99 +198,12 @@
   	(setf (aref tablero fila columna) color)
 	tablero))))
 
-;; TODO - No funciona bien
+;; TODO - Completar
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
 	(or
 		(movimientos-legales tablero)
-		(cuenta-fichas-consecutivas-en-secuencia-sin-color (obtener-fila
-
-
-
-
-
-
-;; 		(cuenta-4-en-horizontal tablero)
-;; 		(cuenta-4-en-vertical tablero)
-;; 		(cuenta-4-en-diagonal tablero)))
-;; 
-;; ;; Busca alguna secuencia horizontal del color dado de longitud mayor o igual a 4 en el tablero
-;; (defun cuenta-4-en-horizontal (tablero)
-;; 	(apply #'or
-;; 		(loop for x in
-;; 			(loop for i from 0 to *filas* collect
-;; 				(cuenta-fichas-consecutivas-en-secuencia-sin-color (loop for j from 0 to *columnas* collect (aref tablero i j))))
-;; 			collect (> x 3))))
-;; 
-;; ;; Busca alguna secuencia vertical del color dado de longitud mayor o igual a 4 en el tablero
-;; (defun cuenta-4-en-vertical (tablero)
-;; 	(apply #'or
-;; 		(loop for x in
-;; 			(loop for j from 0 to *columnas* collect
-;; 				(cuenta-fichas-consecutivas-en-secuencia-sin-color (loop for i from 0 to *filas* collect (aref tablero i j))))
-;; 			collect (> x 3))))
-;; 
-;; ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
-;; (defun cuenta-4-en-diagonal (tablero)
-;; 	(or
-;; 		(cuenta-4-en-diagonales-izquierdas tablero)
-;; 		(cuenta-4-en-diagonales-derechas tablero)))
-;; 
-;; ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
-;; (defun cuenta-4-en-diagonales-izquierdas (tablero)
-;; 	(let ((i 0) (j 0) (x *filas*) (y *columnas*) (res '()) (enc nil))
-;; 		(loop for y from *columnas* downto 0 do
-;; 			(setf i x)
-;; 			(setf j y)
-;; 			(loop while (and (>= i 0) (<= j *columnas*)) do
-;; 				(cons (aref tablero i j) res)
-;; 				(setf i (- i 1))
-;; 				(setf j (+ j 1)))
-;; 			(if (> (cuenta-fichas-consecutivas-en-secuencia-sin-color res) 3)
-;; 				(setf enc t)
-;; 				nil)
-;; 			(setf res '()))
-;; 		(setf y 0)
-;; 		(loop for x from *filas* downto 0 do
-;; 			(setf i x)
-;; 			(setf j y)
-;; 			(loop while (and (<= i *filas*) (<= j *columnas*)) do
-;; 				(cons (aref tablero i j) res)
-;; 				(setf i (- i 1))
-;; 				(setf j (+ j 1)))
-;; 			(if (> (cuenta-fichas-consecutivas-en-secuencia-sin-color res) 3)
-;; 				(setf enc t)
-;; 				nil)
-;; 			(setf res '()))
-;; 		enc))
-;; 
-;; ;; Busca alguna secuencia diagonal del color dado de longitud mayor o igual a 4 en el tablero
-;; (defun cuenta-4-en-diagonales-derechas (tablero)
-;; 	(let ((i 0) (j 0) (x *filas*) (y 0) (res '()) (enc nil))
-;; 		(loop for y from 0 to *columnas* do
-;; 			(setf i x)
-;; 			(setf j y)
-;; 			(loop while (and (>= i 0) (>= j 0)) do
-;; 				(cons (aref tablero i j) res)
-;; 				(setf i (- i 1))
-;; 				(setf j (- j 1)))
-;; 			(if (> (cuenta-fichas-consecutivas-en-secuencia-sin-color res) 3)
-;; 				(setf enc t)
-;; 				nil)
-;; 			(setf res '()))
-;; 		(setf y *columnas*)
-;; 		(loop for x from *filas* downto 0 do
-;; 			(setf i x)
-;; 			(setf j y)
-;; 			(loop while (and (>= i 0) (>= j 0)) do
-;; 				(cons (aref tablero i j) res)
-;; 				(setf i (- i 1))
-;; 				(setf j (- j 1)))
-;; 			(if (> (cuenta-fichas-consecutivas-en-secuencia-sin-color res) 3)
-;; 				(setf enc t)
-;; 				nil)
-;; 			(setf res '()))
-;; 		enc))
+		(cuenta-fichas-consecutivas-en-secuencia-sin-color ())))
 
 ;; Llama a cuenta-fichas-consecutivas-en-secuencia con ambos colores
 (defun cuenta-fichas-consecutivas-en-secuencia-sin-color (secuencia)
@@ -540,14 +453,13 @@
 			(cuenta-fichas-consecutivas 
 				(recorre-posiciones tablero x) color))))
 
-;; Dada una posicion (x y) devuelve el numero maximo de veces consecutivas que se repite el color
 (defun fichas-consecutivas-con-centro (tablero posicion color)
 (maximo 
 	(loop for x in 
 		(rango-posiciones (cons posicion (first posicion)) (second posicion)) 
 		collect 
-			(cuenta-fichas-consecutivas 
-				(recorre-posiciones tablero x) color))))
+			(cuenta-fichas-consecutivas-con-centro
+				(recorre-posiciones tablero x) tablero posicion color))))
 
 ;; Lista tiene una doble lista con los las posiciones del array ordenadas de
 ;; tal modo que el primer elemento es la parte derecha y el segundo es la parte
@@ -569,6 +481,14 @@
 (defun cuenta-fichas-consecutivas (secuencias color)
 	(+
 		(loop for x in (first secuencias) count (eq x color) until (not(eq x color)))
+		(loop for x in (second secuencias) count (eq x color) until (not(eq x color)))))
+
+(defun cuenta-fichas-consecutivas-con-centro (secuencias tablero posicion color)
+	(+
+		(loop for x in (first secuencias) count (eq x color) until (not(eq x color)))
+		(if (eq color (aref tablero (first posicion) (second posicion)))
+			1
+			0)
 		(loop for x in (second secuencias) count (eq x color) until (not(eq x color)))))
 
 ;; Devuelve el maximo entero de la lista
