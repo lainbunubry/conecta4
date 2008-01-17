@@ -182,7 +182,7 @@
 
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
-	(apply #'(lambda (x y) (first procedimiento) (list nodo-j (rest procedimiento)))))
+	(funcall (symbol-function (first procedimiento)) nodo-j (rest procedimiento)))
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador
 (defun aplica-movimiento (movimiento tablero)
