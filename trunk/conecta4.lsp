@@ -53,7 +53,7 @@
 		   do (if (equal (aref a i j) NIL)
 			  (format t "| ")
 			(format t "|~a" (aref a i j))))
-	  (format t "|~%")
+	  (format t "|~a ~%" i)
 	  (escribe-linea-aux c))))
 
 ;; Genera una línea del tablero a mostrar
