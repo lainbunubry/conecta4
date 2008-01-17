@@ -191,12 +191,12 @@
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador
 (defun aplica-movimiento (columna tablero color)
-(if 
-  (setf (aref tablero 
-	      (primera-posicion-vacia tablero columna)
-	      columna)
-	color)
-	tablero))
+(let ((fila (primera-posicion-vacia tablero columna)))
+ (cond ((null fila)
+	nil)
+	(t
+  	(setf (aref tablero fila columna) color)
+	tablero))))
 
 ;; TODO - No funciona bien
 ;; Determina si el juego ha llegado a su final
