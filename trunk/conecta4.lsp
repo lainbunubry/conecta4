@@ -18,6 +18,7 @@
 (defvar *color-maquina* 'M)
 (defvar *color-humano* 'H)
 (defvar *profundidad* '5)
+(defvar *ultimo-movimiento*) ;; Última columna donde se ha echado una ficha
 
 ;; Estructura que representa un nodo del árbol de búsqueda
 (defstruct (nodo-j (:constructor crea-nodo-j)
@@ -100,6 +101,7 @@
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
+    (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
     (if (es-estado-final (estado siguiente))
         (analiza-final siguiente)
         (jugada-humana siguiente))))
@@ -140,6 +142,7 @@
                	       (let ((siguiente (crea-nodo-j
 	:estado nuevo-estado
 	:jugador 'max)))
+						(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
 	                        (if  nil ;; TODO (es-estado-final nuevo-estado)
      	                       (analiza-final siguiente)
           	                (jugada-maquina siguiente))))
@@ -195,6 +198,7 @@
 	color)
 	tablero))
 
+;; TODO - No funciona bien
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
 	(or
