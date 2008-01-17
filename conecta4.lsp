@@ -140,7 +140,7 @@
                	       (let ((siguiente (crea-nodo-j
 	:estado nuevo-estado
 	:jugador 'max)))
-	                        (if (es-estado-final nuevo-estado)
+	                        (if  nil ;; TODO (es-estado-final nuevo-estado)
      	                       (analiza-final siguiente)
           	                (jugada-maquina siguiente))))
                	      (t (format t "~&   El movimiento ~a no se puede usar. " m)
