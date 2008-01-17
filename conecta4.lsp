@@ -187,18 +187,13 @@
 	(funcall (symbol-function (first procedimiento)) nodo-j (rest procedimiento)))
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador
-(defun aplica-movimiento (movimiento tablero color)		;; TODO - Optimizar esto poniendo acá el código de insert-ficha-en-columna
-	(inserta-ficha-en-columna tablero movimiento color))
-
-;; Inserta una ficha correctamente en la columna dicha
-;; Nota: Si la columna esta llena no falla
-(defun inserta-ficha-en-columna (tablero columna color)
+(defun aplica-movimiento (columna tablero color)
 (if 
   (setf (aref tablero 
 	      (primera-posicion-vacia tablero columna)
 	      columna)
 	color)
-	tablero) ;; TODO Debería devolver NIL si el tablero está lleno (en la columna dicha)
+	tablero))
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
