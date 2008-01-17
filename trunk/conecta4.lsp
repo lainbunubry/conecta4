@@ -198,28 +198,17 @@
   	(setf (aref tablero fila columna) color)
 	tablero))))
 
-;; TODO - Completar
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
-	(or
-		(movimientos-legales tablero)
-		(cuenta-fichas-consecutivas-en-secuencia-sin-color ())))
-
-;; Llama a cuenta-fichas-consecutivas-en-secuencia con ambos colores
-(defun cuenta-fichas-consecutivas-en-secuencia-sin-color (secuencia)
-   (max
-      (cuenta-fichas-consecutivas-en-secuencia secuencia *color-humano*)
-      (cuenta-fichas-consecutivas-en-secuencia secuencia *color-maquina*)))
-
-;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
-;; de la secuencia más larga
-(defun cuenta-fichas-consecutivas-en-secuencia (secuencia color)
-(let ((cont 0))	
-	(loop for x in secuencia
-		maximize
-		(if (eq x color)
-			(setf cont (+ 1 cont))
-			(setf cont 0)))))
+	(let* ((columna *ultimo-movimiento*)
+		 (aux (primera-posicion-vacia))
+		 (fila (if (null aux)
+					0)
+					aux))
+			(or
+				(movimientos-legales tablero)
+				(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-humano*) 3)
+				(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-maquina*) 3))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
