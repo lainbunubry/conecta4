@@ -196,7 +196,8 @@
   (setf (aref tablero 
 	      (primera-posicion-vacia tablero columna)
 	      columna)
-	color))
+	color)
+	tablero)
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
