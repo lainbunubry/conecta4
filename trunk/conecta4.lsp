@@ -74,11 +74,13 @@
                    (procedimiento (list 'minimax-a-b '5)))
   (setf *procedimiento* procedimiento)
   (cond (empieza-la-maquina? (crea-nodo-j-inicial 'max)
-                             (if (es-estado-final *estado-inicial*)
+(format t "~&Juega la máquina (MIN)") ;; TODO
+                             (if  nil ;; TODO (es-estado-final *estado-inicial*)
                                  (analiza-final *nodo-j-inicial*)
                                  (jugada-maquina *nodo-j-inicial*)))
         (t (crea-nodo-j-inicial 'min)
-           (if (es-estado-final *estado-inicial*)
+(format t "~&Juega el humano (MIN)") ;; TODO
+           (if  nil ;; TODO (es-estado-final *estado-inicial*)
                (analiza-final *nodo-j-inicial*)
                (jugada-humana *nodo-j-inicial*)))))
 
@@ -105,7 +107,7 @@
 ;; Devuelve para un determinado estado qué movimientos son posibles
 (defun movimientos-legales (estado)
   (loop for m in *movimientos*
-        when (aplica-movimiento m estado)
+        when (primera-posicion-vacia estado m)
         collect m))
 
 ;; Muestra por pantalla los movimientos permitidos obtenidos con movimientos-legales
@@ -185,7 +187,7 @@
 	(funcall (symbol-function (first procedimiento)) nodo-j (rest procedimiento)))
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador
-(defun aplica-movimiento (movimiento tablero)
+(defun aplica-movimiento (movimiento tablero) ;; TODO no debería ser siempre *color-humano*
 	(inserta-ficha-en-columna tablero movimiento *color-humano*))
 
 ;; Inserta una ficha correctamente en la columna dicha
@@ -394,7 +396,7 @@
 ;; se escoje la mejor heurística
 (defun funcion-heuristica (tablero jugador)
 	(cond
-		((equal jugador *jugador-maquina)
+		((equal jugador *jugador-maquina*)
 			(loop for mov in (movimientos-legales tablero) maximize
 				(heuristica-3 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
 		(t
