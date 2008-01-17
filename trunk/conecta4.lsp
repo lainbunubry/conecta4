@@ -193,6 +193,7 @@
 ;; Inserta una ficha correctamente en la columna dicha
 ;; Nota: Si la columna esta llena no falla
 (defun inserta-ficha-en-columna (tablero columna color)
+(if 
   (setf (aref tablero 
 	      (primera-posicion-vacia tablero columna)
 	      columna)
@@ -563,9 +564,11 @@
 
 ;; Devuelve la fila de la primera casilla vacía de la columna
 (defun primera-posicion-vacia (tablero columna)
-    (loop for i from *filas* downto 0
+(if (and (< columna *columnas*)(posicion-vacia tablero 0 columna))
+    	(loop for i from *filas* downto 0
 	  minimize i
-	  until (posicion-vacia tablero i columna)))
+	  until (posicion-vacia tablero i columna))
+	nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES DE RANGOS DE VALORES
