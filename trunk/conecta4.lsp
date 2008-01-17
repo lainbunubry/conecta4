@@ -445,7 +445,7 @@
 (defun fichas-consecutivas-con-centro (tablero posicion color)
 (maximo 
 	(loop for x in 
-		(rango-posiciones (cons posicion (first posicion)) (second posicion)) 
+		(rango-posiciones (first posicion) (second posicion)) 
 		collect 
 			(cuenta-fichas-consecutivas-con-centro
 				(recorre-posiciones tablero x) tablero posicion color))))
