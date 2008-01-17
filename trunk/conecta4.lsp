@@ -200,15 +200,15 @@
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
-	(let* ((columna *ultimo-movimiento*)
+	(let ((columna *ultimo-movimiento*)
 		 (fila (primera-posicion-vacia tablero columna)))
 		 (if (null fila)
 			(setf fila 0)
 			nil)
-			(or
-				(> (length (movimientos-legales tablero)) 0)
-				(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-humano*) 3)
-				(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-maquina*) 3))))
+		(or
+			(<= (length (movimientos-legales tablero)) 0)
+			(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-humano*) 3)
+			(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-maquina*) 3))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
@@ -488,7 +488,7 @@
 
 ;; Devuelve la fila de la primera casilla vacía de la columna
 (defun primera-posicion-vacia (tablero columna)
-(if (and (< columna *columnas*)(posicion-vacia tablero 0 columna))
+(if (and (<= columna *columnas*)(posicion-vacia tablero 0 columna))
     	(loop for i from *filas* downto 0
 	  minimize i
 	  until (posicion-vacia tablero i columna))
