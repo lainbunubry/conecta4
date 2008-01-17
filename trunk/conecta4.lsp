@@ -135,7 +135,7 @@
 			(setf m (read))))
       (cond ((and (integerp m) (< -1 m (length movimientos)))
 	             (let ((nuevo-estado
-     	               (aplica-movimiento (nth m movimientos) (estado nodo-j))))
+     	               (aplica-movimiento (nth m movimientos) (estado nodo-j) *color-humano*)))
           	     (cond (nuevo-estado
                	       (let ((siguiente (crea-nodo-j
 	:estado nuevo-estado
@@ -187,8 +187,8 @@
 	(funcall (symbol-function (first procedimiento)) nodo-j (rest procedimiento)))
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador
-(defun aplica-movimiento (movimiento tablero) ;; TODO no debería ser siempre *color-humano*
-	(inserta-ficha-en-columna tablero movimiento *color-humano*))
+(defun aplica-movimiento (movimiento tablero color)		;; TODO - Optimizar esto poniendo acá el código de insert-ficha-en-columna
+	(inserta-ficha-en-columna tablero movimiento color))
 
 ;; Inserta una ficha correctamente en la columna dicha
 ;; Nota: Si la columna esta llena no falla
@@ -316,7 +316,7 @@
     (loop for movimiento in *movimientos* do
       (let ((siguiente
              (aplica-movimiento movimiento
-                                (estado nodo-j))))
+                                (estado nodo-j) *color-maquina*)))
         (when siguiente
           (push
             (crea-nodo-j
