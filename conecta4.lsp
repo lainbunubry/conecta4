@@ -18,7 +18,7 @@
 (defvar *color-maquina* 'M)
 (defvar *color-humano* 'H)
 (defvar *profundidad* '5)
-(defvar *ultimo-movimiento* 0) ;; Última columna donde se ha echado una ficha
+(defvar *ultimo-movimiento* nil) ;; Última columna donde se ha echado una ficha
 
 ;; Estructura que representa un nodo del árbol de búsqueda
 (defstruct (nodo-j (:constructor crea-nodo-j)
@@ -32,6 +32,7 @@
 (defun escribe-nodo-j (nodo-j &optional (canal t) profundidad)
 	(format canal "~%Estado :")
 	(imprime-tablero (estado nodo-j))
+	(format canal "ultimo movimiento ~a" (ultimo-movimiento (estado nodo-j)))
 	(format canal "~%Jugador : ~a" (jugador nodo-j)))
 
 ;; Función que inicializa *nodo-j-inicial*
@@ -163,14 +164,23 @@
 
 ;; Compara dos tableros, tales que el segundo es el mismo que el primero pero con una jugada más,
 ;; y devuelve el movimiento que lleva del primer tablero al segundo
+;; (defun compara-tableros (viejo nuevo)
+;; 	(let ((resultado 0))
+;; 		(loop for i from 0 to *filas* do
+;; 			(loop for j from 0 to *columnas* do
+;; 				(if (not (equal (aref viejo i j) (aref nuevo i j)))
+;; 					(setf resultado j)
+;; 					nil)))
+;; 		resultado))
+
 (defun compara-tableros (viejo nuevo)
-	(let ((resultado 0))
-		(loop for i from 0 to *filas* do
-			(loop for j from 0 to *columnas* do
-				(if (not (equal (aref viejo i j) (aref nuevo i j)))
-					(setf resultado j)
-					nil)))
-		resultado))
+(first 
+	(last 
+	(loop for x in *movimientos*
+		while 
+			(eq (primera-posicion-vacia viejo x) (primera-posicion-vacia nuevo x)) 
+		collect
+			x))))
 
 ;; Determina si ha ganado algún jugador la partida
 (defun es-estado-ganador (tablero jugador turno)
@@ -207,15 +217,24 @@
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
-	(let ((columna *ultimo-movimiento*)
-		 (fila (primera-posicion-vacia tablero *ultimo-movimiento*)))
-		 (if (null fila)
-			(setf fila 0)
-			nil)
+	(let ((posicion (ultimo-movimiento tablero)))
 		(or
 			(<= (length (movimientos-legales tablero)) 0)
-			(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-humano*) 3)
-			(> (fichas-consecutivas-con-centro tablero (list fila columna) *color-maquina*) 3))))
+			(> (fichas-consecutivas-con-centro tablero posicion *color-humano*) 3)
+			(> (fichas-consecutivas-con-centro tablero posicion *color-maquina*) 3))))
+
+;; Determina la última posicion ocupada
+(defun ultimo-movimiento (tablero)
+	(cond 
+	((null *ultimo-movimiento*)
+		nil)
+	(t
+		(let ((fila (primera-posicion-vacia tablero *ultimo-movimiento*)))
+		(list (if (null fila)
+			0
+			fila)
+		*ultimo-movimiento*)))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
@@ -301,10 +320,10 @@
 	(cond
 		((equal jugador *jugador-maquina*)
 			(loop for mov in (movimientos-legales tablero) maximize
-				(heuristica-3 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
+				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
 		(t
 			(loop for mov in (movimientos-legales tablero) maximize
-				(heuristica-3 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
+				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
@@ -343,7 +362,7 @@
 (let* ((listas (cuatro-en-linea-posible tablero posicion color))
 	(valor-heuristico-consecutivas (heuristica-3-aux-consecutivas listas tablero posicion color))
 	(valor-heuristico-multiplicador (length listas))
-	(valor-heuristico-divisor (minimo-turnos-ocupar-posicion tablero posicion)))
+	(valor-heuristico-divisor (max 1 (minimo-turnos-ocupar-posicion tablero posicion))))
 		(if (eq valor-heuristico-consecutivas *maximo-valor*)
 ;; significa que si ponemos aqui una ficha ganamos
 			*maximo-valor*
@@ -355,12 +374,18 @@
 ;; si no devuelve un numero que será mayor mientras menos fichas tengamos que insertar para conseguir 4 en linea
 ;; devuelve un numero
 (defun heuristica-3-aux-consecutivas (listas tablero posicion color)
-(if(= 3 (fichas-consecutivas tablero posicion color))
-;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
-*maximo-valor*
-(maximo 
-	(loop for x in listas collect
-		(mas-posibilidades-conecta-4 x)))))
+	(cond
+		((= 3 (fichas-consecutivas tablero posicion color))
+		;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
+			*maximo-valor*)
+		((null listas) 
+		;; Si no hay donde poner no pongas
+			*minimo-valor*)
+		(t
+		;; Te quedas con el de la heuristica mejor
+			(maximo 
+			(loop for x in listas collect
+				(mas-posibilidades-conecta-4 x))))))
 	
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
