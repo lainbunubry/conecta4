@@ -18,7 +18,7 @@
 (defvar *color-maquina* 'M)
 (defvar *color-humano* 'H)
 (defvar *profundidad* '5)
-(defvar *ultimo-movimiento* nil) ;; Última columna donde se ha echado una ficha
+(defvar *ultimo-movimiento* '(0 0)) ;; Última columna donde se ha echado una ficha
 
 ;; Estructura que representa un nodo del árbol de búsqueda
 (defstruct (nodo-j (:constructor crea-nodo-j)
@@ -32,7 +32,7 @@
 (defun escribe-nodo-j (nodo-j &optional (canal t) profundidad)
 	(format canal "~%Estado :")
 	(imprime-tablero (estado nodo-j))
-	(format canal "ultimo movimiento ~a" (ultimo-movimiento (estado nodo-j)))
+	(format canal "ultimo movimiento ~a" *ultimo-movimiento*)
 	(format canal "~%Jugador : ~a" (jugador nodo-j)))
 
 ;; Función que inicializa *nodo-j-inicial*
@@ -100,7 +100,7 @@
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-    (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
+    (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;; Eleccion de la maquina
     (if (es-estado-final (estado siguiente))
         (analiza-final siguiente)
         (jugada-humana siguiente))))
@@ -134,21 +134,21 @@
 			(solicitar-consejo nodo-j)
 			(format t "~%Tu turno : ")		;; Hay que volver a leer la m una vez dado el consejo
 			(setf m (read))))
-      (cond ((and (integerp m) (< -1 m (length movimientos)))
-	             (let ((nuevo-estado
-     	               (aplica-movimiento (nth m movimientos) (estado nodo-j) *color-humano*)))
-          	     (cond (nuevo-estado
-               	       (let ((siguiente (crea-nodo-j
-	:estado nuevo-estado
-	:jugador 'max)))
-						(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
+      	(cond ((and (integerp m) (< -1 m (length movimientos)))
+		(let ((nuevo-estado
+			(aplica-movimiento (nth m movimientos) (estado nodo-j) *color-humano*)))
+			(cond (nuevo-estado
+				(let ((siguiente (crea-nodo-j
+					:estado nuevo-estado
+					:jugador 'max))) 
+				(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;;Eleccion del humano
 	                        (if (es-estado-final nuevo-estado)
-     	                       (analiza-final siguiente)
-          	                (jugada-maquina siguiente))))
-               	      (t (format t "~&   El movimiento ~a no se puede usar. " m)
-                    	    (jugada-humana nodo-j)))))
-            (t (format t "~&   ~a es ilegal. " m)
-               (jugada-humana nodo-j))))))
+     	                       		(analiza-final siguiente)
+          	                	(jugada-maquina siguiente))))
+               	      	(t (format t "~&   El movimiento ~a no se puede usar. " m)
+			(jugada-humana nodo-j)))))
+		(t (format t "~&   ~a es ilegal. " m)
+               		(jugada-humana nodo-j))))))
 
 ;; Función que se llama cuando se pide consejo a la máquina
 (defun solicitar-consejo (nodo-j)
@@ -164,35 +164,31 @@
 
 ;; Compara dos tableros, tales que el segundo es el mismo que el primero pero con una jugada más,
 ;; y devuelve el movimiento que lleva del primer tablero al segundo
-;; (defun compara-tableros (viejo nuevo)
-;; 	(let ((resultado 0))
-;; 		(loop for i from 0 to *filas* do
-;; 			(loop for j from 0 to *columnas* do
-;; 				(if (not (equal (aref viejo i j) (aref nuevo i j)))
-;; 					(setf resultado j)
-;; 					nil)))
-;; 		resultado))
-
 (defun compara-tableros (viejo nuevo)
-(first 
-	(last 
-	(loop for x in *movimientos*
-		while 
-			(eq (primera-posicion-vacia viejo x) (primera-posicion-vacia nuevo x)) 
-		collect
-			x))))
+	(let ((resultado nil))
+		(loop for i from 0 to *filas* do
+			(loop for j from 0 to *columnas* do
+				(if (not (equal (aref viejo i j) (aref nuevo i j)))
+					(setf resultado (list i j))
+					nil)))
+		resultado))
+
 
 ;; Determina si ha ganado algún jugador la partida
+;; TODO a ver si no dice siempre empate
 (defun es-estado-ganador (tablero jugador turno)
 	(cond
 		((not (movimientos-legales tablero))
 			nil) ;; Empate
-		((and (equal jugador *jugador-maquina*) (equal turno 'max))
-			t)
-		((and (equal jugador *jugador-humano*) (equal turno 'min))
-			t)
+		((and (equal jugador *jugador-maquina*) 
+			(equal turno 'max)) 
+			t) ;; Gana máquina
+		((and (equal jugador *jugador-humano*) 
+			(equal turno 'min))
+			t) ;; Gana humano
 		(t nil))) ;; En principio inalcanzable
 
+;;TODO falla, porque siempre escoje el primer tablero solo
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
 	(funcall (symbol-function (first procedimiento)) nodo-j (first(rest procedimiento))))
@@ -217,23 +213,12 @@
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
-	(let ((posicion (ultimo-movimiento tablero)))
-		(or
-			(<= (length (movimientos-legales tablero)) 0)
-			(> (fichas-consecutivas-con-centro tablero posicion *color-humano*) 3)
-			(> (fichas-consecutivas-con-centro tablero posicion *color-maquina*) 3))))
-
-;; Determina la última posicion ocupada
-(defun ultimo-movimiento (tablero)
-	(cond 
-	((null *ultimo-movimiento*)
-		nil)
-	(t
-		(let ((fila (primera-posicion-vacia tablero *ultimo-movimiento*)))
-		(list (if (null fila)
-			0
-			fila)
-		*ultimo-movimiento*)))))
+(if (null *ultimo-movimiento*)
+nil
+	(or
+		(<= (length (movimientos-legales tablero)) 0)
+		(> (fichas-consecutivas-con-centro tablero *ultimo-movimiento* *color-humano*) 3)
+		(> (fichas-consecutivas-con-centro tablero *ultimo-movimiento* *color-maquina*) 3))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -333,6 +318,7 @@
 (defvar *heuristica1*)
 (defvar *heuristica2*)
 
+;; TODO
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
 (defun compara_heurs (heuristica1 heuristica2)
