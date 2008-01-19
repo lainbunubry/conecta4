@@ -75,19 +75,16 @@
                    (procedimiento (list 'minimax-a-b '5)))
   (setf *procedimiento* procedimiento)
   (cond (empieza-la-maquina? (crea-nodo-j-inicial 'max)
-(format t "~&Juega la máquina (MAX)") ;; TODO
                              (if (es-estado-final *estado-inicial*)
                                  (analiza-final *nodo-j-inicial*)
                                  (jugada-maquina *nodo-j-inicial*)))
         (t (crea-nodo-j-inicial 'min)
-(format t "~&Juega el humano (MIN)") ;; TODO
            (if (es-estado-final *estado-inicial*)
                (analiza-final *nodo-j-inicial*)
                (jugada-humana *nodo-j-inicial*)))))
 
 ;; Comprueba el resultado de la partida
 (defun analiza-final (nodo-j-final &optional (canal t))
-  (format t "~&Empezando analiza-final") ;; TODO
   (escribe-nodo-j nodo-j-final)
   (cond ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'max)
@@ -99,12 +96,9 @@
 
 ;; Función llamada cuando es el turno de la máquina
 (defun jugada-maquina (nodo-j)
-  (format t "~&Empezando jugada-maquina") ;; TODO
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-    (format t "~&Terminado aplica-decision -> Resultado: ") ;; TODO
-    (imprime-tablero (estado siguiente)) ;; TODO - Borrar esta línea
     (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
     (if (es-estado-final (estado siguiente))
         (analiza-final siguiente)
@@ -112,7 +106,6 @@
 
 ;; Devuelve para un determinado estado qué movimientos son posibles
 (defun movimientos-legales (estado)
-  (format t "~&Empezando movimientos-legales") ;; TODO
   (loop for m in *movimientos*
         when (primera-posicion-vacia estado m)
         collect m))
@@ -171,14 +164,12 @@
 ;; Compara dos tableros, tales que el segundo es el mismo que el primero pero con una jugada más,
 ;; y devuelve el movimiento que lleva del primer tablero al segundo
 (defun compara-tableros (viejo nuevo)
-	(format t "~&Empezando compara-tableros") ;;TODO
 	(let ((resultado 0))
 		(loop for i from 0 to *filas* do
 			(loop for j from 0 to *columnas* do
 				(if (not (equal (aref viejo i j) (aref nuevo i j)))
 					(setf resultado j)
 					nil)))
-		(format t "~&Empezando compara-tableros -> Resultado: ~a" resultado) ;;TODO
 		resultado))
 
 ;; Determina si ha ganado algún jugador la partida
@@ -194,12 +185,10 @@
 
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
-	(format t "~&Empezando aplica-decision") ;; TODO
-	(funcall (symbol-function (first procedimiento)) nodo-j (rest procedimiento)))
+	(funcall (symbol-function (first procedimiento)) nodo-j (first(rest procedimiento))))
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador, sin alterar el tablero original
 (defun aplica-movimiento (columna tablero color)
-	(format t "~&Empezando aplica-movimiento") ;; TODO
 	(let ((fila (primera-posicion-vacia tablero columna))
 		 (nuevo-tablero (duplica-tablero tablero)))
 		(cond ((null fila)
@@ -218,7 +207,6 @@
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
-	(format t "~&Empezando es-estado-final") ;; TODO
 	(let ((columna *ultimo-movimiento*)
 		 (fila (primera-posicion-vacia tablero *ultimo-movimiento*)))
 		 (if (null fila)
@@ -459,7 +447,6 @@
 				(recorre-posiciones tablero x) color))))
 
 (defun fichas-consecutivas-con-centro (tablero posicion color)
-(format t "~&Empezando fichas-consecutivas-con-centro") ;; TODO
 (maximo 
 	(loop for x in 
 		(rango-posiciones (first posicion) (second posicion)) 
@@ -499,13 +486,12 @@
 
 ;; Devuelve el maximo entero de la lista
 (defun maximo (lista)
-	(apply #'max 
+	(apply #'max ;; TODO - Esto falla
 ;; tenemos que filtrar los nil ya que max no los reconoce
 	(loop for x in lista when (not (null x)) collect x)))
 
 ;; Devuelve la fila de la primera casilla vacía de la columna
 (defun primera-posicion-vacia (tablero columna)
-(format t "~&Empezando primera-posicion-vacia") ;; TODO
 (if (and (<= columna *columnas*)(posicion-vacia tablero 0 columna))
     	(loop for i from *filas* downto 0
 	  minimize i
