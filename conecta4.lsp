@@ -355,7 +355,6 @@
 ;; si no devuelve un numero que será mayor mientras menos fichas tengamos que insertar para conseguir 4 en linea
 ;; devuelve un numero
 (defun heuristica-3-aux-consecutivas (listas tablero posicion color)
-(format t "~&Entrando en heuristica-3-aux-consecutivas") ;; DEBUG
 (if(= 3 (fichas-consecutivas tablero posicion color))
 ;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
 *maximo-valor*
@@ -437,7 +436,6 @@
 
 ;; Dada una posicion (x y) devuelve el numero maximo de veces consecutivas que se repite el color
 (defun fichas-consecutivas (tablero posicion color)
-(format t "~&Entrando en fichas-consecutivas") ;; DEBUG
 (maximo 
 	(loop for x in 
 		(rango-posiciones (first posicion) (second posicion)) 
@@ -446,7 +444,6 @@
 				(recorre-posiciones tablero x) color))))
 
 (defun fichas-consecutivas-con-centro (tablero posicion color)
-(format t "~&Entrando en fichas-consecutivas-con-centro") ;; DEBUG
 (maximo 
 	(loop for x in 
 		(rango-posiciones (first posicion) (second posicion)) 
@@ -484,12 +481,12 @@
 			0)
 		(loop for x in (second secuencias) count (eq x color) until (not(eq x color)))))
 
-;; Devuelve el maximo entero de la lista
+;; Devuelve el maximo entero de la lista, y si la lista es vacía devuelve 0
 (defun maximo (lista)
-(format t "~&Entrando en maximo") ;; DEBUG
-	(apply #'max ;; TODO - Esto falla a veces (una mala llamada tal vez)
-;; tenemos que filtrar los nil ya que max no los reconoce
-	(loop for x in lista when (not (null x)) collect x)))
+	(if  (null lista)
+		0
+		(apply #'max
+			(loop for x in lista when (not (null x)) collect x)))) ;; tenemos que filtrar los nil ya que max no los reconoce
 
 ;; Devuelve la fila de la primera casilla vacía de la columna
 (defun primera-posicion-vacia (tablero columna)
