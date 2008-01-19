@@ -21,29 +21,53 @@
 ;ariscosn@us.es
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar *T-prueba* (make-array '(6 7) :initial-contents
+(setf *T-prueba* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
-		(x nil nil nil nil nil nil)
-		(x nil x nil nil nil nil)
-		(x o x o o x o)
-		(o x o x o x o)
-		(x x x o o o x))))
+		(h nil nil nil nil nil nil)
+		(h nil h nil nil nil nil)
+		(h h m m m h h)
+		(m m h m m h m)
+		(m m m h h h m))))
 
-(defvar *T-bprueba* (make-array '(6 7) :initial-contents
-             '((nil nil hola nil nil nil nil)
-		(o nil x x nil nil nil)
-		(x nil x o o nil nil)
-		(x o x o o x o)
-		(o x o x o x o)
-		(x x x o o o x))))
-
-(defvar *T-prueba2* (make-array '(6 7) :initial-contents
+(setf *prueba* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
-		(x nil nil nil nil nil nil)
-		(x nil x x nil nil nil)
-		(x o x o o x o)
-		(o x o x o x o)
-		(x x x o o o x))))
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil))))
+
+(setf *prueba2* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil h nil nil nil))))
+
+(setf *prueba3* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil h nil nil nil)
+		(nil nil nil h nil nil nil))))
+
+(setf *prueba4* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil m nil nil nil)
+		(nil nil nil h nil nil nil)
+		(nil nil nil h nil nil nil))))
+
+(setf *prueba5* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil h nil nil nil)
+		(nil nil nil h nil nil nil)
+		(nil nil nil h nil nil nil))))
 
 ;Estructura que representa el tablero con las fichas
 (defstruct (partida (:constructor crea-tablero)
