@@ -227,7 +227,6 @@
 
 ;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
-(format t "~&Empezando sucesores") ;; TODO
   (let ((resultado ()))
     (loop for movimiento in *movimientos* do
       (let ((siguiente
@@ -249,7 +248,6 @@
 (defun minimax-a-b (nodo-j profundidad
                            &optional (alfa *minimo-valor*)
                            (beta *maximo-valor*))
-(format t "~&Empezando minimax-a-b") ;; TODO
   (if (or (es-estado-final (estado nodo-j))
           (= profundidad 0))
       (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
@@ -300,7 +298,6 @@
 
 ;; Devuelve una valoración heurística para un nodo (jugada)
 (defun f-e-estatica (tablero jugador)
-	(format t "~&Empezando f-e-estatica") ;; TODO
 	(cond
 		((equal jugador *jugador-maquina*)
 			(loop for mov in (movimientos-legales tablero) maximize
@@ -358,6 +355,7 @@
 ;; si no devuelve un numero que será mayor mientras menos fichas tengamos que insertar para conseguir 4 en linea
 ;; devuelve un numero
 (defun heuristica-3-aux-consecutivas (listas tablero posicion color)
+(format t "~Entrando en heuristica-3-aux-consecutivas") ;; DEBUG
 (if(= 3 (fichas-consecutivas tablero posicion color))
 ;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
 *maximo-valor*
@@ -439,6 +437,7 @@
 
 ;; Dada una posicion (x y) devuelve el numero maximo de veces consecutivas que se repite el color
 (defun fichas-consecutivas (tablero posicion color)
+(format t "~Entrando en fichas-consecutivas") ;; DEBUG
 (maximo 
 	(loop for x in 
 		(rango-posiciones (first posicion) (second posicion)) 
@@ -447,6 +446,7 @@
 				(recorre-posiciones tablero x) color))))
 
 (defun fichas-consecutivas-con-centro (tablero posicion color)
+(format t "~Entrando en fichas-consecutivas-con-centro") ;; DEBUG
 (maximo 
 	(loop for x in 
 		(rango-posiciones (first posicion) (second posicion)) 
@@ -486,7 +486,8 @@
 
 ;; Devuelve el maximo entero de la lista
 (defun maximo (lista)
-	(apply #'max ;; TODO - Esto falla
+(format t "~Entrando en maximo") ;; DEBUG
+	(apply #'max ;; TODO - Esto falla a veces (una mala llamada tal vez)
 ;; tenemos que filtrar los nil ya que max no los reconoce
 	(loop for x in lista when (not (null x)) collect x)))
 
