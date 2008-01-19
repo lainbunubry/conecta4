@@ -108,6 +108,7 @@
 
 ;; Devuelve para un determinado estado qué movimientos son posibles
 (defun movimientos-legales (estado)
+  (format t "~&Empezando movimientos-legales") ;; TODO
   (loop for m in *movimientos*
         when (primera-posicion-vacia estado m)
         collect m))
@@ -166,12 +167,14 @@
 ;; Compara dos tableros, tales que el segundo es el mismo que el primero pero con una jugada más,
 ;; y devuelve el movimiento que lleva del primer tablero al segundo
 (defun compara-tableros (viejo nuevo)
-	(let ((resultado nil))
+	(format t "~&Empezando compara-tableros") ;;TODO
+	(let ((resultado 0))
 		(loop for i from 0 to *filas* do
 			(loop for j from 0 to *columnas* do
 				(if (not (equal (aref viejo i j) (aref nuevo i j)))
-					(setf resultado (aref nuevo i j))
+					(setf resultado j)
 					nil)))
+		(format t "~&Empezando compara-tableros -> Resultado: ~a" resultado) ;;TODO
 		resultado))
 
 ;; Determina si ha ganado algún jugador la partida
@@ -200,8 +203,9 @@
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
+	(format t "~&Empezando es estado final") ;; TODO
 	(let ((columna *ultimo-movimiento*)
-		 (fila (primera-posicion-vacia tablero columna)))
+		 (fila (primera-posicion-vacia tablero *ultimo-movimiento*)))
 		 (if (null fila)
 			(setf fila 0)
 			nil)
@@ -488,6 +492,7 @@
 
 ;; Devuelve la fila de la primera casilla vacía de la columna
 (defun primera-posicion-vacia (tablero columna)
+(format t "~&Empezando primera-posicion-vacia") ;; TODO
 (if (and (<= columna *columnas*)(posicion-vacia tablero 0 columna))
     	(loop for i from *filas* downto 0
 	  minimize i

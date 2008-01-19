@@ -36,6 +36,15 @@
 		(x o x o o x o)
 		(o x o x o x o)
 		(x x x o o o x))))
+
+(defvar *T-prueba2* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(x nil nil nil nil nil nil)
+		(x nil x x nil nil nil)
+		(x o x o o x o)
+		(o x o x o x o)
+		(x x x o o o x))))
+
 ;Estructura que representa el tablero con las fichas
 (defstruct (partida (:constructor crea-tablero)
                     (:conc-name nil)
