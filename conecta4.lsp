@@ -192,14 +192,24 @@
 (defun aplica-decision (procedimiento nodo-j)
 	(funcall (symbol-function (first procedimiento)) nodo-j (rest procedimiento)))
 
-;; Devuelve el estado siguiente según el movimiento dado por el jugador
+;; Devuelve el estado siguiente según el movimiento dado por el jugador, generando un tablero clon
 (defun aplica-movimiento (columna tablero color)
-(let ((fila (primera-posicion-vacia tablero columna)))
- (cond ((null fila)
-	nil)
-	(t
-  	(setf (aref tablero fila columna) color)
-	tablero))))
+	(format t "~&Empezando aplica-movimiento") ;; TODO
+	(let ((fila (primera-posicion-vacia tablero columna))
+		 (nuevo-tablero (duplica-tablero tablero)))
+		(cond ((null fila)
+			nil)
+			(t
+				(setf (aref nuevo-tablero fila columna) color)
+				nuevo-tablero))))
+
+;; Devuelve una copia de un tablero
+(defun duplica-tablero (tablero)
+	(let ((nuevo-tablero (make-array '(6 7))))
+		(loop for i from 0 to *filas* do
+			(loop for j from 0 to *columnas* do
+				(setf (aref nuevo-tablero i j) (aref tablero i j))))
+		nuevo-tablero))
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
