@@ -388,6 +388,17 @@
 				(mas-posibilidades-conecta-4 x))))))
 	
 
+;; Heuristica 4 corta la jugada del contrario
+(defun heuristica-4 (tablero posicion color)
+(max 
+	(heuristica-3 tablero posicion color)
+	(heuristica-3 tablero posicion (contrincante color))))
+
+(defun contrincante (color)
+(if (eq color *color-humano*)
+	*color-maquina*
+	*color-humano*))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
