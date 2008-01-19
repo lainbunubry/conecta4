@@ -75,7 +75,7 @@
                    (procedimiento (list 'minimax-a-b '5)))
   (setf *procedimiento* procedimiento)
   (cond (empieza-la-maquina? (crea-nodo-j-inicial 'max)
-(format t "~&Juega la máquina (MIN)") ;; TODO
+(format t "~&Juega la máquina (MAX)") ;; TODO
                              (if (es-estado-final *estado-inicial*)
                                  (analiza-final *nodo-j-inicial*)
                                  (jugada-maquina *nodo-j-inicial*)))
@@ -87,6 +87,7 @@
 
 ;; Comprueba el resultado de la partida
 (defun analiza-final (nodo-j-final &optional (canal t))
+  (format t "~&Empezando analiza-final") ;; TODO
   (escribe-nodo-j nodo-j-final)
   (cond ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'max)
@@ -98,9 +99,12 @@
 
 ;; Función llamada cuando es el turno de la máquina
 (defun jugada-maquina (nodo-j)
+  (format t "~&Empezando jugada-maquina") ;; TODO
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
+    (format t "~&Terminado aplica-decision -> Resultado: ") ;; TODO
+    (imprime-tablero (estado siguiente)) ;; TODO - Borrar esta línea
     (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
     (if (es-estado-final (estado siguiente))
         (analiza-final siguiente)
@@ -190,6 +194,7 @@
 
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
+	(format t "~&Empezando aplica-decision") ;; TODO
 	(funcall (symbol-function (first procedimiento)) nodo-j (rest procedimiento)))
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador, sin alterar el tablero original
@@ -213,7 +218,7 @@
 
 ;; Determina si el juego ha llegado a su final
 (defun es-estado-final (tablero)
-	(format t "~&Empezando es estado final") ;; TODO
+	(format t "~&Empezando es-estado-final") ;; TODO
 	(let ((columna *ultimo-movimiento*)
 		 (fila (primera-posicion-vacia tablero *ultimo-movimiento*)))
 		 (if (null fila)
@@ -234,6 +239,7 @@
 
 ;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
+(format t "~&Empezando sucesores") ;; TODO
   (let ((resultado ()))
     (loop for movimiento in *movimientos* do
       (let ((siguiente
@@ -255,6 +261,7 @@
 (defun minimax-a-b (nodo-j profundidad
                            &optional (alfa *minimo-valor*)
                            (beta *maximo-valor*))
+(format t "~&Empezando minimax-a-b") ;; TODO
   (if (or (es-estado-final (estado nodo-j))
           (= profundidad 0))
       (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
@@ -305,7 +312,14 @@
 
 ;; Devuelve una valoración heurística para un nodo (jugada)
 (defun f-e-estatica (tablero jugador)
-	(funcion-heuristica tablero jugador))
+	(format t "~&Empezando f-e-estatica") ;; TODO
+	(cond
+		((equal jugador *jugador-maquina*)
+			(loop for mov in (movimientos-legales tablero) maximize
+				(heuristica-3 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
+		(t
+			(loop for mov in (movimientos-legales tablero) maximize
+				(heuristica-3 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
@@ -315,18 +329,6 @@
 (defvar *heuristica1*)
 (defvar *heuristica2*)
 
-;; Front-End para las heurísticas, sirve para que f-e-estatica no tenga que preocuparse
-;; sobre qué heurística es la más avanzada, siempre llama a esta función y es aquí donde
-;; se escoje la mejor heurística
-(defun funcion-heuristica (tablero jugador)
-	(cond
-		((equal jugador *jugador-maquina*)
-			(loop for mov in (movimientos-legales tablero) maximize
-				(heuristica-3 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
-		(t
-			(loop for mov in (movimientos-legales tablero) maximize
-				(heuristica-3 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
-				
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
 (defun compara_heurs (heuristica1 heuristica2)
@@ -457,6 +459,7 @@
 				(recorre-posiciones tablero x) color))))
 
 (defun fichas-consecutivas-con-centro (tablero posicion color)
+(format t "~&Empezando fichas-consecutivas-con-centro") ;; TODO
 (maximo 
 	(loop for x in 
 		(rango-posiciones (first posicion) (second posicion)) 
