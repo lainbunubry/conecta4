@@ -192,7 +192,7 @@
 (defun aplica-decision (procedimiento nodo-j)
 	(funcall (symbol-function (first procedimiento)) nodo-j (rest procedimiento)))
 
-;; Devuelve el estado siguiente según el movimiento dado por el jugador, generando un tablero clon
+;; Devuelve el estado siguiente según el movimiento dado por el jugador, sin alterar el tablero original
 (defun aplica-movimiento (columna tablero color)
 	(format t "~&Empezando aplica-movimiento") ;; TODO
 	(let ((fila (primera-posicion-vacia tablero columna))
