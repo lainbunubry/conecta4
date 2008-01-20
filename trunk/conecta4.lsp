@@ -18,7 +18,7 @@
 (defvar *color-maquina* 'M)
 (defvar *color-humano* 'H)
 (defvar *profundidad* '5)
-(defvar *ultimo-movimiento* '(0 0)) ;; Última columna donde se ha echado una ficha
+(defvar *ultimo-movimiento* '(0 0)) ;; Última posición donde se ha echado una ficha
 
 ;; Estructura que representa un nodo del árbol de búsqueda
 (defstruct (nodo-j (:constructor crea-nodo-j)
@@ -32,7 +32,7 @@
 (defun escribe-nodo-j (nodo-j &optional (canal t) profundidad)
 	(format canal "~%Estado :")
 	(imprime-tablero (estado nodo-j))
-	(format canal "ultimo movimiento ~a" *ultimo-movimiento*)
+	(format canal "~%Último movimiento : ~a" *ultimo-movimiento*)
 	(format canal "~%Jugador : ~a" (jugador nodo-j)))
 
 ;; Función que inicializa *nodo-j-inicial*
@@ -100,7 +100,7 @@
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-    (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;; Eleccion de la maquina
+    (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;; Elección de la máquina
     (if (es-estado-final (estado siguiente))
         (analiza-final siguiente)
         (jugada-humana siguiente))))
@@ -141,7 +141,7 @@
 				(let ((siguiente (crea-nodo-j
 					:estado nuevo-estado
 					:jugador 'max))) 
-				(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;;Eleccion del humano
+				(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;;Elección del humano
 	                        (if (es-estado-final nuevo-estado)
      	                       		(analiza-final siguiente)
           	                	(jugada-maquina siguiente))))
@@ -172,7 +172,6 @@
 					(setf resultado (list i j))
 					nil)))
 		resultado))
-
 
 ;; Determina si ha ganado algún jugador la partida
 ;; TODO a ver si no dice siempre empate
@@ -372,7 +371,6 @@ nil
 			(maximo 
 			(loop for x in listas collect
 				(mas-posibilidades-conecta-4 x))))))
-	
 
 ;; Heuristica 4 corta la jugada del contrario
 (defun heuristica-4 (tablero posicion color)
