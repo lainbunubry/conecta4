@@ -173,8 +173,8 @@
 					nil)))
 		resultado))
 
+;; TODO - Gana el contrario XD
 ;; Determina si ha ganado algún jugador la partida
-;; TODO a ver si no dice siempre empate
 (defun es-estado-ganador (tablero jugador turno)
 	(cond
 		((not (movimientos-legales tablero))
