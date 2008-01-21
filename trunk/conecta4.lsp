@@ -152,7 +152,7 @@
 
 ;; Función que se llama cuando se pide consejo a la máquina
 (defun solicitar-consejo (nodo-j)
-  (format t "~%Pensando")
+  (format t "Pensando")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))	;; TODO - Devuelve dnd echaría la máquina, así q no tiene sentido XD
 	(format t " - Mi recomendación: ~a" (second (compara-tableros
 							(estado nodo-j)
@@ -186,7 +186,6 @@
 			t) ;; Gana humano
 		(t nil))) ;; En principio inalcanzable
 
-;;TODO falla, probablemente por el minimax, pq esto está perfecto XD
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
 	(funcall (symbol-function (first procedimiento)) nodo-j (first(rest procedimiento))))
@@ -336,6 +335,7 @@ nil
     (setf (valor mejor-sucesor) beta)
     mejor-sucesor))
 
+;; TODO - No está bien, fijo, este es el problema
 ;; Devuelve una valoración heurística para un nodo (jugada)
 (defun f-e-estatica (tablero jugador)
 	(cond
