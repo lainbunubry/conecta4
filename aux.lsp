@@ -69,6 +69,91 @@
 		(nil nil nil o nil nil nil)
 		(nil nil nil o nil nil nil))))
 
+(setf *unaficha0* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(x nil nil nil nil nil nil))))
+
+(setf *unaficha1* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil x nil nil nil nil nil))))
+
+(setf *unaficha2* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil x nil nil nil nil))))
+
+(setf *unaficha3* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil x nil nil nil))))
+
+(setf *unaficha4* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil x nil nil))))
+
+(setf *unaficha5* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil x nil))))
+
+(setf *unaficha6* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil x))))
+
+;; [35]> (heuristica-4 *unaficha0* '(4 0) 'X)
+;; 3
+;; [36]> (heuristica-4 *unaficha3* '(5 0) 'X)
+;; 3
+;; [37]> (heuristica-4 *unaficha0* '(5 1) 'X)
+;; 3
+;; [38]> (heuristica-4 *unaficha3* '(5 1) 'X)
+;; 3
+;; [39]> (heuristica-4 *unaficha0* '(5 2) 'X)
+;; 3
+;; [40]> (heuristica-4 *unaficha3* '(5 2) 'X)
+;; 3
+;; [42]> (heuristica-4 *unaficha0* '(5 3) 'X)
+;; 4
+;; [43]> (heuristica-4 *unaficha3* '(4 3) 'X)
+;; 4
+;; [44]> (heuristica-4 *unaficha0* '(5 4) 'X)
+;; 0
+;; [45]> (heuristica-4 *unaficha3* '(5 4) 'X)
+;; 3
+;; [46]> (heuristica-4 *unaficha0* '(5 5) 'X)
+;; 0
+;; [47]> (heuristica-4 *unaficha3* '(5 5) 'X)
+;; 3
+;; [48]> (heuristica-4 *unaficha0* '(5 6) 'X)
+;; 0
+;; [49]> (heuristica-4 *unaficha3* '(5 6) 'X)
+;; 3
+
 ;Estructura que representa el tablero con las fichas
 (defstruct (partida (:constructor crea-tablero)
                     (:conc-name nil)
@@ -120,6 +205,4 @@
 ;(posicion-vacia *tablero* 1 1)
 
 (defun heurjoke (tablero posicion color)
-	(if (equal (second posicion) 0)
-		0
-		5))
+	(random 10))
