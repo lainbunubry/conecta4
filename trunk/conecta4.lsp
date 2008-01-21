@@ -153,7 +153,7 @@
 ;; Función que se llama cuando se pide consejo a la máquina
 (defun solicitar-consejo (nodo-j)
   (format t "~%Pensando")
-  (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
+  (let ((siguiente (aplica-decision *procedimiento* nodo-j)))	;; TODO - Devuelve dnd echaría la máquina, así q no tiene sentido XD
 	(format t " - Mi recomendación: ~a" (second (compara-tableros
 							(estado nodo-j)
 							(estado siguiente))))))
