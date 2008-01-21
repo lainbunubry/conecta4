@@ -23,11 +23,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setf *T-prueba* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
-		(h nil nil nil nil nil nil)
-		(h nil h nil nil nil nil)
-		(h h m m m h h)
-		(m m h m m h m)
-		(m m m h h h m))))
+		(X nil nil nil nil nil nil)
+		(X nil X nil nil nil nil)
+		(X X O O O X X)
+		(O O X O O X O)
+		(O O O X X X O))))
 
 (setf *prueba* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
@@ -43,31 +43,31 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil h nil nil nil))))
+		(nil nil nil o nil nil nil))))
 
 (setf *prueba3* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil h nil nil nil)
-		(nil nil nil h nil nil nil))))
+		(nil nil nil X nil nil nil)
+		(nil nil nil X nil nil nil))))
 
 (setf *prueba4* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil m nil nil nil)
-		(nil nil nil h nil nil nil)
-		(nil nil nil h nil nil nil))))
+		(nil nil nil x nil nil nil)
+		(nil nil nil o nil nil nil)
+		(nil nil nil o nil nil nil))))
 
 (setf *prueba5* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil h nil nil nil)
-		(nil nil nil h nil nil nil)
-		(nil nil nil h nil nil nil))))
+		(nil nil nil o nil nil nil)
+		(nil nil nil o nil nil nil)
+		(nil nil nil o nil nil nil))))
 
 ;Estructura que representa el tablero con las fichas
 (defstruct (partida (:constructor crea-tablero)
@@ -118,3 +118,8 @@
       t ;vacia
     nil))
 ;(posicion-vacia *tablero* 1 1)
+
+(defun heurjoke (tablero posicion color)
+	(if (equal (second posicion) 0)
+		0
+		5))
