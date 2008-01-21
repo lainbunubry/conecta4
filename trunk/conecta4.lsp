@@ -173,7 +173,6 @@
 					nil)))
 		resultado))
 
-;; TODO - Gana el contrario XD
 ;; Determina si ha ganado algún jugador la partida
 (defun es-estado-ganador (tablero jugador turno)
 	(cond
@@ -187,7 +186,7 @@
 			t) ;; Gana humano
 		(t nil))) ;; En principio inalcanzable
 
-;;TODO falla, porque siempre escoje el primer tablero solo
+;;TODO falla, probablemente por el minimax, pq esto está perfecto XD
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
 	(funcall (symbol-function (first procedimiento)) nodo-j (first(rest procedimiento))))
@@ -355,7 +354,7 @@ nil
 (defvar *heuristica1*)
 (defvar *heuristica2*)
 
-;; TODO
+;; TODO - Peta infinito xD
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
 (defun compara_heurs (heuristica1 heuristica2)
