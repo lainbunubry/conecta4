@@ -88,10 +88,10 @@
 (defun analiza-final (nodo-j-final &optional (canal t))
   (escribe-nodo-j nodo-j-final)
   (cond ((es-estado-ganador (estado nodo-j-final)
-                            (jugador nodo-j-final) 'max)
+                            (jugador nodo-j-final) 'min)
          (format canal "~&La maquina ha ganado"))
         ((es-estado-ganador (estado nodo-j-final)
-                            (jugador nodo-j-final) 'min)
+                            (jugador nodo-j-final) 'max)
          (format canal "~&El humano ha ganado"))
         (t (format canal "~&Empate"))))
 
