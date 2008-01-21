@@ -15,9 +15,9 @@
 (defvar *estado-inicial*)
 (defvar *jugador-humano* 'min)
 (defvar *jugador-maquina* 'max)
-(defvar *color-maquina* 'M)
-(defvar *color-humano* 'H)
-(defvar *profundidad* '5)
+(defvar *color-maquina* 'X)
+(defvar *color-humano* 'O)
+(defvar *profundidad* '3)
 (defvar *ultimo-movimiento* '(0 0)) ;; Última posición donde se ha echado una ficha
 
 ;; Estructura que representa un nodo del árbol de búsqueda
