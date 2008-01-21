@@ -152,11 +152,11 @@
 
 ;; Función que se llama cuando se pide consejo a la máquina
 (defun solicitar-consejo (nodo-j)
-  (format t "~%Mi recomendación: ")
+  (format t "~%Pensando")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-	(format t "~a" (compara-tableros
-				(estado nodo-j)
-				(estado siguiente)))))
+	(format t " - Mi recomendación: ~a" (second (compara-tableros
+							(estado nodo-j)
+							(estado siguiente))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES AUXILIARES DE ARBITRACIÓN
