@@ -153,7 +153,7 @@
 ;; Función que se llama cuando se pide consejo a la máquina
 (defun solicitar-consejo (nodo-j)
   (format t "Pensando")
-  (let ((siguiente (aplica-decision *procedimiento* nodo-j)))	;; TODO - Devuelve dnd echaría la máquina, así q no tiene sentido XD
+  (let ((siguiente (aplica-decision *procedimiento* nodo-j)))	;; TODO - Devuelve dnd echaría la máquina, así q no tiene demasiado sentido XD
 	(format t " - Mi recomendación: ~a" (second (compara-tableros
 							(estado nodo-j)
 							(estado siguiente))))))
@@ -335,15 +335,14 @@ nil
     (setf (valor mejor-sucesor) beta)
     mejor-sucesor))
 
-;; TODO - No está bien, fijo, este es el problema
 ;; Devuelve una valoración heurística para un nodo (jugada)
 (defun f-e-estatica (tablero jugador)
 	(cond
 		((equal jugador *jugador-maquina*)
-			(loop for mov in (movimientos-legales tablero) maximize
+			(loop for mov in (movimientos-legales tablero) summing	;; TODO - O sumamos, o máximo, o multiplicamos o algo
 				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
 		(t
-			(loop for mov in (movimientos-legales tablero) maximize
+			(loop for mov in (movimientos-legales tablero) summing	;; TODO - Pero la heur tiene q dar bien las cosas y no lo hace
 				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -409,6 +408,7 @@ nil
 			(loop for x in listas collect
 				(mas-posibilidades-conecta-4 x))))))
 
+;; TODO - No funciona como debiera
 ;; Heuristica 4 corta la jugada del contrario
 (defun heuristica-4 (tablero posicion color)
 (max 
