@@ -21,7 +21,7 @@
 ;ariscosn@us.es
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(setf *T-prueba* (make-array '(6 7) :initial-contents
+(setf *prueba0* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(X nil nil nil nil nil nil)
 		(X nil X nil nil nil nil)
@@ -29,13 +29,13 @@
 		(O O X O O X O)
 		(O O O X X X O))))
 
-(setf *prueba* (make-array '(6 7) :initial-contents
+(setf *prueba1* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil))))
+		(o o x nil nil x x)
+		(x x x o nil o o))))
 
 (setf *prueba2* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
@@ -59,7 +59,7 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil x nil nil nil)
 		(nil nil nil o nil nil nil)
-		(nil nil nil o nil nil nil))))
+		(x x x o x x x))))
 
 (setf *prueba5* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
@@ -67,15 +67,23 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil o nil nil nil)
 		(nil nil nil o nil nil nil)
-		(nil nil nil o nil nil nil))))
+		(nil nil x o x nil nil))))
 
-(setf *unaficha0* (make-array '(6 7) :initial-contents
+(setf *prueba6* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
+		(nil nil x nil nil nil nil)
+		(nil x o o nil nil nil)
+		(x o o o x nil nil))))
+
+(setf *prueba7* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(x nil nil nil nil nil nil))))
+		(nil nil x o nil nil nil)
+		(nil x o o o nil nil)
+		(x o o o x o nil))))
 
 (setf *unaficha1* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
@@ -124,6 +132,8 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil x))))
+
+(setf tableros (list *prueba* *prueba2* *prueba3* *prueba4* *prueba5* *prueba6* *prueba7*))
 
 ;; [35]> (heuristica-4 *unaficha0* '(4 0) 'X)
 ;; 3
@@ -206,6 +216,16 @@
 
 (defun heurjoke (tablero posicion color)
 	(random 10))
+
+(defun p-f-e (lista color)
+(loop for x in lista do
+(format t "valor ~a " (f-e x color))))
+
+(defun f-e (tablero color)
+	(imprime-tablero tablero)
+	(format t "color ~a  " color)
+	(loop for mov in (movimientos-legales tablero) summing
+		(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) color)))
 
 ;; ;; Devuelve todas las posiciones no ocupadas del tablero
 ;; (defun posiciones-posibles (tablero)
