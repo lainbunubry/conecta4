@@ -21,6 +21,12 @@
 ;ariscosn@us.es
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun recarga()
+(load "conecta4.lsp"))
+
+(defun jr()
+(juego :procedimiento (list 'minimax-a-b '3)))
+
 (setf *prueba0* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(X nil nil nil nil nil nil)
@@ -133,7 +139,7 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil x))))
 
-(setf tableros (list *prueba* *prueba2* *prueba3* *prueba4* *prueba5* *prueba6* *prueba7*))
+(setf tableros (list *prueba0* *prueba1* *prueba2* *prueba3* *prueba4* *prueba5* *prueba6* *prueba7*))
 
 ;; [35]> (heuristica-4 *unaficha0* '(4 0) 'X)
 ;; 3
