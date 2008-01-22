@@ -77,8 +77,8 @@
 ;; Da comienzo a la partida y establece el primer turno de juego
 (defun juego (&key (empieza-la-maquina? nil)
                    (procedimiento 
-		(list 'minimax-a-b '1) ;; algoritmo y profundidad
-;; 		(list 'minimax '1)
+;; 		(list 'minimax-a-b '1) ;; algoritmo y profundidad
+		(list 'minimax '2)
 		)) 
   (setf *procedimiento* procedimiento)
   (cond (empieza-la-maquina? (crea-nodo-j-inicial 'max)
@@ -442,29 +442,21 @@ nil)
 	(close *fichero-compara_heurs*)) ;; MAX usa la segunda heurística
 
 ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
-(defun heuristica-1 (tablero lista-valores jugador)
-	(loop for pos in lista-valores count (igual-color tablero pos color)))
-
-;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
-;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
-(defun heuristica-2 (tablero posicion color)
-	(-
-		(fichas-consecutivas tablero posicion color)
-		(minimo-turnos-ocupar-posicion tablero posicion)))
 
 ;; Esta es la heuristica definitiva :D
 ;; NOTA: No se puede aplicar sobre posiciones ya ocupadas, eso aparte de ser inutil provocaría una division por 0
 (defun heuristica-3  (tablero posicion color)
 (let* ((listas (cuatro-en-linea-posible tablero posicion color))
 	(valor-heuristico-consecutivas (heuristica-3-aux-consecutivas listas tablero posicion color))
-	(valor-heuristico-multiplicador (length listas))
-	(valor-heuristico-divisor (max 1 (minimo-turnos-ocupar-posicion tablero posicion))))
+	(valor-heuristico-multiplicador (length listas)))
+;; 	(format t "~% listas posibles ~a ~%" listas) ;;debug
+;; 	(format t "consecutivas ~a " valor-heuristico-consecutivas) ;;debug
+;; 	(format t "numero de posibles conecta-4 ~a ~%" valor-heuristico-multiplicador) ;;debug
 		(if (eq valor-heuristico-consecutivas *maximo-valor*)
 ;; significa que si ponemos aqui una ficha ganamos
 			*maximo-valor*
 ;; significa que multiplicaremos el numero de posibles lineas completas que podemos tener y lo dividiremos por el numero de turnos que tardaríamos en llegar nosotros a esa posicion
-			(/ (* valor-heuristico-consecutivas valor-heuristico-multiplicador) 
-				valor-heuristico-divisor))))
+			(* valor-heuristico-consecutivas valor-heuristico-multiplicador))))
 
 ;; detecta cuando solo hay que insertar una ficha para ganar y devuelve el maximo valor heuristico para ese nodo
 ;; si no devuelve un numero que será mayor mientras menos fichas tengamos que insertar para conseguir 4 en linea
@@ -488,7 +480,15 @@ nil)
 (defun heuristica-4 (tablero posicion color)
 (max 
 	(heuristica-3 tablero posicion color)
-	(heuristica-3 tablero posicion (contrincante color))))
+	(heuristica-4-aux tablero posicion (contrincante color))))
+
+(defun heuristica-4-aux (tablero posicion color)
+(let ((valor (heuristica-3 tablero posicion color)))
+	(cond 
+		((eq valor *maximo-valor*) 
+			(- 1 *maximo-valor*)) ;; Da prioridad a ganar Yo a que gane él
+		(t
+			valor))))
 
 (defun contrincante (color)
 (if (eq color *color-humano*)
@@ -534,8 +534,25 @@ nil)
 ;; Nos indica el numero de fichas del mismo color que ya hay en una lista, lista es una de las listas resultantes de cuantro-en-linea-posible
 ;; mientras mayor sea el numero menos fichas habra que insertar para ganar
 (defun mas-posibilidades-conecta-4 (lista)
+;; (format t "~%maximo fichas consecutivas ~a" (maximo-consecutivos lista)) ;;debug
+;; (format t "fichas ocupadas de ~a son ~a ~%" lista (fichas-ocupadas lista)) ;;debug
+(* (maximo-consecutivos lista) (fichas-ocupadas lista)))
+
+(defun fichas-ocupadas (lista)
 (- (length lista)
 (loop for x in lista count (not (null x)))))
+
+(defun maximo-consecutivos (lista)
+(let ((max 0)
+	(aux 0))
+	(loop for x in lista do
+		(if (null x)
+			(if (<= max aux)
+			(setf max (setf aux (+ 1 aux)))
+			(setf aux (+ 1 aux)))
+		(setf aux 0)))
+	max))
+
 
 ;; Devuelve una lista de posiciones posibles en las que insertar una ficha de
 ;; nuestro color incrementaria el numero de fichas consecutivas
@@ -543,14 +560,6 @@ nil)
 	(loop for x in (rango-posiciones (first posicion) (second posicion))
 		collect
 			(posiciones-cuatro-en-linea tablero x color)))
-
-;; Devuelve todas las posiciones no ocupadas del tablero
-(defun posiciones-posibles (tablero)
-	(loop for i from 0 to *columnas*
-		append 
-		(loop for j from 0 to *filas* 
-			until (not (null (aref tablero j i)))
-			collect (list j i))))
 
 ;; Devuelve sólo las posiciones consecutivas accesibles que conectan con nuestro color
 ;; accesibles significa libres y no cortadas por otro color
