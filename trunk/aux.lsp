@@ -207,21 +207,21 @@
 (defun heurjoke (tablero posicion color)
 	(random 10))
 
-;; Devuelve todas las posiciones no ocupadas del tablero
-(defun posiciones-posibles (tablero)
-	(loop for i from 0 to *columnas*
-		append 
-		(loop for j from 0 to *filas* 
-			until (not (null (aref tablero j i)))
-			collect (list j i))))
-
-;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
-(defun heuristica-1 (tablero lista-valores jugador)
-	(loop for pos in lista-valores count (igual-color tablero pos color)))
-
-;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
-;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
-(defun heuristica-2 (tablero posicion color)
-	(-
-		(fichas-consecutivas tablero posicion color)
-		(minimo-turnos-ocupar-posicion tablero posicion)))
+;; ;; Devuelve todas las posiciones no ocupadas del tablero
+;; (defun posiciones-posibles (tablero)
+;; 	(loop for i from 0 to *columnas*
+;; 		append 
+;; 		(loop for j from 0 to *filas* 
+;; 			until (not (null (aref tablero j i)))
+;; 			collect (list j i))))
+;; 
+;; ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
+;; (defun heuristica-1 (tablero lista-valores jugador)
+;; 	(loop for pos in lista-valores count (igual-color tablero pos color)))
+;; 
+;; ;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
+;; ;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
+;; (defun heuristica-2 (tablero posicion color)
+;; 	(-
+;; 		(fichas-consecutivas tablero posicion color)
+;; 		(minimo-turnos-ocupar-posicion tablero posicion)))

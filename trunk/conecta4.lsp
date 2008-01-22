@@ -1,5 +1,7 @@
 (load "aux.lsp")
 
+;; TODO - BORRAR - (juego :procedimiento (list 'minimax-a-b '3))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; REPRESENTACIÓN DE ESTADOS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -384,14 +386,15 @@ nil
 (defun heuristica-3  (tablero posicion color)
 (let* ((listas (cuatro-en-linea-posible tablero posicion color))
 	(valor-heuristico-consecutivas (heuristica-3-aux-consecutivas listas tablero posicion color))
-	(valor-heuristico-multiplicador (length listas))
-	(valor-heuristico-divisor (max 1 (minimo-turnos-ocupar-posicion tablero posicion))))
+	(valor-heuristico-multiplicador (length listas)))
+;; 	(format t "~% listas posibles ~a ~%" listas) ;;debug
+;; 	(format t "consecutivas ~a " valor-heuristico-consecutivas) ;;debug
+;; 	(format t "numero de posibles conecta-4 ~a ~%" valor-heuristico-multiplicador) ;;debug
 		(if (eq valor-heuristico-consecutivas *maximo-valor*)
 ;; significa que si ponemos aqui una ficha ganamos
 			*maximo-valor*
 ;; significa que multiplicaremos el numero de posibles lineas completas que podemos tener y lo dividiremos por el numero de turnos que tardaríamos en llegar nosotros a esa posicion
-			(/ (* valor-heuristico-consecutivas valor-heuristico-multiplicador) 
-				valor-heuristico-divisor))))
+			(* valor-heuristico-consecutivas valor-heuristico-multiplicador))))
 
 ;; detecta cuando solo hay que insertar una ficha para ganar y devuelve el maximo valor heuristico para ese nodo
 ;; si no devuelve un numero que será mayor mientras menos fichas tengamos que insertar para conseguir 4 en linea
@@ -415,7 +418,15 @@ nil
 (defun heuristica-4 (tablero posicion color)
 (max 
 	(heuristica-3 tablero posicion color)
-	(heuristica-3 tablero posicion (contrincante color))))
+	(heuristica-4-aux tablero posicion (contrincante color))))
+
+(defun heuristica-4-aux (tablero posicion color)
+(let ((valor (heuristica-3 tablero posicion color)))
+	(cond 
+		((eq valor *maximo-valor*) 
+			(- 1 *maximo-valor*)) ;; Da prioridad a ganar Yo a que gane él
+		(t
+			valor))))
 
 (defun contrincante (color)
 (if (eq color *color-humano*)
@@ -461,8 +472,24 @@ nil
 ;; Nos indica el numero de fichas del mismo color que ya hay en una lista, lista es una de las listas resultantes de cuantro-en-linea-posible
 ;; mientras mayor sea el numero menos fichas habra que insertar para ganar
 (defun mas-posibilidades-conecta-4 (lista)
+;; (format t "~%maximo fichas consecutivas ~a" (maximo-consecutivos lista)) ;;debug
+;; (format t "fichas ocupadas de ~a son ~a ~%" lista (fichas-ocupadas lista)) ;;debug
+(* (maximo-consecutivos lista) (fichas-ocupadas lista)))
+
+(defun fichas-ocupadas (lista)
 (- (length lista)
 (loop for x in lista count (not (null x)))))
+
+(defun maximo-consecutivos (lista)
+(let ((max 0)
+	(aux 0))
+	(loop for x in lista do
+		(if (null x)
+			(if (<= max aux)
+			(setf max (setf aux (+ 1 aux)))
+			(setf aux (+ 1 aux)))
+		(setf aux 0)))
+	max))
 
 ;; Devuelve una lista de posiciones posibles en las que insertar una ficha de
 ;; nuestro color incrementaria el numero de fichas consecutivas
