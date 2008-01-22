@@ -343,10 +343,10 @@ nil
 (defun f-e-estatica (tablero jugador)
 	(cond
 		((equal jugador *jugador-maquina*)
-			(loop for mov in (movimientos-legales tablero) summing	;; TODO - O sumamos, o máximo, o multiplicamos o algo
+			(loop for mov in (movimientos-legales tablero) summing
 				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
-		(t
-			(loop for mov in (movimientos-legales tablero) summing	;; TODO - Pero la heur tiene q dar bien las cosas y no lo hace
+		((equal jugador *jugador-humano*)
+			(loop for mov in (movimientos-legales tablero) summing
 				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -416,9 +416,10 @@ nil
 ;; TODO - No funciona como debiera
 ;; Heuristica 4 corta la jugada del contrario
 (defun heuristica-4 (tablero posicion color)
-(max 
+;; (max 
 	(heuristica-3 tablero posicion color)
-	(heuristica-4-aux tablero posicion (contrincante color))))
+	)
+;; 	(heuristica-4-aux tablero posicion (contrincante color))))
 
 (defun heuristica-4-aux (tablero posicion color)
 (let ((valor (heuristica-3 tablero posicion color)))
