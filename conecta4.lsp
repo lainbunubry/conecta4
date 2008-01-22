@@ -46,6 +46,7 @@
 
 ;; Muestra por pantalla el contenido de un tablero
 (defun imprime-tablero (a)
+(format t "tablero a pelo ~a "a) ;;debug
   (let* ((dim (array-dimensions a))
 	 (f (first dim))
 	 (c (second dim)))
