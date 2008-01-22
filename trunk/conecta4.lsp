@@ -232,7 +232,9 @@ nil
     (loop for movimiento in *movimientos* do
       (let ((siguiente
              (aplica-movimiento movimiento
-                                (estado nodo-j) *color-maquina*)))
+                                (estado nodo-j) (if (equal (jugador nodo-j) 'max)
+							 *color-maquina*
+							 *color-humano*))))
         (when siguiente
           (push
             (crea-nodo-j
