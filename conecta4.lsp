@@ -231,18 +231,19 @@ nil
 
 ;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
+  (format t "~%DEBUG - Calculando sucesores")	;; DEBUG
   (let ((resultado ()))
     (loop for movimiento in *movimientos* do
       (let ((siguiente
              (aplica-movimiento movimiento
                                 (estado nodo-j) (if (equal (jugador nodo-j) 'max)
-							 *color-maquina*
-							 *color-humano*))))
+							 				*color-maquina*
+							 				*color-humano*))))
         (when siguiente
           (push
             (crea-nodo-j
-	:estado siguiente
-	:jugador (contrario (jugador nodo-j)))
+					:estado siguiente
+					:jugador (contrario (jugador nodo-j)))
             resultado))))
     (nreverse resultado)))
 
@@ -292,11 +293,18 @@ nil
 (defun minimax-a-b (nodo-j profundidad
                            &optional (alfa *minimo-valor*)
                            (beta *maximo-valor*))
-  (if (or (es-estado-final (estado nodo-j))
-          (= profundidad 0))
+  (format t "~%DEBUG - Entrando en minimax-a-b")	;; DEBUG
+  (if (or (es-estado-final (estado nodo-j)) (= profundidad 0))
       (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                         (jugador nodo-j)))
       (let ((sucesores (sucesores nodo-j)))
+	   (format t "~%DEBUG - Calculados los sucesores ;)")	;; DEBUG
+	   (format t "~%DEBUG - Tablero original: ")	;; DEBUG
+	   (imprime-tablero (estado nodo-j))	;; DEBUG
+	   (format t "~%DEBUG - Tableros sucesores: ")	;; DEBUG
+	   (loop for x in sucesores do	;; DEBUG
+		(imprime-tablero (estado x))	;; DEBUG
+		(format t "~%DEBUG - Valor heurístico sucesor: ~a~&" (f-e-estatica (estado x) (jugador x))))	;; DEBUG
         (if (null sucesores)
             (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                               (jugador nodo-j)))
