@@ -1,7 +1,5 @@
 (load "aux.lsp")
 
-;; TODO - BORRAR - (juego :procedimiento (list 'minimax-a-b '3))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; REPRESENTACIÓN DE ESTADOS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -46,7 +44,7 @@
 
 ;; Muestra por pantalla el contenido de un tablero
 (defun imprime-tablero (a)
-(format t "tablero a pelo ~a "a) ;;debug
+;; (format t "tablero a pelo ~a "a) ;; DEBUG
   (let* ((dim (array-dimensions a))
 	 (f (first dim))
 	 (c (second dim)))
@@ -331,6 +329,8 @@ nil
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) alfa)
+	(format t "~%DEBUG - Mejor sucesor maximizador: ") ;; DEBUG
+	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
 ;; Función que busca minimizar (MIN) la puntuación con ALFA-BETA
@@ -346,6 +346,8 @@ nil
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) beta)
+	(format t "~%DEBUG - Mejor sucesor minimizador: ") ;; DEBUG
+	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
 ;; Devuelve una valoración heurística para un nodo (jugada)
