@@ -48,8 +48,8 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(nil nil nil x o nil nil))))
+		(x nil nil nil nil nil nil)
+		(x nil o o o nil x))))
 
 (setf *prueba3* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
@@ -121,15 +121,15 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil x nil nil))))
+		(nil nil o x x nil x))))
 
 (setf *unaficha5* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil x nil))))
+		(nil nil nil x nil nil nil)
+		(nil nil nil x nil nil nil)
+		(nil o nil o nil nil nil))))
 
 (setf *unaficha6* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
@@ -137,9 +137,9 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil x))))
+		(nil nil nil x x o x))))
 
-(setf tableros (list *prueba0* *prueba1* *prueba2* *prueba3* *prueba4* *prueba5* *prueba6* *prueba7*))
+(setf *tableros* (list *prueba0* *prueba1* *prueba2* *prueba3* *prueba4* *prueba5* *prueba6* *prueba7* *unaficha1* *unaficha2* *unaficha3* *unaficha4* *unaficha5* *unaficha6*))
 
 ;; [35]> (heuristica-4 *unaficha0* '(4 0) 'X)
 ;; 3
@@ -214,24 +214,83 @@
 ;(inserta-ficha-en-fila *tablero* 1 'R)
 ;(imprime-tablero *tablero*)
 
-(defun posicion-vacia (tablero f c)
-  (if (eq nil (aref tablero f c))
-      t ;vacia
-    nil))
+
 ;(posicion-vacia *tablero* 1 1)
 
 (defun heurjoke (tablero posicion color)
 	(random 10))
 
-(defun p-f-e (lista color)
-(loop for x in lista do
-(format t "valor ~a " (f-e x color))))
+(defun pFED (color)
+(loop for x in *tableros* do
+(format t "valor ~a " (feD x color))))
 
-(defun f-e (tablero color)
+(defun pFEDd (color)
+(loop for x in *tableros* do
+(format t "valor ~a " (feDD x color))))
+
+(defun feD (tablero color)
 	(imprime-tablero tablero)
 	(format t "color ~a  " color)
 	(loop for mov in (movimientos-legales tablero) summing
 		(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) color)))
+;; 		(heuristicaDC tablero (list (primera-posicion-vacia tablero mov) mov) color)))
+(defun feDD (tablero color)
+	(imprime-tablero tablero)
+	(format t "color ~a  " color)
+	(loop for mov in (movimientos-legales tablero) collect
+		(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) color)))
+;; 		(heuristicaDC tablero (list (primera-posicion-vacia tablero mov) mov) color)))
+
+(defun heuristicaD (tablero posicion color)
+(let 
+  ((heuristica-favor (heuristica-3D tablero posicion color))
+    (heuristica-contra (heuristica-3D tablero posicion (contrincante color))))
+  (if (<= heuristica-favor heuristica-contra)
+    (* -1 heuristica-contra)
+    heuristica-favor)))
+
+(defun heurísticaDC (tablero posicion color)
+(heuristica-3D tablero posicion color))
+
+
+(defun heuristica-3D  (tablero posicion color)
+(let* ((listas (cuatro-en-linea-posible tablero posicion color))
+	(valor-heuristico-consecutivas (heuristica-3-auxD listas tablero posicion color))
+	(valor-heuristico-multiplicador (heuristica-3-aux-max4D listas)))
+	(format t "~% posicion: ~a ,color: ~a ,listas posibles ~a " posicion color listas) ;;debug
+	(format t "~%Nº listas o valor: ~a " valor-heuristico-consecutivas) ;;debug
+	(format t "consecutivas: ~a " valor-heuristico-multiplicador) ;;debug
+		(cond ((eq valor-heuristico-consecutivas *maximo-valor*)
+;; significa que si ponemos aqui una ficha ganamos
+			*maximo-valor*)
+			((eq valor-heuristico-consecutivas  *medio-valor*)
+			(+ *medio-valor* valor-heuristico-multiplicador))
+;; significa que tiene dos en linea y que deberiamos cortarsela por si acaso
+			(* valor-heuristico-consecutivas valor-heuristico-multiplicador))))
+;; significa que multiplicaremos el numero de posibles lineas completas que podemos tener y lo dividiremos por el numero de turnos que tardaríamos en llegar nosotros a esa posicion
+
+
+;; detecta cuando solo hay que insertar una ficha para ganar y devuelve el maximo valor heuristico para ese nodo
+;; si no devuelve un numero que será mayor mientras menos fichas tengamos que insertar para conseguir 4 en linea
+;; devuelve un numero
+(defun heuristica-3-auxD (listas tablero posicion color)
+	(cond
+		((= 3 (fichas-consecutivas tablero posicion color))
+		;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
+			*maximo-valor*)
+		((= 2 (fichas-consecutivas tablero posicion color))
+			*medio-valor*)
+;; 		da mucha prioridad a cuando tienes dos consecutivas
+		((null listas) 
+		;; Si no hay donde poner no pongas
+			*minimo-valor*)
+		(t
+		(length listas))))
+			
+(defun heuristica-3-aux-max4D (listas)
+(maximo 
+			(loop for x in listas collect
+				(mas-posibilidades-conecta-4 x))))
 
 ;; ;; Devuelve todas las posiciones no ocupadas del tablero
 ;; (defun posiciones-posibles (tablero)
@@ -251,3 +310,207 @@
 ;; 	(-
 ;; 		(fichas-consecutivas tablero posicion color)
 ;; 		(minimo-turnos-ocupar-posicion tablero posicion)))
+
+;; Fila con un rango + - 3
+;; (defun rango-posiciones (f c)
+;; 	(list (seccion-fila f c) (seccion-columna f c) (seccion-diagonal-izq f c) (seccion-diagonal-der f c)))
+;; 
+;; (defun seccion-fila (f c)
+;;   (let ((inicio (max (- c 3) 0))
+;; 	(fin (min (+ c 3) *columnas*)))
+;; 	(list
+;;     	(reverse ;; tiene que estar al revés
+;; 		(loop for i from inicio to (- c 1) collect (list f i)))
+;; 	(loop for i from (+ 1 c) to fin collect (list f i)))))
+;; 
+;; ;; Columna con un rango de + - 3
+;; (defun seccion-columna (f c)
+;;   (let ((inicio (max (- f 3) 0))
+;; 	(fin (min (+ f 3) *filas*)))
+;; 	(list 
+;;     	(reverse ;; tiene que estar al revés
+;; 		(loop for i from inicio to (- f 1) collect (list i c)))
+;; 	(loop for i from (+ 1 f) to fin collect (list i c)))))
+;; 
+;; ;; Diagonal izquierda con un rango de + - 3 
+;; (defun seccion-diagonal-izq (f c) 
+;;     (list
+;; 	(reverse ;; tiene que estar al revés
+;; 	(loop for i from 3 downto 1 when (and (>= (- f i) 0) (>= (- c i) 0)) collect
+;; 	(list (- f i) (- c i))))
+;; 	(loop for i from 1 to 3 when (and (<= (+ f i) *filas*) (<= (+ c i) *columnas*)) collect
+;; 	(list (+ f i) (+ c i)))))
+;; 
+;; ;; diagonal derecha con un rango de + - 3
+;; (defun seccion-diagonal-der (f c) 
+;;     (list
+;; 	(reverse ;; tiene que estar al revés
+;; 	(loop for i from 3 downto 1 when (and (>= (- f i) 0) (<= (+ c i) *columnas*)) collect
+;; 	(list (- f i) (+ c i))))
+;; 	(loop for i from 1 to 3 when (and (<= (+ f i) *filas*) (>= (- c i) 0)) collect
+;; 	(list (+ f i) (- c i)))))
+;; 
+;; ;; Devuelve una lista de posiciones posibles en las que insertar una ficha de
+;; ;; nuestro color incrementaria el numero de fichas consecutivas
+;; (defun todas-posiciones-posibles (tablero posicion color)
+;; 	(loop for x in (rango-color (first posicion) (second posicion) color)
+;; 		collect
+;; 			(posiciones-cuatro-en-linea tablero x color)))
+;; 
+;; ;; Devuelve todas las posiciones no ocupadas del tablero
+;; (defun posiciones-posibles (tablero)
+;; 	(loop for i from 0 to *columnas*
+;; 		append 
+;; 		(loop for j from 0 to *filas* 
+;; 			until (not (null (aref tablero j i)))
+;; 			collect (list j i))))
+;; 
+;; ;; Devuelve sólo las posiciones consecutivas accesibles que conectan con nuestro color
+;; ;; accesibles significa libres y no cortadas por otro color
+;; (defun posiciones-cuatro-en-linea (tablero rango color)
+;; 	(loop for posiciones in rango
+;; 	append
+;; 	(loop for x in posiciones
+;; 		until (not (or
+;; 			(eq (aref tablero (first x) (second x)) color)
+;; 			(eq (aref tablero (first x) (second x)) nil)))
+;; 		collect
+;; 		(if (eq (aref tablero (first x)(second x)) nil)
+;; 		x
+;; 		nil))))
+;; 
+;; (defun cuenta-fichas-consecutivas (secuencias color)
+;; (+
+;; 		(loop for x in (first secuencias) count (eq x color) until (not(eq x color)))
+;; 		(loop for x in (second secuencias) count (eq x color) until (not(eq x color))))))
+;; 
+;; (defun cuenta-fichas-consecutivas-con-centro (secuencias tablero posicion color)
+;; 	(+
+;; 		(loop for x in (first secuencias) count (eq x color) until (not(eq x color)))
+;; 		(if (eq color (aref tablero (first posicion) (second posicion)))
+;; 			1
+;; 			0)
+;; 		(loop for x in (second secuencias) count (eq x color) until (not(eq x color)))))
+;; 
+;; (defun fichas-ocupadas (lista)
+;; (- (length lista)
+;; (loop for x in lista count (not (null x)))))
+;; 
+;; (defun maximo-consecutivos (lista)
+;; (let ((max 0)
+;; 	(aux 0))
+;; 	(loop for x in lista do
+;; 		(if (null x)
+;; 			(if (<= max aux)
+;; 			(setf max (setf aux (+ 1 aux)))
+;; 			(setf aux (+ 1 aux)))
+;; 		(setf aux 0)))
+;; 	max))
+;; 
+;; ;; Dada una posicion (x y) devuelve el numero maximo de veces consecutivas que se repite el color
+;; (defun fichas-consecutivas (tablero posicion color)
+;; (maximo 
+;; 	(loop for x in 
+;; 		(rango-color tablero (first posicion) (second posicion) color) 
+;; 		collect 
+;; 			(cuenta-fichas-consecutivas 
+;; 				 color))))
+;; 
+;; (defun fichas-consecutivas-con-centro (tablero posicion color)
+;; (maximo 
+;; 	(loop for x in 
+;; 		(rango-color (first posicion) (second posicion) color) 
+;; 		collect 
+;; 			(cuenta-fichas-consecutivas-con-centro
+;; 				(recorre-posiciones tablero x) tablero posicion color))))
+;; 
+;; ;; Lista tiene una doble lista con los las posiciones del array ordenadas de
+;; ;; tal modo que el primer elemento es la parte derecha y el segundo es la parte
+;; ;; izquierda sin incluir la posicion inicial
+;; ;; Devuelve en una doble lista los valores contenidos en el tablero
+;; ;; que esten en las posciones definidas por lista
+;; (defun recorre-posiciones (tablero lista)
+;; 	(list 
+;; 		(loop for x in (first lista) collect 
+;; 			(aref tablero (first x) (second x)))
+;; 		(loop for x in (second lista) collect 
+;; 			(aref tablero (first x) (second x)))))
+;; 
+;; ;; Mínimo de turnos que necesitaremos para ocupar esa posición
+;; (defun minimo-turnos-ocupar-posicion (tablero posicion)
+;; 	(loop for i from *filas* downto (first posicion) count
+;; 		(eq (aref tablero i (second posicion)) nil)))
+;; 
+;; ;; Devuelve una lista de listas de posiciones posibles en las que colocando
+;; ;; una ficha del color apropiado se podria hacer cuatro en linea
+;; (defun conecta-4-posible (tablero posicion color)
+;; 	(loop for x in (todas-posiciones-posibles tablero posicion color)
+;; 		when (< 2 (length x)) collect x))
+;; ;; 			mayor que tres son 4
+
+
+;; (defun rango-color (tablero pos color)
+;; (loop for x in
+;; (list (seccion-fila-color tablero (first pos) (second pos) color) (seccion-columna-color tablero (first pos) (second pos) color) (seccion-diagonal-izq-color tablero (first pos) (second pos) color) (seccion-diagonal-der-color tablero (first pos) (second pos) color))
+;; when (< 1 (length x)) collect x))
+;; 
+;; 
+;; 
+;; (defun seccion-fila-color (tablero f c color)
+;;   (append 
+;; 	(reverse (loop for i from (- c 1) downto 0 until (corte (aref tablero f i) color)
+;;     	collect
+;; 	(if (null (aref tablero f i))
+;; 		nil
+;; 		color)))
+;; 	(loop for i from (+ 1 c) to *columnas* until (corte (aref tablero f i) color)
+;;     	collect
+;; 	(if (null (aref tablero f i))
+;; 		nil
+;; 		color))))
+;; 
+;; (defun seccion-columna-color (tablero f c color)
+;;   (append 
+;; 	(reverse (loop for i from (- f 1) downto 1 until (corte (aref tablero i c) color)
+;;     	collect
+;; 	(if (null (aref tablero i c))
+;; 		nil
+;; 		color)))
+;; 	(loop for i from (+ 1 f) to *filas* until (corte (aref tablero i c) color)
+;;     	collect
+;; 	(if (null (aref tablero i c))
+;; 		nil
+;; 		color))))
+;; 
+;; ;;devuelve T solo si la posicion es invalida
+;; 
+;; 
+;; (defun seccion-diagonal-izq-color (tablero f c color) 
+;;     (append
+;; 	(reverse ;; tiene que estar al revés
+;; 	(loop for i from 1 to *maximo-valor* 
+;; 		until (or (pos-invalida (- f i) (- c i)) (corte (aref tablero (- f i) (- c i)) color)) 
+;; 	collect
+;; 		(if (null (aref tablero  (- f i) (- c i)))
+;; 		nil
+;; 		color)))
+;; 	(loop for i from 1 to *maximo-valor* 
+;; 		until (or (pos-invalida (+ f i) (+ c i)) (corte (aref tablero (+ f i) (+ c i)) color)) 
+;; 	collect
+;; 		(if (null (aref tablero  (+ f i) (+ c i)))
+;; 		nil
+;; 		color))))
+;; 
+;; (defun seccion-diagonal-der-color (tablero f c color) 
+;;     (append
+;; 	(reverse ;; tiene que estar al revés
+;; 	(loop for i from 1 to *maximo-valor* until (or (pos-invalida (+ f i) (- c i)) (corte (aref tablero (+ f i) (- c i)) color)) 
+;; 	collect
+;; 		(if (null (aref tablero  (+ f i) (- c i)))
+;; 		nil
+;; 		color)))
+;; 	(loop for i from 1 to *maximo-valor* until (or (pos-invalida (- f i) (+ c i)) (corte (aref tablero (- f i) (+ c i)) color)) 
+;; 	collect
+;; 		(if (null (aref tablero  (- f i) (+ c i)))
+;; 		nil
+;; 		color))))
