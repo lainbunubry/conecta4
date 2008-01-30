@@ -359,7 +359,16 @@ nil
 		((equal jugador *jugador-humano*)
 			(loop for mov in (movimientos-legales tablero) summing
 				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
-
+(defun f-e-d (tablero jugador)
+	(cond
+		((equal jugador *jugador-maquina*)
+			(format t "color ~a" *color-maquina*)
+			(loop for mov in (movimientos-legales tablero) collect
+				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
+		((equal jugador *jugador-humano*)
+			(format t "color ~a" *color-humano*)
+			(loop for mov in (movimientos-legales tablero) collect
+				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -427,10 +436,12 @@ nil
 ;; TODO - No funciona como debiera
 ;; Heuristica 4 corta la jugada del contrario
 (defun heuristica-4 (tablero posicion color)
-;; (max 
-	(heuristica-3 tablero posicion color)
-	)
-;; 	(heuristica-4-aux tablero posicion (contrincante color))))
+(let 
+  ((heuristica-favor (heuristica-3 tablero posicion color))
+    (heuristica-contra (heuristica-4-aux tablero posicion (contrincante color))))
+  (if (<= heuristica-favor heuristica-contra)
+    (* -1 heuristica-contra)
+    heuristica-favor)))
 
 (defun heuristica-4-aux (tablero posicion color)
 (let ((valor (heuristica-3 tablero posicion color)))
