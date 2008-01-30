@@ -49,7 +49,7 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil o nil o nil))))
+		(nil nil nil x o nil nil))))
 
 (setf *prueba3* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
@@ -97,23 +97,23 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil x nil nil nil nil nil))))
+		(x nil o o nil nil x))))
 
 (setf *unaficha2* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(nil nil x nil nil nil nil))))
+		(nil nil o nil nil nil nil)
+		(x x nil o nil nil nil))))
 
 (setf *unaficha3* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(nil nil nil x nil nil nil))))
+		(x nil nil o nil nil nil)
+		(x nil nil o nil nil nil))))
 
 (setf *unaficha4* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
