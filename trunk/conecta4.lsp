@@ -48,20 +48,20 @@
   (let* ((dim (array-dimensions a))
 	 (f (first dim))
 	 (c (second dim)))
-    (format t "~% 0 1 2 3 4 5 6 ~%")
+    (format t "~%  0   1   2   3   4   5   6~%")
     (escribe-linea-aux c)
     (loop for i from 0 to (- f 1)
 	  do (loop for j from 0 to (- c 1)
 		   do (if (equal (aref a i j) NIL)
-			  (format t "| ")
-			(format t "|~a" (aref a i j))))
+			  (format t "|   ")
+			(format t "| ~a " (aref a i j))))
 	  (format t "|~a ~%" i)
 	  (escribe-linea-aux c))))
 
 ;; Genera una línea del tablero a mostrar
 (defun escribe-linea-aux (col)
        (loop for i from 0 to (- col 1)
-               do (format t "+-"))
+               do (format t "+---"))
        (format t "+~%"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
