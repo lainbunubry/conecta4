@@ -227,9 +227,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Valores máximos y mínimos para las variables alfa y beta
-(defvar *minimo-valor* -999)
-(defvar *maximo-valor* 999)
-(defvar *medio-valor* (/ *maximo-valor* 9))
+(defvar *minimo-valor* -5040)
+(defvar *maximo-valor* 5040)
+(defvar *medio-valor* 720) ;;porque es un valor facilmente divisible 2*3*4*5*6
 
 ;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
@@ -360,11 +360,11 @@
 		((equal jugador *jugador-maquina*)
 			(format t "~%f-e-est color ~a" *color-maquina*)
 			(loop for mov in (movimientos-legales tablero) summing
-				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*)))
+				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*))) ;;cruzados
 		((equal jugador *jugador-humano*)
 			(format t "~%f-e-est color ~a" *color-humano*)
 			(loop for mov in (movimientos-legales tablero) summing
-				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-humano*)))))
+				(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) *color-maquina*))))) ;;cruzados
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -419,7 +419,7 @@
 		(seccion-diagonal-der (seccion-diagonal-der-accesible tablero (first posicion) (second posicion) color))
 		(seccion-diagonal-izq (seccion-diagonal-izq-accesible tablero (first posicion) (second posicion) color))
 		(distancia-fila (distancia-minima seccion-fila posicion))
-		(distancia-columna 1) ;;ta encima
+		(distancia-columna 2) ;;ta encima pero no es demasiada buena elección
 		(distancia-diagonal-der (distancia-minima seccion-diagonal-der posicion))
 		(distancia-diagonal-izq (distancia-minima seccion-diagonal-izq posicion))
 		(consecutivas-fila (cuenta-fichas-consecutivas seccion-fila))
@@ -427,25 +427,27 @@
 		(consecutivas-diagona-der (cuenta-fichas-consecutivas seccion-diagonal-der))
 		(consecutivas-diagonal-izq (cuenta-fichas-consecutivas seccion-diagonal-izq)))
 	(+
-		(heuristica-3-aux (length seccion-fila) distancia-fila consecutivas-fila)
-		(heuristica-3-aux (length seccion-columna) distancia-columna consecutivas-columna)
-		(heuristica-3-aux (length seccion-diagonal-der) distancia-diagonal-der consecutivas-diagona-der)
-		(heuristica-3-aux (length seccion-diagonal-izq) distancia-diagonal-izq consecutivas-diagonal-izq))))
+		(heuristica-3-aux (length seccion-fila) distancia-fila consecutivas-fila (cuenta-fichas seccion-fila))
+		(heuristica-3-aux (length seccion-columna) distancia-columna consecutivas-columna (cuenta-fichas seccion-columna))
+		(heuristica-3-aux 
+		(length seccion-diagonal-der) distancia-diagonal-der consecutivas-diagona-der (cuenta-fichas seccion-diagonal-der))
+		(heuristica-3-aux 
+		(length seccion-diagonal-izq) distancia-diagonal-izq consecutivas-diagonal-izq (cuenta-fichas seccion-diagonal-izq)))))
 
 
-(defun heuristica-3-aux (tamaño distancia consecutivas)
+(defun heuristica-3-aux (tamaño distancia consecutivas fichas)
 (if (< 2 tamaño)
 	(cond
 		((or (null distancia) (null consecutivas))
 		0)
 		((= 3 consecutivas)
 		;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
-			*maximo-valor*)
+			(/ *maximo-valor* distancia))
 		((= 2 consecutivas)
-			(/ *medio-valor* distancia))
+			(* (/ *medio-valor* distancia) fichas))
 ;; 		da mucha prioridad a cuando tienes dos consecutivas
 		((= 1 consecutivas)
-		(* (- *columnas* distancia ) 2))
+		(* (- *columnas* distancia ) fichas))
 		(t
 			(- *columnas* distancia )))
 	0))
@@ -455,13 +457,13 @@
 (defun heuristica-4 (tablero posicion color)
 (let 
   ((heuristica-favor (heuristica-3 tablero posicion color))
-    (heuristica-contra (heuristica-3 tablero posicion (contrincante color))))
-  (cond ((= heuristica-favor heuristica-contra)
+    (heuristica-contra (heuristica-3 tablero posicion (contrincante color)))) ;; Le da menos prioridad a ganar él
+  (cond ((eq heuristica-contra *maximo-valor*)
+	(* -1 (/ *maximo-valor* 2)))
+	((>= heuristica-favor heuristica-contra)
 	heuristica-favor)
-	((< heuristica-favor heuristica-contra)
-    	(* -1 heuristica-contra))
 	(t
-    	heuristica-favor))))
+    	(* -1 heuristica-contra)))))
 
 ;; (defun heuristica-4-aux (tablero posicion color)
 ;; (let ((valor (heuristica-3 tablero posicion color)))
@@ -503,28 +505,6 @@
 
 
 
-;; Devuelve t si es posible hacer cuatro en linea en esa secuencia
-(defun conecta-4-posible (lista)
-(<= 3 (length lista)))
-
-;; 			mayor que tres son 4
-
-;; Nos indica cuanto es el maximo de fichas consecutivas que tenemos en una lista de secuencias
-(defun maximo-conecta-4 (listas)
-(if (listp listas)
-(maximo
-	(loop for x in listas when (conecta-4-posible x) collect
-	(cuenta-fichas-consecutivas x)))
-0))
-
-;;Cuenta el numero de posibilidades que tendriamos de hacer 4 en linea.
-(defun cuenta-conecta-4-posible (listas)
-;; (if (listp listas)
-(loop for x in listas count (conecta-4-posible x)))
-;; 7)
-
-
-
 ;; Secuencias es una doble lista de valores, el primer miembro es la primera
 ;; parte de la lista de valores y el segundo miembro es la segunda parte de la lista
 ;; Se han ordenado de esta manera para facilitar contar las fichas consecutivas
@@ -542,6 +522,9 @@
 		(t
 			(setf aux 0))))
 	maximo))
+
+(defun cuenta-fichas (secuencia)
+(loop for x in secuencia count (not (null x))))
 
 
 ;; Devuelve el maximo entero de la lista, y si la lista es vacía devuelve 0
@@ -573,7 +556,7 @@
 
 (defun distancia-minima (lista pos)
 (if (null lista)
-0
+1
 (loop for x in lista when (not (null x)) minimize (distancia x pos))))
 
 (defun distancia (posx posy)
