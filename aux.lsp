@@ -463,12 +463,7 @@
 ;; 			mayor que tres son 4
 
 ;; ;; Nos indica cuanto es el maximo de fichas consecutivas que tenemos en una lista de secuencias
-;; (defun maximo-conecta-4 (listas)
-;; (if (listp listas)
-;; (maximo
-;; 	(loop for x in listas when (conecta-4-posible x) collect
-;; 	(cuenta-fichas-consecutivas x)))
-;; 0))
+
 ;; 
 ;; ;;Cuenta el numero de posibilidades que tendriamos de hacer 4 en linea.
 ;; (defun cuenta-conecta-4-posible (listas)
