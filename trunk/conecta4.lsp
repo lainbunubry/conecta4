@@ -212,7 +212,6 @@
 ;; Determina si el juego ha llegado a su final
 ;; rango-accesible no tiene en cuenta el centro, por eso hay que hacer esto
 (defun es-estado-final (tablero)
-
 (cond ((<= (length (movimientos-legales tablero)) 0) t)
 	((eq (aref tablero (first *ultimo-movimiento*) (second *ultimo-movimiento*)) *color-humano*)
 		(>= (maximo-conecta-4 (rango-accesible tablero *ultimo-movimiento* *color-humano*)) 3))
@@ -221,7 +220,12 @@
 	(t
 	nil)))
 
-
+(defun maximo-conecta-4 (listas)
+(if (listp listas)
+(maximo
+	(loop for x in listas when (conecta-4-posible x) collect
+	(cuenta-fichas-consecutivas x)))
+0))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
