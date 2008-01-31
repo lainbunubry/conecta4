@@ -28,7 +28,7 @@
 (juego :procedimiento (list 'minimax-a-b '3)))
 
 (setf *0t* (make-array '(6 7) :initial-contents
-             '((nil nil nil nil nil nil nil)
+             '((x nil nil nil nil nil nil)
 		(X nil nil nil nil nil nil)
 		(X nil X nil nil nil nil)
 		(X X O O O X X)
@@ -54,8 +54,8 @@
 (setf *3t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
+		(nil nil nil x nil nil nil)
+		(nil nil nil x nil nil nil)
 		(nil nil nil X nil nil nil)
 		(nil nil nil X nil nil nil))))
 
@@ -78,10 +78,10 @@
 (setf *6t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(nil nil x nil nil nil nil)
-		(nil x o o nil nil nil)
-		(x o o o x nil nil))))
+		(nil nil x x nil nil nil)
+		(nil nil x o nil nil nil)
+		(nil x o o o nil nil)
+		(x o o o x o nil))))
 
 (setf *7t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
@@ -172,14 +172,14 @@
 (defun feD (tablero color)
 	(imprime-tablero tablero)
 	(format t "color ~a  " color)
-	(loop for mov in (movimientos-legales tablero) summing
-		(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) color)))
+	(loop for mov in (posiciones-heuristicas tablero) summing
+		(heuristica-4 tablero mov color)))
 ;; 		(heuristicaDC tablero (list (primera-posicion-vacia tablero mov) mov) color)))
 (defun feDD (tablero color)
 	(imprime-tablero tablero)
 	(format t "color ~a  " color)
-	(loop for mov in (movimientos-legales tablero) collect
-		(heuristica-4 tablero (list (primera-posicion-vacia tablero mov) mov) color)))
+	(loop for mov in (posiciones-heuristicas tablero) collect
+		(heuristica-4 tablero mov color)))
 ;; 		(heuristicaDC tablero (list (primera-posicion-vacia tablero mov) mov) color)))
 
 (defun heuristicaD (tablero posicion color)
