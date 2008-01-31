@@ -172,12 +172,14 @@
 (defun feD (tablero color)
 	(imprime-tablero tablero)
 	(format t "color ~a  " color)
+;; 	(loop for mov in (posiciones-heuristicas tablero color) summing
 	(loop for mov in (posiciones-heuristicas tablero) summing
 		(heuristica-4 tablero mov color)))
 ;; 		(heuristicaDC tablero (list (primera-posicion-vacia tablero mov) mov) color)))
 (defun feDD (tablero color)
 	(imprime-tablero tablero)
 	(format t "color ~a  " color)
+;; 	(loop for mov in (posiciones-heuristicas tablero color) collect
 	(loop for mov in (posiciones-heuristicas tablero) collect
 		(heuristica-4 tablero mov color)))
 ;; 		(heuristicaDC tablero (list (primera-posicion-vacia tablero mov) mov) color)))
@@ -457,8 +459,8 @@
 ;; 		color))))
 
 ;; Devuelve t si es posible hacer cuatro en linea en esa secuencia
-(defun conecta-4-posible (lista)
-(<= 3 (length lista)))
+;; (defun conecta-4-posible (lista)
+;; (<= 3 (length lista)))
 
 ;; 			mayor que tres son 4
 

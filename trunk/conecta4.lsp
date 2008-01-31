@@ -247,7 +247,7 @@ when (not (null x)) collect x))
 (defun maximo-conecta-4 (listas)
 (if (listp listas)
 (maximo
-	(loop for x in listas when (conecta-4-posible x) collect
+	(loop for x in listas when (> (length x) 3) collect
 	(cuenta-fichas-consecutivas x)))
 0))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -266,14 +266,14 @@ when (not (null x)) collect x))
     (loop for movimiento in *movimientos* do
       (let ((siguiente
              (aplica-movimiento movimiento
-                                (estado nodo-j) (if (equal (jugador nodo-j) 'max)
-							 				*color-maquina*
-							 				*color-humano*))))
+              (estado nodo-j) (if (equal (jugador nodo-j) 'max)
+		*color-maquina*
+		*color-humano*))))
         (when siguiente
           (push
             (crea-nodo-j
-					:estado siguiente
-					:jugador (contrario (jugador nodo-j)))
+		:estado siguiente
+		:jugador (contrario (jugador nodo-j)))
             resultado))))
     (nreverse resultado)))
 
@@ -392,14 +392,31 @@ when (not (null x)) collect x))
 				(heuristica-4 tablero posicion *color-humano*)))
 		((equal jugador *jugador-humano*)
 			(format t "~%f-e-est color ~a" *color-humano*)
-			(loop for posicion in (posiciones-heuristicas tablero) summing
+			(loop for posicion in (posiciones-heuristicas tablero ) summing
 				(heuristica-4 tablero posicion *color-maquina*))))) ;;cruzados
 
 (defun posiciones-heuristicas (tablero)
-(loop for x from 0 to *columnas* collect
-(if (null (primera-posicion-ocupada tablero x))
-(primera-posicion-vacia tablero x)
-(primera-posicion-ocupada tablero x))))
+  (loop for i from 0 to *columnas* collect
+    (if (null (primera-posicion-vacia tablero i))
+      (primera-posicion-ocupada tablero i)
+      (primera-posicion-vacia tablero i))))
+
+;; (defun posiciones-heuristicas (tablero color)
+;; (loop for x in
+;;   (loop for i from 0 to *columnas* collect
+;;     (let ((ppo (primera-posicion-ocupada tablero i))
+;; 	  (ppv (primera-posicion-vacia tablero i)))
+;;     (cond 
+;;       ((null ppo)
+;;       ppv)
+;;     ((eq color (aref tablero (first ppo) (second ppo)))
+;;       ppo)
+;;       (t
+;;       ppv))))
+;; when (not (null x))
+;; collect x))
+      
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -448,50 +465,34 @@ when (not (null x)) collect x))
 ;; 			(* consecutivas (cuenta-conecta-4-posible secuencias))))))
 
 (defun heuristica-3  (tablero posicion color)
-	(let* 
-		((seccion-fila (seccion-fila-accesible tablero (first posicion) (second posicion) color))
-		(seccion-columna (seccion-columna-accesible tablero (first posicion) (second posicion) color))
-		(seccion-diagonal-der (seccion-diagonal-der-accesible tablero (first posicion) (second posicion) color))
-		(seccion-diagonal-izq (seccion-diagonal-izq-accesible tablero (first posicion) (second posicion) color))
-		(distancia-fila (distancia-minima seccion-fila posicion))
-		(distancia-columna 1) ;;ta encima pero no es demasiada buena elección
-		(distancia-diagonal-der (distancia-minima seccion-diagonal-der posicion))
-		(distancia-diagonal-izq (distancia-minima seccion-diagonal-izq posicion))
-		(consecutivas-fila (cuenta-fichas-consecutivas seccion-fila))
-		(consecutivas-columna (cuenta-fichas-consecutivas seccion-columna))
-		(consecutivas-diagona-der (cuenta-fichas-consecutivas seccion-diagonal-der))
-		(consecutivas-diagonal-izq (cuenta-fichas-consecutivas seccion-diagonal-izq)))
-	(+
-		(heuristica-3-aux (length seccion-fila) distancia-fila consecutivas-fila (cuenta-fichas seccion-fila))
-		(heuristica-3-aux (length seccion-columna) distancia-columna consecutivas-columna (cuenta-fichas seccion-columna))
-		(heuristica-3-aux 
-		(length seccion-diagonal-der) distancia-diagonal-der consecutivas-diagona-der (cuenta-fichas seccion-diagonal-der))
-		(heuristica-3-aux 
-		(length seccion-diagonal-izq) distancia-diagonal-izq consecutivas-diagonal-izq (cuenta-fichas seccion-diagonal-izq)))))
+  (let* 
+    ((secciones (rango-accesible tablero posicion color)))
+  (loop for x in secciones when (> (length x) 3) summing
+    (heuristica-3-aux 
+    (distancia-minima x posicion) 
+    (cuenta-fichas-consecutivas x) 
+    (cuenta-fichas x)))))
 
-
-(defun heuristica-3-aux (tamaño distancia consecutivas fichas)
-(if (< 2 tamaño)
-	(cond
-		((or (null distancia) (null consecutivas))
-		0)
-		((= 3 consecutivas)
-		;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
-			(/ *maximo-valor* distancia))
-		((= 2 consecutivas)
-			(* (/ *medio-valor* distancia) fichas))
+(defun heuristica-3-aux (distancia consecutivas fichas)
+;; (format t "distancia: ~a, consecutivas: ~a, fichas: ~a"distancia consecutivas fichas) ;;DEBUG
+  (cond
+    ((or (null distancia) (null consecutivas))
+	0)
+    ((< 2 consecutivas)
+	;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
+	(/ *maximo-valor* (max 1 distancia)))
+    ((= 2 consecutivas)
+	(* (/ *medio-valor* (max 1 distancia)) fichas))
 ;; 		da mucha prioridad a cuando tienes dos consecutivas
-		((= 1 consecutivas)
-		(* (- *columnas* distancia ) fichas))
-		(t
-			(- *columnas* distancia )))
-	0))
+    ((= 1 consecutivas)
+	(* (- *columnas* distancia ) fichas))
+    (t
+	(- *columnas* distancia ))))
 
 ;; TODO - No funciona como debiera
 ;; Heuristica 4 corta la jugada del contrario
+
 (defun heuristica-4 (tablero posicion color)
-(if (null posicion)
-0
 (let 
   ((heuristica-favor (heuristica-3 tablero posicion color))
     (heuristica-contra (heuristica-3 tablero posicion (contrincante color)))) ;; Le da menos prioridad a ganar él
@@ -501,7 +502,7 @@ when (not (null x)) collect x))
 	((>= heuristica-favor heuristica-contra)
 	heuristica-favor)
 	(t
-    	(* -1 heuristica-contra))))))
+    	(* -1 heuristica-contra)))))
 
 ;; (defun heuristica-4-aux (tablero posicion color)
 ;; (let ((valor (heuristica-3 tablero posicion color)))
@@ -607,9 +608,7 @@ nil
 ;; en el tablero y que conecten con un color
 
 (defun distancia-minima (lista pos)
-(if (null lista)
-1
-(loop for x in lista when (not (null x)) minimize (distancia x pos))))
+  (loop for x in lista when (not (null x)) minimize (distancia x pos)))
 
 (defun distancia (posx posy)
 (+ (abs (- (second posx) (second posy)))))
@@ -621,7 +620,7 @@ nil
 		(seccion-columna-accesible tablero (first pos) (second pos) color) 
 		(seccion-diagonal-izq-accesible tablero (first pos) (second pos) color) 
 		(seccion-diagonal-der-accesible tablero (first pos) (second pos) color))
-	when (< 1 (length x)) collect x))
+	when (< 3 (length x)) collect x))
 
 ;; funcion que dice si la posicion inferior esta ocupada o no
 (defun inacesible (tablero f c)
@@ -667,11 +666,14 @@ nil
 (defun seccion-columna-accesible (tablero f c color)
   (append 
 ;; 	(loop for i from 0 to (- f 1)
-	(loop for i from 0 to f
-    		collect
-		nil) ;; las posiciones arriba no estan ocupadas
+	(loop for i from 0 to f until (corte (aref tablero i c) color)
+	  collect
+	  (if (null (aref tablero i c))
+	    nil
+	    (list i c)))
+ ;; las posiciones arriba no estan ocupadas
 ;; 	(loop for i from (+ 1 f) to *filas* until (corte (aref tablero i c) color)
-	(loop for i from f to *filas* until (corte (aref tablero i c) color)
+	(loop for i from (+ 1 f) to *filas* until (corte (aref tablero i c) color)
     		collect
 		(if (null (aref tablero i c))
 			nil
