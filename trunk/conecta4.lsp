@@ -85,6 +85,7 @@
                (analiza-final *nodo-j-inicial*)
                (jugada-humana *nodo-j-inicial*)))))
 
+;; TODO - Devuelve empate :S
 ;; Comprueba el resultado de la partida
 (defun analiza-final (nodo-j-final &optional (canal t))
   (escribe-nodo-j nodo-j-final)
@@ -187,7 +188,7 @@ when (not (null x)) collect x))
 					nil)))
 		resultado))
 
-;; TODO - No funciona bien
+;; TODO - No sé funciona bien (creo q sí)
 ;; Determina si ha ganado algún jugador la partida
 (defun es-estado-ganador (tablero jugador turno)
 	(if (es-estado-final tablero)
@@ -379,8 +380,7 @@ when (not (null x)) collect x))
 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
-;; Tablero Jugador Turno
-
+;; TODO
 ;; Devuelve una valoración heurística para un nodo (jugada)
 (defun f-e-estatica (tablero jugador) 
   (cond
