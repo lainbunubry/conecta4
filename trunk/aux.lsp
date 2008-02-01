@@ -58,7 +58,7 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil o o o nil nil)
-		(nil nil x x x nil nil))))
+		(nil nil x x x x nil))))
 
 (setf *4t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
