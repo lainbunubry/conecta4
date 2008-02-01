@@ -381,7 +381,7 @@ when (not (null x)) collect x))
 (defun f-e-estatica (tablero jugador) 
   (cond
     ((es-estado-final tablero) ;;TODO esto es un tanto desesperado, si es estado final le da una puntuacion estratosferica
-      (loop for i from 0 to *columnas* summing *maximo-valor*))
+      (* *columnas* *maximo-valor*))
     ((equal jugador *jugador-maquina*);; TODO calcula los valores cruzados!!!, no tiene mucho sentido no??? 
 ;;       (format t "~%f-e-est color ~a" *color-maquina*)
       (loop for posicion in (posiciones-heuristicas tablero) summing
