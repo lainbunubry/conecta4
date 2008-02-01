@@ -187,18 +187,29 @@ when (not (null x)) collect x))
 					nil)))
 		resultado))
 
+;; TODO - No funciona bien
 ;; Determina si ha ganado algún jugador la partida
 (defun es-estado-ganador (tablero jugador turno)
-	(cond
-		((not (movimientos-legales tablero))
-			nil) ;; Empate
-		((and (equal jugador *jugador-maquina*) 
-			(equal turno 'max)) 
-			t) ;; Gana máquina
-		((and (equal jugador *jugador-humano*) 
-			(equal turno 'min))
-			t) ;; Gana humano
-		(t nil))) ;; En principio inalcanzable
+	(if (es-estado-final tablero)
+		(cond
+			((not (movimientos-legales tablero))
+				nil) ;; Empate
+			((and (equal jugador *jugador-maquina*)
+				 (equal turno 'max)
+				 (mismo-color tablero *ultimo-movimiento* *color-maquina*))
+				t) ;; Gana máquina
+			((and (equal jugador *jugador-humano*)
+				 (equal turno 'min)
+				 (mismo-color tablero *ultimo-movimiento* *color-humano*))
+				t) ;; Gana humano
+			(t nil)) ;; En principio inalcanzable
+		nil))
+
+;; Comprueba si la ficha de la posición dada es del color dado
+(defun mismo-color (tablero posicion color)
+	(if (eq (aref tablero (first posicion) (second posicion)) color)
+		1 
+		0))
 
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
@@ -223,21 +234,14 @@ when (not (null x)) collect x))
 		nuevo-tablero))
 
 ;; Determina si el juego ha llegado a su final
-;; rango-accesible no tiene en cuenta el centro, por eso hay que hacer esto
 (defun es-estado-final (tablero)
 (cond ((<= (length (movimientos-legales tablero)) 0) t)
 	(t 
 	(< 0
 	(loop for x in (fila-superior tablero) 
  	count (or
-		(> (maximo-conecta-4 (rango-accesible tablero x *color-humano*)) ;;tiene en cuenta el centro	
-		 3)
+		(> (maximo-conecta-4 (rango-accesible tablero x *color-humano*)) 3)	;; Se tiene en cuenta el centro del tablero
 		(> (maximo-conecta-4 (rango-accesible tablero x *color-maquina*)) 3)))))))
-
-;; (defun mismo-color (tablero posicion color)
-;; (if (eq (aref tablero (first posicion) (second posicion)) color)
-;; 1 
-;; 0))
 
 (defun maximo-conecta-4 (listas)
 (if (listp listas)
@@ -375,10 +379,14 @@ when (not (null x)) collect x))
 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
+;; Tablero Jugador Turno
+
 ;; Devuelve una valoración heurística para un nodo (jugada)
 (defun f-e-estatica (tablero jugador) 
   (cond
-    ((es-estado-final tablero) (* *columnas* *maximo-valor*))
+;;     ((es-estado-final tablero) (* *columnas* *maximo-valor*))
+    ((es-estado-ganador tablero jugador 'max) (* *columnas* *maximo-valor*))
+    ((es-estado-ganador tablero jugador 'min) *minimo-valor*)
     ((equal jugador *jugador-maquina*)
 ;;       (format t "~%f-e-est color ~a" *color-maquina*) ;; DEBUG
       (loop for posicion in (posiciones-heuristicas tablero) summing ;; TODO - Cruzados
@@ -396,7 +404,6 @@ when (not (null x)) collect x))
     (if (null (primera-posicion-vacia tablero i))
       (primera-posicion-ocupada tablero i)
       (primera-posicion-vacia tablero i))))
-      
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
