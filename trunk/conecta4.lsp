@@ -356,7 +356,7 @@ when (not (null x)) collect x))
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) alfa)
-	(format t "~%DEBUG - Mejor sucesor maximizador jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
+	(format t "~%DEBUG - Mejor sucesor maximizador, jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
@@ -373,7 +373,7 @@ when (not (null x)) collect x))
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) beta)
-	(format t "~%DEBUG - Mejor sucesor minimizador jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
+	(format t "~%DEBUG - Mejor sucesor minimizador, jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
