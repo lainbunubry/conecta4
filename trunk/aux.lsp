@@ -38,26 +38,27 @@
 (setf *1t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(nil nil nil nil nil nil nil)
-		(o o x nil nil x x)
-		(x x x o nil o o))))
+		(nil x x o nil nil nil)
+		(nil x x x nil nil nil)
+		(o x o o x nil o)
+		(o o x o o nil x))))
 
 (setf *2t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(x nil nil nil nil nil nil)
-		(x nil o o o nil x))))
+		(nil nil nil x nil nil nil)
+		(nil nil x x nil nil nil))))
+
 
 (setf *3t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil x nil nil nil)
-		(nil nil nil x nil nil nil)
-		(nil nil nil X nil nil nil)
-		(nil nil nil X nil nil nil))))
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil o o o nil nil)
+		(nil nil x x x nil nil))))
 
 (setf *4t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
@@ -90,72 +91,47 @@
 		(nil nil x o nil nil nil)
 		(nil x o o o nil nil)
 		(x o o o x o o))))
-
++---+---+---+---+---+---+---+
+|   |   |   |   |   |   |   |0
++---+---+---+---+---+---+---+
+|   |   |   |   |   |   |   |1
++---+---+---+---+---+---+---+
+|   |   |   |   |   |   |   |2
++---+---+---+---+---+---+---+
+|   |   |   |   |   |   |   |3
++---+---+---+---+---+---+---+
+|   |   |   | X |   |   |   |4
++---+---+---+---+---+---+---+
+|   |   | X | X | O | O | O |5
++---+---+---+---+---+---+---+
 (setf *8t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
+		(nil nil nil x nil nil nil)
+		(nil nil x x o o o))))
+
+(setf *80t* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(x nil o o nil nil x))))
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil x x x o o o))))
 
 (setf *9t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
-		(nil nil nil o nil nil nil)
-		(x x nil o nil nil nil))))
+		(nil nil nil nil nil nil nil)
+		(nil x nil o nil nil nil))))
 
 
 (setf *tableros* (list *0t* *1t* *2t* *3t* *4t* *5t* *6t* *7t* *8t* *9t*))
 
-;Estructura que representa el tablero con las fichas
-;; (defstruct (partida (:constructor crea-tablero)
-;;                     (:conc-name nil)
-;;                     (:print-function muestra-tablero))
-;;   fichas
-;;   posiciones)
-;; 
-;; ;; Devuelve la primera posicion de la lista de posiciones con una heuristica mayor
-;; (defun mejor-eleccion (tablero heuristica color)
-;; (let ((posicion-valor (list nil *minimo-valor*))
-;; 	(aux nil))
-;; 	(loop for x in (posiciones-pos tablero) do
-;; 		(if (< (second posicion-valor) (setf aux (funcall (symbol-function heuristica) tablero x color)))
-;; 			(setf posicion-valor (list x aux))))
-;; 	(first posicion-valor)))
-;; 
-;; ;; (mejor-eleccion *t-prueba* 'heuristica-3 'x)
-;; 
-;; (defun posiciones-pos (tablero)
-;; (let ((fila nil))
-;; (loop for x in (movimientos-legales tablero) 
-;; 	when (not (null (setf fila (primera-posicion-vacia tablero x))))
-;; 	collect (list fila x))))
-;; ;; (posiciones-pos *t-prueba*)
-;; ;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
-;; ;; de la secuencia más larga
-;; (defun cuenta-fichas-consecutivas-en-secuencia (secuencia color)
-;; (let ((cont 0))	
-;; 	(loop for x in secuencia
-;; 		maximize
-;; 		(if (eq x color)
-;; 			(setf cont (+ 1 cont))
-;; 			(setf cont 0)))))
 
-; Constructor del tablero
-;------------------------------
-(defun crea-tablero-en-blanco ()
-  (setf *tablero* (make-array '(6 7))))
-
-;(crea-tablero-en-blanco)
-
-;(inserta-ficha-en-fila *tablero* 1 'R)
-;(imprime-tablero *tablero*)
-
-
-;(posicion-vacia *tablero* 1 1)
 
 (defun heurjoke (tablero posicion color)
 	(random 10))
@@ -182,59 +158,8 @@
 ;; 	(loop for mov in (posiciones-heuristicas tablero color) collect
 	(loop for mov in (posiciones-heuristicas tablero) collect
 		(heuristica-4 tablero mov color)))
+
 ;; 		(heuristicaDC tablero (list (primera-posicion-vacia tablero mov) mov) color)))
-
-(defun heuristicaD (tablero posicion color)
-(let 
-  ((heuristica-favor (heuristica-3D tablero posicion color))
-    (heuristica-contra (heuristica-3D tablero posicion (contrincante color))))
-  (if (<= heuristica-favor heuristica-contra)
-    (* -1 heuristica-contra)
-    heuristica-favor)))
-
-(defun heurísticaDC (tablero posicion color)
-(heuristica-3D tablero posicion color))
-
-
-(defun heuristica-3D  (tablero posicion color)
-(let* ((listas (cuatro-en-linea-posible tablero posicion color))
-	(valor-heuristico-consecutivas (heuristica-3-auxD listas tablero posicion color))
-	(valor-heuristico-multiplicador (heuristica-3-aux-max4D listas)))
-	(format t "~% posicion: ~a ,color: ~a ,listas posibles ~a " posicion color listas) ;;debug
-	(format t "~%Nº listas o valor: ~a " valor-heuristico-consecutivas) ;;debug
-	(format t "consecutivas: ~a " valor-heuristico-multiplicador) ;;debug
-		(cond ((eq valor-heuristico-consecutivas *maximo-valor*)
-;; significa que si ponemos aqui una ficha ganamos
-			*maximo-valor*)
-			((eq valor-heuristico-consecutivas  *medio-valor*)
-			(+ *medio-valor* valor-heuristico-multiplicador))
-;; significa que tiene dos en linea y que deberiamos cortarsela por si acaso
-			(* valor-heuristico-consecutivas valor-heuristico-multiplicador))))
-;; significa que multiplicaremos el numero de posibles lineas completas que podemos tener y lo dividiremos por el numero de turnos que tardaríamos en llegar nosotros a esa posicion
-
-
-;; detecta cuando solo hay que insertar una ficha para ganar y devuelve el maximo valor heuristico para ese nodo
-;; si no devuelve un numero que será mayor mientras menos fichas tengamos que insertar para conseguir 4 en linea
-;; devuelve un numero
-(defun heuristica-3-auxD (listas tablero posicion color)
-	(cond
-		((= 3 (fichas-consecutivas tablero posicion color))
-		;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
-			*maximo-valor*)
-		((= 2 (fichas-consecutivas tablero posicion color))
-			*medio-valor*)
-;; 		da mucha prioridad a cuando tienes dos consecutivas
-		((null listas) 
-		;; Si no hay donde poner no pongas
-			*minimo-valor*)
-		(t
-		(length listas))))
-			
-(defun heuristica-3-aux-max4D (listas)
-(maximo 
-			(loop for x in listas collect
-				(mas-posibilidades-conecta-4 x))))
-
 ;; ;; Devuelve todas las posiciones no ocupadas del tablero
 ;; (defun posiciones-posibles (tablero)
 ;; 	(loop for i from 0 to *columnas*
@@ -472,3 +397,59 @@
 ;; ;; (if (listp listas)
 ;; (loop for x in listas count (conecta-4-posible x)))
 ;; ;; 7)
+
+
+;; (defun heuristica-4-aux (tablero posicion color)
+;; (let ((valor (heuristica-3 tablero posicion color)))
+;; 	(cond 
+;; 		((eq valor *maximo-valor*) 
+;; 			(- 1 *maximo-valor*)) ;; Da prioridad a ganar Yo a que gane él
+;; 		(t
+;; 			valor))))
+
+;Estructura que representa el tablero con las fichas
+;; (defstruct (partida (:constructor crea-tablero)
+;;                     (:conc-name nil)
+;;                     (:print-function muestra-tablero))
+;;   fichas
+;;   posiciones)
+;; 
+;; ;; Devuelve la primera posicion de la lista de posiciones con una heuristica mayor
+;; (defun mejor-eleccion (tablero heuristica color)
+;; (let ((posicion-valor (list nil *minimo-valor*))
+;; 	(aux nil))
+;; 	(loop for x in (posiciones-pos tablero) do
+;; 		(if (< (second posicion-valor) (setf aux (funcall (symbol-function heuristica) tablero x color)))
+;; 			(setf posicion-valor (list x aux))))
+;; 	(first posicion-valor)))
+;; 
+;; ;; (mejor-eleccion *t-prueba* 'heuristica-3 'x)
+;; 
+;; (defun posiciones-pos (tablero)
+;; (let ((fila nil))
+;; (loop for x in (movimientos-legales tablero) 
+;; 	when (not (null (setf fila (primera-posicion-vacia tablero x))))
+;; 	collect (list fila x))))
+;; ;; (posiciones-pos *t-prueba*)
+;; ;; Cuenta el numero de fichas consecutivas del mismo color y devuelve la longitud
+;; ;; de la secuencia más larga
+;; (defun cuenta-fichas-consecutivas-en-secuencia (secuencia color)
+;; (let ((cont 0))	
+;; 	(loop for x in secuencia
+;; 		maximize
+;; 		(if (eq x color)
+;; 			(setf cont (+ 1 cont))
+;; 			(setf cont 0)))))
+
+; Constructor del tablero
+;------------------------------
+(defun crea-tablero-en-blanco ()
+  (setf *tablero* (make-array '(6 7))))
+
+;(crea-tablero-en-blanco)
+
+;(inserta-ficha-en-fila *tablero* 1 'R)
+;(imprime-tablero *tablero*)
+
+
+;(posicion-vacia *tablero* 1 1)
