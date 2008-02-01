@@ -378,8 +378,7 @@ when (not (null x)) collect x))
 ;; Devuelve una valoración heurística para un nodo (jugada)
 (defun f-e-estatica (tablero jugador) 
   (cond
-    ((es-estado-final tablero) ;;TODO esto es un tanto desesperado, si es estado final le da una puntuacion estratosferica
-      (* *columnas* *maximo-valor*))
+    ((es-estado-final tablero) (* *columnas* *maximo-valor*))
     ((equal jugador *jugador-maquina*)
 ;;       (format t "~%f-e-est color ~a" *color-maquina*) ;; DEBUG
       (loop for posicion in (posiciones-heuristicas tablero) summing ;; TODO - Cruzados
