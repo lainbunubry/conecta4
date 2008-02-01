@@ -255,7 +255,7 @@ when (not (null x)) collect x))
 (defvar *medio-valor* 720) ;;porque son valores facilmente divisible 2*3*4*5*6
 
 ;; Para un posible nodo del árbol devuelve sus hijos
-(defun sucesores (nodo-j) ;; TODO no tiene en cuenta es estado final o no lo hace bien porque no lo escoje correctamente
+(defun sucesores (nodo-j)
   (format t "~%DEBUG - Calculando sucesores")	;; DEBUG
   (let ((resultado ()))
     (loop for movimiento in *movimientos* do
@@ -318,7 +318,7 @@ when (not (null x)) collect x))
 (defun minimax-a-b (nodo-j profundidad
                            &optional (alfa *minimo-valor*)
                            (beta *maximo-valor*))
-  (format t "~%DEBUG - Entrando en minimax-a-b estado final ~a ,jugador: ~a"(es-estado-final (estado nodo-j)) (jugador nodo-j))	;; DEBUG
+  (format t "~%DEBUG - Entrando en minimax-a-b ~%Estado final: ~a - Jugador: ~a"(es-estado-final (estado nodo-j)) (jugador nodo-j))	;; DEBUG
   (if (or (es-estado-final (estado nodo-j)) (= profundidad 0))
       (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                         (jugador nodo-j)))
