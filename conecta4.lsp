@@ -230,11 +230,6 @@ when (not (null x)) collect x))
 	(< 0
 	(loop for x in (fila-superior tablero) 
  	count (or
-;; 		(> (+ (maximo-conecta-4 (rango-accesible tablero x *color-humano*)) 
-;; 			(mismo-color tablero x *color-humano*))
-;; 		 3)
-;; 		(> (+ (maximo-conecta-4 (rango-accesible tablero x *color-maquina*))
-;; 			(mismo-color tablero x *color-maquina*)) 3)))))))
 		(> (maximo-conecta-4 (rango-accesible tablero x *color-humano*)) ;;tiene en cuenta el centro	
 		 3)
 		(> (maximo-conecta-4 (rango-accesible tablero x *color-maquina*)) 3)))))))
@@ -255,12 +250,12 @@ when (not (null x)) collect x))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Valores máximos y mínimos para las variables alfa y beta
-(defvar *minimo-valor* -5040)
-(defvar *maximo-valor* 5040)
+(defvar *minimo-valor* -10080)
+(defvar *maximo-valor* 10080)
 (defvar *medio-valor* 720) ;;porque son valores facilmente divisible 2*3*4*5*6
 
 ;; Para un posible nodo del árbol devuelve sus hijos
-(defun sucesores (nodo-j)
+(defun sucesores (nodo-j) ;; TODO no tiene en cuenta es estado final o no lo hace bien porque no lo escoje correctamente
   (format t "~%DEBUG - Calculando sucesores")	;; DEBUG
   (let ((resultado ()))
     (loop for movimiento in *movimientos* do
@@ -323,7 +318,7 @@ when (not (null x)) collect x))
 (defun minimax-a-b (nodo-j profundidad
                            &optional (alfa *minimo-valor*)
                            (beta *maximo-valor*))
-  (format t "~%DEBUG - Entrando en minimax-a-b estado final ~a "(es-estado-final (estado nodo-j)))	;; DEBUG
+  (format t "~%DEBUG - Entrando en minimax-a-b estado final ~a ,jugador: ~a"(es-estado-final (estado nodo-j)) (jugador nodo-j))	;; DEBUG
   (if (or (es-estado-final (estado nodo-j)) (= profundidad 0))
       (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                         (jugador nodo-j)))
@@ -334,7 +329,7 @@ when (not (null x)) collect x))
 	   (format t "~%DEBUG - Tableros sucesores: ")	;; DEBUG
 	   (loop for x in sucesores do	;; DEBUG
 		(imprime-tablero (estado x))	;; DEBUG
-		(format t "~%DEBUG - Valor heurístico sucesor: ~a~&" (f-e-estatica (estado x) (jugador x))))	;; DEBUG
+		(format t "~%DEBUG - Jugador ~a ,Valor heurístico sucesor: ~a~&"(jugador x) (f-e-estatica (estado x) (jugador x))))	;; DEBUG
         (if (null sucesores)
             (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                               (jugador nodo-j)))
@@ -361,7 +356,7 @@ when (not (null x)) collect x))
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) alfa)
-	(format t "~%DEBUG - Mejor sucesor maximizador: ") ;; DEBUG
+	(format t "~%DEBUG - Mejor sucesor maximizador jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
@@ -378,43 +373,32 @@ when (not (null x)) collect x))
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) beta)
-	(format t "~%DEBUG - Mejor sucesor minimizador: ") ;; DEBUG
+	(format t "~%DEBUG - Mejor sucesor minimizador jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
 ;; Devuelve una valoración heurística para un nodo (jugada)
-(defun f-e-estatica (tablero jugador)
-	(cond
-		((equal jugador *jugador-maquina*)
-			(format t "~%f-e-est color ~a" *color-maquina*)
-			(loop for posicion in (posiciones-heuristicas tablero) summing
-;; 				(heuristica-4 tablero (primera-posicion-vacia tablero mov) *color-humano*))) ;;cruzados
-				(heuristica-4 tablero posicion *color-humano*)))
-		((equal jugador *jugador-humano*)
-			(format t "~%f-e-est color ~a" *color-humano*)
-			(loop for posicion in (posiciones-heuristicas tablero ) summing
-				(heuristica-4 tablero posicion *color-maquina*))))) ;;cruzados
+(defun f-e-estatica (tablero jugador) 
+  (cond
+    ((es-estado-final tablero) ;;TODO esto es un tanto desesperado, si es estado final le da una puntuacion estratosferica
+      (loop for i from 0 to *columnas* summing *maximo-valor*))
+    ((equal jugador *jugador-maquina*);; TODO calcula los valores cruzados!!!, no tiene mucho sentido no??? 
+;;       (format t "~%f-e-est color ~a" *color-maquina*)
+      (loop for posicion in (posiciones-heuristicas tablero) summing
+	(heuristica-4 tablero posicion *color-humano*))) ;;cruzados
+;; 	(heuristica-4 tablero posicion *color-maquina*))) ;;normal
+     ((equal jugador *jugador-humano*);; TODO calcula los valores cruzados!!!, no tiene mucho sentido no??? 
+;; 	(format t "~%f-e-est color ~a" *color-humano*)
+	(loop for posicion in (posiciones-heuristicas tablero ) summing
+	  (heuristica-4 tablero posicion *color-maquina*))))) ;;cruzados
+;; 	  (heuristica-4 tablero posicion *color-humano*))))) ;;cruzados
 
+;; Devuelve la lista de posiciones adecuadas por la cual se va a valorar el tablero
 (defun posiciones-heuristicas (tablero)
   (loop for i from 0 to *columnas* collect
     (if (null (primera-posicion-vacia tablero i))
       (primera-posicion-ocupada tablero i)
       (primera-posicion-vacia tablero i))))
-
-;; (defun posiciones-heuristicas (tablero color)
-;; (loop for x in
-;;   (loop for i from 0 to *columnas* collect
-;;     (let ((ppo (primera-posicion-ocupada tablero i))
-;; 	  (ppv (primera-posicion-vacia tablero i)))
-;;     (cond 
-;;       ((null ppo)
-;;       ppv)
-;;     ((eq color (aref tablero (first ppo) (second ppo)))
-;;       ppo)
-;;       (t
-;;       ppv))))
-;; when (not (null x))
-;; collect x))
       
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -450,28 +434,14 @@ when (not (null x)) collect x))
 		(minimo-turnos-ocupar-posicion tablero posicion)))
 
 ;; Esta es la heuristica definitiva :D
-;; NOTA: No se puede aplicar sobre posiciones ya ocupadas, eso aparte de ser inutil provocaría una division por 0
-;; (defun heuristica-3  (tablero posicion color)
-;; (let* ((secuencias (rango-accesible tablero posicion color))
-;; 	(consecutivas (maximo-conecta-4 secuencias)))
-;; 	(cond
-;; 		((= 3 consecutivas)
-;; 		;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
-;; 			*maximo-valor*)
-;; 		((= 2 consecutivas)
-;; 			(* *medio-valor* (cuenta-conecta-4-posible secuencias)))
-;; ;; 		da mucha prioridad a cuando tienes dos consecutivas
-;; 		(t
-;; 			(* consecutivas (cuenta-conecta-4-posible secuencias))))))
-
 (defun heuristica-3  (tablero posicion color)
-  (let* 
-    ((secciones (rango-accesible tablero posicion color)))
-  (loop for x in secciones when (> (length x) 3) summing
+  (loop for x in (rango-accesible tablero posicion color) 
+  when (> (length x) 3) 
+  summing
     (heuristica-3-aux 
     (distancia-minima x posicion) 
     (cuenta-fichas-consecutivas x) 
-    (cuenta-fichas x)))))
+    (cuenta-fichas x))))
 
 (defun heuristica-3-aux (distancia consecutivas fichas)
 ;; (format t "distancia: ~a, consecutivas: ~a, fichas: ~a"distancia consecutivas fichas) ;;DEBUG
@@ -482,35 +452,22 @@ when (not (null x)) collect x))
 	;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
 	(/ *maximo-valor* (max 1 distancia)))
     ((= 2 consecutivas)
-	(* (/ *medio-valor* (max 1 distancia)) fichas))
+;; 	(* (/ *medio-valor* (max 1 distancia)) fichas))
+	(/ *medio-valor* (max 1 distancia)))
 ;; 		da mucha prioridad a cuando tienes dos consecutivas
-    ((= 1 consecutivas)
-	(* (- *columnas* distancia ) fichas))
     (t
-	(- *columnas* distancia ))))
+	(* (- *columnas* distancia ) fichas))))
 
-;; TODO - No funciona como debiera
 ;; Heuristica 4 corta la jugada del contrario
-
 (defun heuristica-4 (tablero posicion color)
 (let 
   ((heuristica-favor (heuristica-3 tablero posicion color))
     (heuristica-contra (heuristica-3 tablero posicion (contrincante color)))) ;; Le da menos prioridad a ganar él
   (cond 
-;; 	((eq heuristica-contra *maximo-valor*)
-;; 	(* -1 (/ *maximo-valor* 2)))
-	((>= heuristica-favor heuristica-contra)
+	((< heuristica-contra heuristica-favor)
 	heuristica-favor)
 	(t
-    	(* -1 heuristica-contra)))))
-
-;; (defun heuristica-4-aux (tablero posicion color)
-;; (let ((valor (heuristica-3 tablero posicion color)))
-;; 	(cond 
-;; 		((eq valor *maximo-valor*) 
-;; 			(- 1 *maximo-valor*)) ;; Da prioridad a ganar Yo a que gane él
-;; 		(t
-;; 			valor))))
+    	(* -1 heuristica-contra))))) ;; El siguiente paso es para el contrario, favoremos al contrario
 
 (defun contrincante (color)
 (if (eq color *color-humano*)
@@ -574,23 +531,18 @@ when (not (null x)) collect x))
 			(loop for x in lista when (not (null x)) collect x))))
  ;; tenemos que filtrar los nil ya que max no los reconoce
 
-;; Devuelve la fila de la primera casilla vacía de la columna
-;; (defun primera-posicion-vacia (tablero columna)
-;; (if (and (<= columna *columnas*)(posicion-vacia tablero 0 columna))
-;;     	(loop for i from *filas* downto 0
-;; 	  minimize i
-;; 	  until (posicion-vacia tablero i columna))
-;; 	nil))
 
+;; Devuelve la posicion de la primera casillla ocupada de la columna
 (defun primera-posicion-ocupada (tablero columna)
-( let ((fila 
-(loop for i from 0 to *filas* until (aref tablero i columna) count t)))
-(if (> fila *filas*)
-nil
-(list fila columna))))
+  (let ((fila 
+    (loop for i from 0 to *filas* until (aref tablero i columna) count t)))
+      (if (> fila *filas*)
+	nil
+	(list fila columna))))
 
+;; Devuelve la posicion de la primera casillla vacia de la columna
 (defun primera-posicion-vacia (tablero columna)
-(let (( fila 
+  (let (( fila 
 	(- *filas* (loop for i from *filas* downto 0 
 		until (null (aref tablero i columna)) count t))))
 	(if (> 0 fila)
@@ -620,7 +572,7 @@ nil
 		(seccion-columna-accesible tablero (first pos) (second pos) color) 
 		(seccion-diagonal-izq-accesible tablero (first pos) (second pos) color) 
 		(seccion-diagonal-der-accesible tablero (first pos) (second pos) color))
-	when (< 3 (length x)) collect x))
+	when (< 3 (length x)) collect x)) ;; filtro que tenga un tamaño minimo de 4
 
 ;; funcion que dice si la posicion inferior esta ocupada o no
 (defun inacesible (tablero f c)
@@ -643,7 +595,6 @@ nil
 (defun seccion-fila-accesible (tablero f c color)
   (append 
 	(reverse 
-;; 	(loop for i from (- c 1) downto 0 
 	(loop for i from c downto 0  ;;tiene en cuenta el centro
 		until 
 		(or 
@@ -665,14 +616,12 @@ nil
 
 (defun seccion-columna-accesible (tablero f c color)
   (append 
-;; 	(loop for i from 0 to (- f 1)
 	(loop for i from 0 to f until (corte (aref tablero i c) color)
 	  collect
 	  (if (null (aref tablero i c))
 	    nil
 	    (list i c)))
  ;; las posiciones arriba no estan ocupadas
-;; 	(loop for i from (+ 1 f) to *filas* until (corte (aref tablero i c) color)
 	(loop for i from (+ 1 f) to *filas* until (corte (aref tablero i c) color)
     		collect
 		(if (null (aref tablero i c))
@@ -683,7 +632,6 @@ nil
 (defun seccion-diagonal-izq-accesible (tablero f c color) 
     (append
 	(reverse ;; tiene que estar al revés
-;; 	(loop for i from 1 to *maximo-valor* 
 	(loop for i from 0 to *maximo-valor*  ;;tiene en cuenta el centro
 		until (or 
 			(pos-invalida (- f i) (- c i)) 
@@ -706,7 +654,6 @@ nil
 (defun seccion-diagonal-der-accesible (tablero f c color) 
     (append
 	(reverse ;; tiene que estar al revés
-;; 	(loop for i from 1 to *maximo-valor* 
 	(loop for i from 0 to *maximo-valor* ;; tiene en cuenta el centro
 		until (or 
 			(pos-invalida (+ f i) (- c i)) 
