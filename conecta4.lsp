@@ -202,14 +202,14 @@ when (not (null x)) collect x))
 				 (equal turno 'min)
 				 (mismo-color tablero *ultimo-movimiento* *color-humano*))
 				t) ;; Gana humano
-			(t nil)) ;; En principio inalcanzable
+			(t nil))
 		nil))
 
 ;; Comprueba si la ficha de la posición dada es del color dado
 (defun mismo-color (tablero posicion color)
 	(if (eq (aref tablero (first posicion) (second posicion)) color)
-		1 
-		0))
+		t 
+		nil))
 
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
