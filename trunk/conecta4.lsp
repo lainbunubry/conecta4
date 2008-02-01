@@ -102,9 +102,9 @@
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
     (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;; Elección de la máquina
-	(format t "juega la maquina") ;;DEBUG
+	(format t "~&DEBUG - Juega la máquina") ;;DEBUG
 	(imprime-tablero (estado siguiente)) ;;DEBUG
-	(format t "juega maquina es estado final: ~a" (es-estado-final (estado siguiente))) ;;DEBUG
+	(format t "~&DEBUG - Es estado final?: ~a" (es-estado-final (estado siguiente))) ;;DEBUG
     (if (es-estado-final (estado siguiente))
         (analiza-final siguiente)
         (jugada-humana siguiente))))
@@ -153,9 +153,9 @@ when (not (null x)) collect x))
 					:estado nuevo-estado
 					:jugador 'max))) 
 				(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;;Elección del humano
-	(format t "juega humano") ;;DEBUG
+	(format t "~&DEBUG - Juega el humano") ;;DEBUG
 	(imprime-tablero (estado siguiente)) ;;DEBUG
-	(format t "juega humano es estado final: ~a" (es-estado-final (estado siguiente))) ;;DEBUG
+	(format t "~&DEBUG - Juega el humano. Es estado final?: ~a" (es-estado-final (estado siguiente))) ;;DEBUG
 	                        (if (es-estado-final nuevo-estado)
      	                       		(analiza-final siguiente)
           	                	(jugada-maquina siguiente))))
