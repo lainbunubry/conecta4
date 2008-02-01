@@ -335,12 +335,10 @@ when (not (null x)) collect x))
                                               (jugador nodo-j)))
           (if (eq (jugador nodo-j) 'max)
               (maximizador-a-b
-               (sort sucesores #'>
-	:key (lambda (nodo) (f-e-estatica (estado nodo) 'min)))
+               (sort sucesores #'> :key (lambda (nodo) (f-e-estatica (estado nodo) 'min)))
                profundidad alfa beta)
               (minimizador-a-b
-               (sort sucesores #'<
-	:key (lambda (nodo) (f-e-estatica (estado nodo) 'max)))
+               (sort sucesores #'< :key (lambda (nodo) (f-e-estatica (estado nodo) 'max)))
                profundidad alfa beta))))))
 
 ;; Función que busca maximizar (MAX) la puntuación con ALFA-BETA
@@ -382,16 +380,16 @@ when (not (null x)) collect x))
   (cond
     ((es-estado-final tablero) ;;TODO esto es un tanto desesperado, si es estado final le da una puntuacion estratosferica
       (* *columnas* *maximo-valor*))
-    ((equal jugador *jugador-maquina*);; TODO calcula los valores cruzados!!!, no tiene mucho sentido no??? 
-;;       (format t "~%f-e-est color ~a" *color-maquina*)
-      (loop for posicion in (posiciones-heuristicas tablero) summing
+    ((equal jugador *jugador-maquina*)
+;;       (format t "~%f-e-est color ~a" *color-maquina*) ;; DEBUG
+      (loop for posicion in (posiciones-heuristicas tablero) summing ;; TODO - Cruzados
 	(heuristica-4 tablero posicion *color-humano*))) ;;cruzados
 ;; 	(heuristica-4 tablero posicion *color-maquina*))) ;;normal
-     ((equal jugador *jugador-humano*);; TODO calcula los valores cruzados!!!, no tiene mucho sentido no??? 
-;; 	(format t "~%f-e-est color ~a" *color-humano*)
-	(loop for posicion in (posiciones-heuristicas tablero ) summing
+     ((equal jugador *jugador-humano*)
+;; 	(format t "~%f-e-est color ~a" *color-humano*) ;; DEBUG
+	(loop for posicion in (posiciones-heuristicas tablero ) summing ;; TODO - Cruzados
 	  (heuristica-4 tablero posicion *color-maquina*))))) ;;cruzados
-;; 	  (heuristica-4 tablero posicion *color-humano*))))) ;;cruzados
+;; 	  (heuristica-4 tablero posicion *color-humano*))))) ;;normal
 
 ;; Devuelve la lista de posiciones adecuadas por la cual se va a valorar el tablero
 (defun posiciones-heuristicas (tablero)
