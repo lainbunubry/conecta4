@@ -85,6 +85,8 @@
                (jugada-humana *nodo-j-inicial*)))))
 
 ;; Comprueba el resultado de la partida
+;; Hay que tener en cuenta que se analiza un nodo para un jugador que ya ha echado su ficha, por eso todo
+;; parece pensado para su contrincante
 (defun analiza-final (nodo-j-final &optional (canal t))
   (escribe-nodo-j nodo-j-final)
   (cond ((es-estado-ganador (estado nodo-j-final)
@@ -179,13 +181,15 @@ when (not (null x)) collect x))
 		resultado))
 
 ;; Determina si ha ganado algún jugador la partida
+;; Hay que tener en cuenta que se analiza un nodo para un jugador que ya ha echado su ficha, por eso todo
+;; parece pensado para su contrincante
 (defun es-estado-ganador (tablero jugador turno)
 	(if (es-estado-final tablero)
 		(cond
 			((not (movimientos-legales tablero))
 				nil) ;; Empate
 			((and (equal jugador *jugador-humano*)
-				 (equal turno 'min)) ;; No es max pq se crea un último nodo del turno del perdedor
+				 (equal turno 'min))
 				t) ;; Gana máquina
 			((and (equal jugador *jugador-maquina*)
 				 (equal turno 'max))
