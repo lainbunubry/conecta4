@@ -30,7 +30,7 @@
 
 ;; Funcion que muestra por pantalla el nodo por el canal t (pantalla) y profundidad
 (defun escribe-nodo-j (nodo-j &optional (canal t) profundidad)
-	(format canal "~%Estado :")
+	(format canal "~%Estado :~%")
 	(imprime-tablero (estado nodo-j))
 	(format canal "~%Último movimiento : ~a" *ultimo-movimiento*)
 	(format canal "~%Jugador : ~a" (jugador nodo-j)))
@@ -85,16 +85,15 @@
                (analiza-final *nodo-j-inicial*)
                (jugada-humana *nodo-j-inicial*)))))
 
-;; TODO - Devuelve empate :S
 ;; Comprueba el resultado de la partida
 (defun analiza-final (nodo-j-final &optional (canal t))
   (escribe-nodo-j nodo-j-final)
   (cond ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'min)
-         (format canal "~&La maquina ha ganado"))
+         		(format canal "~&La maquina ha ganado"))
         ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'max)
-         (format canal "~&El humano ha ganado"))
+         		(format canal "~&El humano ha ganado"))
         (t (format canal "~&Empate"))))
 
 ;; Función llamada cuando es el turno de la máquina
@@ -102,7 +101,7 @@
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-    (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;; Elección de la máquina
+    (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
 	(format t "~&DEBUG - Juega la máquina") ;;DEBUG
 	(imprime-tablero (estado siguiente)) ;;DEBUG
 	(format t "~&DEBUG - Es estado final?: ~a" (es-estado-final (estado siguiente))) ;;DEBUG
@@ -119,9 +118,6 @@
 (defun fila-superior (tablero)
 (loop for x in (loop for x in *movimientos* collect (primera-posicion-ocupada tablero x))
 when (not (null x)) collect x))
-
-
-
 
 ;; Muestra por pantalla los movimientos permitidos obtenidos con movimientos-legales
 (defun escribe-movimientos (movimientos)
@@ -188,20 +184,17 @@ when (not (null x)) collect x))
 					nil)))
 		resultado))
 
-;; TODO - No sé funciona bien (creo q sí)
 ;; Determina si ha ganado algún jugador la partida
 (defun es-estado-ganador (tablero jugador turno)
 	(if (es-estado-final tablero)
 		(cond
 			((not (movimientos-legales tablero))
 				nil) ;; Empate
-			((and (equal jugador *jugador-maquina*)
-				 (equal turno 'max)
-				 (mismo-color tablero *ultimo-movimiento* *color-maquina*))
-				t) ;; Gana máquina
 			((and (equal jugador *jugador-humano*)
-				 (equal turno 'min)
-				 (mismo-color tablero *ultimo-movimiento* *color-humano*))
+				 (equal turno 'min)) ;; No es max pq se crea un último nodo del turno del perdedor
+				t) ;; Gana máquina
+			((and (equal jugador *jugador-maquina*)
+				 (equal turno 'max))
 				t) ;; Gana humano
 			(t nil))
 		nil))
@@ -261,7 +254,7 @@ when (not (null x)) collect x))
 
 ;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
-  (format t "~%DEBUG - Calculando sucesores")	;; DEBUG
+  (format t "~%DEBUG - Calculando sucesores") ;; DEBUG
   (let ((resultado ()))
     (loop for movimiento in *movimientos* do
       (let ((siguiente
@@ -334,7 +327,7 @@ when (not (null x)) collect x))
 	   (format t "~%DEBUG - Tableros sucesores: ")	;; DEBUG
 	   (loop for x in sucesores do	;; DEBUG
 		(imprime-tablero (estado x))	;; DEBUG
-		(format t "~%DEBUG - Jugador ~a ,Valor heurístico sucesor: ~a~&"(jugador x) (f-e-estatica (estado x) (jugador x))))	;; DEBUG
+		(format t "~%DEBUG - Jugador ~a, Valor heurístico sucesor: ~a~&" (jugador x) (f-e-estatica (estado x) (jugador x))))	;; DEBUG
         (if (null sucesores)
             (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                               (jugador nodo-j)))
@@ -382,11 +375,10 @@ when (not (null x)) collect x))
 
 ;; TODO
 ;; Devuelve una valoración heurística para un nodo (jugada)
-(defun f-e-estatica (tablero jugador) 
+(defun f-e-estatica (tablero jugador)
   (cond
-;;     ((es-estado-final tablero) (* *columnas* *maximo-valor*))
-    ((es-estado-ganador tablero jugador 'max) (* *columnas* *maximo-valor*))
-    ((es-estado-ganador tablero jugador 'min) *minimo-valor*)
+    ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*))
+    ((es-estado-ganador tablero jugador 'max) *minimo-valor*)
     ((equal jugador *jugador-maquina*)
 ;;       (format t "~%f-e-est color ~a" *color-maquina*) ;; DEBUG
       (loop for posicion in (posiciones-heuristicas tablero) summing ;; TODO - Cruzados
