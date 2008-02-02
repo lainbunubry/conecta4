@@ -44,7 +44,6 @@
 
 ;; Muestra por pantalla el contenido de un tablero
 (defun imprime-tablero (a)
-;; (format t "tablero a pelo ~a "a) ;; DEBUG
   (let* ((dim (array-dimensions a))
 	 (f (first dim))
 	 (c (second dim)))
@@ -102,9 +101,6 @@
   (format t "~%Mi turno.~&")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
     (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
-	(format t "~&DEBUG - Juega la máquina") ;;DEBUG
-	(imprime-tablero (estado siguiente)) ;;DEBUG
-	(format t "~&DEBUG - Es estado final?: ~a" (es-estado-final (estado siguiente))) ;;DEBUG
     (if (es-estado-final (estado siguiente))
         (analiza-final siguiente)
         (jugada-humana siguiente))))
@@ -150,9 +146,6 @@ when (not (null x)) collect x))
 					:estado nuevo-estado
 					:jugador 'max))) 
 				(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;;Elección del humano
-	(format t "~&DEBUG - Juega el humano") ;;DEBUG
-	(imprime-tablero (estado siguiente)) ;;DEBUG
-	(format t "~&DEBUG - Juega el humano. Es estado final?: ~a" (es-estado-final (estado siguiente))) ;;DEBUG
 	                        (if (es-estado-final nuevo-estado)
      	                       		(analiza-final siguiente)
           	                	(jugada-maquina siguiente))))
@@ -161,6 +154,7 @@ when (not (null x)) collect x))
 		(t (format t "~&   ~a es ilegal. " m)
                		(jugada-humana nodo-j))))))
 
+;; TODO - No funciona bien
 ;; Función que se llama cuando se pide consejo a la máquina
 (defun solicitar-consejo (nodo-j)
   (format t "Pensando")
@@ -243,6 +237,7 @@ when (not (null x)) collect x))
 	(loop for x in listas when (> (length x) 3) collect
 	(cuenta-fichas-consecutivas x)))
 0))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ALGORITMO MINIMAX
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -254,7 +249,6 @@ when (not (null x)) collect x))
 
 ;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
-  (format t "~%DEBUG - Calculando sucesores") ;; DEBUG
   (let ((resultado ()))
     (loop for movimiento in *movimientos* do
       (let ((siguiente
@@ -316,12 +310,10 @@ when (not (null x)) collect x))
 (defun minimax-a-b (nodo-j profundidad
                            &optional (alfa *minimo-valor*)
                            (beta *maximo-valor*))
-  (format t "~%DEBUG - Entrando en minimax-a-b ~%Estado final: ~a - Jugador: ~a"(es-estado-final (estado nodo-j)) (jugador nodo-j))	;; DEBUG
   (if (or (es-estado-final (estado nodo-j)) (= profundidad 0))
       (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                         (jugador nodo-j)))
       (let ((sucesores (sucesores nodo-j)))
-	   (format t "~%DEBUG - Calculados los sucesores ;)")	;; DEBUG
 	   (format t "~%DEBUG - Tablero original: ")	;; DEBUG
 	   (imprime-tablero (estado nodo-j))	;; DEBUG
 	   (format t "~%DEBUG - Tableros sucesores: ")	;; DEBUG
@@ -373,22 +365,21 @@ when (not (null x)) collect x))
 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
-;; TODO
 ;; Devuelve una valoración heurística para un nodo (jugada)
+;; Parece que no tenga sentido comprobar las posiciones para el color del jugador contrario, pero al igual
+;; que es-estado-ganador o analiza-final resulta que el jugador que recibimos como parámetro no es otro que
+;; el del último nodo creado, un nodo sucesor del cual queremos conocer su heurística pero para el jugador
+;; que echó último, es decir, el jugador anterior
 (defun f-e-estatica (tablero jugador)
   (cond
     ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*))
     ((es-estado-ganador tablero jugador 'max) *minimo-valor*)
     ((equal jugador *jugador-maquina*)
-;;       (format t "~%f-e-est color ~a" *color-maquina*) ;; DEBUG
-      (loop for posicion in (posiciones-heuristicas tablero) summing ;; TODO - Cruzados
-	(heuristica-4 tablero posicion *color-humano*))) ;;cruzados
-;; 	(heuristica-4 tablero posicion *color-maquina*))) ;;normal
-     ((equal jugador *jugador-humano*)
-;; 	(format t "~%f-e-est color ~a" *color-humano*) ;; DEBUG
-	(loop for posicion in (posiciones-heuristicas tablero ) summing ;; TODO - Cruzados
-	  (heuristica-4 tablero posicion *color-maquina*))))) ;;cruzados
-;; 	  (heuristica-4 tablero posicion *color-humano*))))) ;;normal
+    		(loop for posicion in (posiciones-heuristicas tablero) summing
+			(heuristica-4 tablero posicion *color-humano*)))
+    ((equal jugador *jugador-humano*)
+		(loop for posicion in (posiciones-heuristicas tablero ) summing
+	  		(heuristica-4 tablero posicion *color-maquina*)))))
 
 ;; Devuelve la lista de posiciones adecuadas por la cual se va a valorar el tablero
 (defun posiciones-heuristicas (tablero)
@@ -409,8 +400,8 @@ when (not (null x)) collect x))
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
 (defun compara_heurs (heuristica1 heuristica2)
-	(setf *procedimiento* (list 'heuristica1 *profundidad*))
-	(setf *procedimiento2* (list 'heuristica2 *profundidad*))
+	(setf *procedimiento* (list 'heuristica1 *profundidad*)) ;; TODO - Obviamente mal, el procedimiento es minimax
+	(setf *procedimiento2* (list 'heuristica2 *profundidad*)) ;;TODO - Idem q anterior
 	(setq *fichero-compara_heurs* (open "compara_heurs.txt" :direction :input))
 	(crea-nodo-j-inicial 'max)
 	(es-estado-final *estado-inicial*)
@@ -440,7 +431,6 @@ when (not (null x)) collect x))
     (cuenta-fichas x))))
 
 (defun heuristica-3-aux (distancia consecutivas fichas)
-;; (format t "distancia: ~a, consecutivas: ~a, fichas: ~a"distancia consecutivas fichas) ;;DEBUG
   (cond
     ((or (null distancia) (null consecutivas))
 	0)
@@ -495,8 +485,6 @@ when (not (null x)) collect x))
 			(analiza-final siguiente *fichero-compara_heurs*)
 			(jugada-maquina-compara_heurs-1 siguiente))))
 
-
-
 ;; Secuencias es una doble lista de valores, el primer miembro es la primera
 ;; parte de la lista de valores y el segundo miembro es la segunda parte de la lista
 ;; Se han ordenado de esta manera para facilitar contar las fichas consecutivas
@@ -518,15 +506,12 @@ when (not (null x)) collect x))
 (defun cuenta-fichas (secuencia)
 (loop for x in secuencia count (not (null x))))
 
-
 ;; Devuelve el maximo entero de la lista, y si la lista es vacía devuelve 0
 (defun maximo (lista)
 	(if  (null lista)
 		0
 		(apply #'max
-			(loop for x in lista when (not (null x)) collect x))))
- ;; tenemos que filtrar los nil ya que max no los reconoce
-
+			(loop for x in lista when (not (null x)) collect x)))) ;; Hay que filtrar los nil ya que max no los reconoce
 
 ;; Devuelve la posicion de la primera casillla ocupada de la columna
 (defun primera-posicion-ocupada (tablero columna)
@@ -548,6 +533,7 @@ when (not (null x)) collect x))
   (if (null (aref tablero f c))
       t ;vacia
     nil))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES DE RANGOS DE VALORES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
