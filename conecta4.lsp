@@ -206,7 +206,7 @@ when (not (null x)) collect x))
 
 ;; Devuelve el nodo siguiente según una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
-	(funcall (symbol-function (first procedimiento)) nodo-j (first(rest procedimiento))))
+	(funcall (symbol-function (first procedimiento)) nodo-j (first (rest procedimiento))))
 
 ;; Devuelve el estado siguiente según el movimiento dado por el jugador, sin alterar el tablero original
 (defun aplica-movimiento (columna tablero color)
