@@ -1,4 +1,5 @@
 (load "aux.lsp")
+(load "compheurs.lsp")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; REPRESENTACIÓN DE ESTADOS
@@ -396,23 +397,6 @@ when (not (null x)) collect x))
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Variables para compara_heurs
-(defvar *heuristica1*)
-(defvar *heuristica2*)
-
-;; TODO - Peta infinito xD
-;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
-;; resulta si MIN utiliza la primera heurística y MAX la segunda
-(defun compara_heurs (heuristica1 heuristica2)
-	(setf *procedimiento* (list 'heuristica1 *profundidad*)) ;; TODO - Obviamente mal, el procedimiento es minimax
-	(setf *procedimiento2* (list 'heuristica2 *profundidad*)) ;;TODO - Idem q anterior
-	(setq *fichero-compara_heurs* (open "compara_heurs.txt" :direction :input))
-	(crea-nodo-j-inicial 'max)
-	(es-estado-final *estado-inicial*)
-	(analiza-final *nodo-j-inicial*)
-	(jugada-maquina-compara_heurs-2 *nodo-j-inicial*)
-	(close *fichero-compara_heurs*)) ;; MAX usa la segunda heurística
-
 ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
 (defun heuristica-1 (tablero lista-valores jugador)
 	(loop for pos in lista-valores count (igual-color tablero pos color)))
@@ -424,7 +408,7 @@ when (not (null x)) collect x))
 		(fichas-consecutivas tablero posicion color)
 		(minimo-turnos-ocupar-posicion tablero posicion)))
 
-;; Esta es la heuristica definitiva :D
+;; Esta es la heuristica definitiva :D (TODO - Cambiar comentario XD )
 (defun heuristica-3  (tablero posicion color)
   (loop for x in (rango-accesible tablero posicion color) 
   when (> (length x) 3) 
@@ -457,7 +441,7 @@ when (not (null x)) collect x))
 	((< heuristica-contra heuristica-favor)
 	heuristica-favor)
 	(t
-    	(* -1 heuristica-contra))))) ;; El siguiente paso es para el contrario, favoremos al contrario
+    	(* -1 heuristica-contra))))) ;; El siguiente paso es para el contrario, favorecemos al contrario
 
 (defun contrincante (color)
 (if (eq color *color-humano*)
@@ -467,27 +451,6 @@ when (not (null x)) collect x))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defvar *fichero-compara_heurs*)
-(defvar *procedimiento2*)
-
-;; Función llamada cuando es el turno de la máquina de la heurística 1 en compara_heurs
-(defun jugada-maquina-compara_heurs-1 (nodo-j)
-	(escribe-nodo-j *fichero-compara_heurs* nodo-j)
-	(format *fichero-compara_heurs* "~%Turno heurística 1.~&")
-	(let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-		(if (es-estado-final (estado siguiente))
-			(analiza-final siguiente *fichero-compara_heurs*)
-			(jugada-maquina-compara_heurs-2 siguiente))))
-
-;; Función llamada cuando es el turno de la máquina de la heurística 2 en compara_heurs
-(defun jugada-maquina-compara_heurs-2 (nodo-j)
-	(escribe-nodo-j *fichero-compara_heurs* nodo-j)
-	(format *fichero-compara_heurs* "~%Turno heurística 2.~&")
-	(let ((siguiente (aplica-decision *procedimiento2* nodo-j)))
-		(if (es-estado-final (estado siguiente))
-			(analiza-final siguiente *fichero-compara_heurs*)
-			(jugada-maquina-compara_heurs-1 siguiente))))
 
 ;; Secuencias es una doble lista de valores, el primer miembro es la primera
 ;; parte de la lista de valores y el segundo miembro es la segunda parte de la lista
@@ -517,7 +480,7 @@ when (not (null x)) collect x))
 		(apply #'max
 			(loop for x in lista when (not (null x)) collect x)))) ;; Hay que filtrar los nil ya que max no los reconoce
 
-;; Devuelve la posicion de la primera casillla ocupada de la columna
+;; Devuelve la posición de la primera casillla ocupada de la columna
 (defun primera-posicion-ocupada (tablero columna)
   (let ((fila 
     (loop for i from 0 to *filas* until (aref tablero i columna) count t)))
@@ -525,7 +488,7 @@ when (not (null x)) collect x))
 	nil
 	(list fila columna))))
 
-;; Devuelve la posicion de la primera casillla vacia de la columna
+;; Devuelve la posición de la primera casillla vacía de la columna
 (defun primera-posicion-vacia (tablero columna)
   (let (( fila 
 	(- *filas* (loop for i from *filas* downto 0 
@@ -542,7 +505,7 @@ when (not (null x)) collect x))
 ;;; FUNCIONES DE RANGOS DE VALORES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Genera una secuencia con el rango de valores accesibles desde una posicion
+;; Genera una secuencia con el rango de valores accesibles desde una posición
 ;; en el tablero y que conecten con un color
 
 (defun distancia-minima (lista pos)
@@ -560,13 +523,13 @@ when (not (null x)) collect x))
 		(seccion-diagonal-der-accesible tablero (first pos) (second pos) color))
 	when (< 3 (length x)) collect x)) ;; filtro que tenga un tamaño minimo de 4
 
-;; funcion que dice si la posicion inferior esta ocupada o no
+;; Función que dice si la posicion inferior esta ocupada o no
 (defun inacesible (tablero f c)
 (if (pos-invalida (+ f 1) c)
 	 nil ;;tamos en el fondo del tablero
 	(null (aref tablero (+ f 1) c))))
 
-;; funcion de corte,devuelve T solo si es distinto color
+;; Función de corte,devuelve T sólo si es distinto color
 (defun corte (x y)
 (not (or (eq x y) (null x))))
 
