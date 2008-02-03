@@ -30,7 +30,7 @@
   valor) 		;; Valor heurístico de la nueva jugada
 
 ;; Funcion que muestra por pantalla el nodo por el canal t (pantalla) y profundidad
-(defun escribe-nodo-j (nodo-j &optional (canal t) profundidad)
+(defun escribe-nodo-j (nodo-j &optional (canal t) profundidad) ;;TODO canal no puede ser t por defecto
 	(format canal "~%Estado :~%")
 	(imprime-tablero (estado nodo-j))
 	(format canal "~%Último movimiento : ~a" *ultimo-movimiento*)
@@ -141,7 +141,8 @@ when (not (null x)) collect x))
 			(solicitar-consejo nodo-j)
 			(format t "~%Tu turno : ")		;; Hay que volver a leer la m una vez dado el consejo
 			(setf m (read))))
-      	(cond ((and (integerp m) (< -1 m (length movimientos)))
+;;       	(cond ((and (integerp m) (< -1 m (length movimientos)));; TODO aqui petaba antes, a ver si ahora ...
+      	(cond ((and (integerp m) (member m movimientos))  
 		(let ((nuevo-estado
 			(aplica-movimiento (nth m movimientos) (estado nodo-j) *color-humano*)))
 			(cond (nuevo-estado
@@ -319,12 +320,12 @@ when (not (null x)) collect x))
       (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                         (jugador nodo-j)))
       (let ((sucesores (sucesores nodo-j)))
-	   (format t "~%DEBUG - Tablero original: ")	;; DEBUG
-	   (imprime-tablero (estado nodo-j))	;; DEBUG
-	   (format t "~%DEBUG - Tableros sucesores: ")	;; DEBUG
-	   (loop for x in sucesores do	;; DEBUG
-		(imprime-tablero (estado x))	;; DEBUG
-		(format t "~%DEBUG - Jugador ~a, Valor heurístico sucesor: ~a~&" (jugador x) (f-e-estatica (estado x) (jugador x))))	;; DEBUG
+;; 	   (format t "~%DEBUG - Tablero original: ")	;; DEBUG
+;; 	   (imprime-tablero (estado nodo-j))	;; DEBUG
+;; 	   (format t "~%DEBUG - Tableros sucesores: ")	;; DEBUG
+;; 	   (loop for x in sucesores do	;; DEBUG
+;; 		(imprime-tablero (estado x))	;; DEBUG
+;; 		(format t "~%DEBUG - Jugador ~a, Valor heurístico sucesor: ~a~&" (jugador x) (f-e-estatica (estado x) (jugador x))))	;; DEBUG
         (if (null sucesores)
             (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                               (jugador nodo-j)))
@@ -349,8 +350,8 @@ when (not (null x)) collect x))
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) alfa)
-	(format t "~%DEBUG - Mejor sucesor maximizador, jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
-	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
+;; 	(format t "~%DEBUG - Mejor sucesor maximizador, jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
+;; 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
 ;; Función que busca minimizar (MIN) la puntuación con ALFA-BETA
@@ -366,8 +367,8 @@ when (not (null x)) collect x))
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) beta)
-	(format t "~%DEBUG - Mejor sucesor minimizador, jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
-	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
+;; 	(format t "~%DEBUG - Mejor sucesor minimizador, jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
+;; 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
 ;; Devuelve una valoración heurística para un nodo (jugada)

@@ -5,8 +5,9 @@
 ;; Variables para compara_heurs
 (defvar *heuristica1*)
 (defvar *heuristica2*)
-(defvar *fichero-compara_heurs*)
+(defvar *fichero-compara_heurs* "compara_heurs.txt")
 (defvar *procedimiento2*)
+(defvar *profundidad* 4)
 
 ;; TODO - Arreglar escritura en fichero
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
@@ -14,17 +15,22 @@
 (defun compara_heurs (heuristica1 heuristica2)
 	(setf *procedimiento* (list 'minimax-a-b-ch *profundidad* 'heuristica1))
 	(setf *procedimiento2* (list 'minimax-a-b-ch *profundidad* 'heuristica2))
-	(setq *fichero-compara_heurs* (open "compara_heurs.txt" :direction :input))
+	(with-open-file (str *fichero-compara_heurs* :direction :output :if-exists :supersede)
+;; TODO todo (format str "... que este dentro de este parentesis esccribirá en el *fichero-compara_heurs*
 	(crea-nodo-j-inicial 'max)
 	(es-estado-final *estado-inicial*)
 	(analiza-final *nodo-j-inicial*)
-	(jugada-maquina-ch2 *nodo-j-inicial*)
-	(close *fichero-compara_heurs*)) ;; MAX usa la segunda heurística
+	(jugada-maquina-ch2 *nodo-j-inicial*))) ;; MAX usa la segunda heurística
+
+;; TODO funcion de prueba para que escriba en el fichero
+(defun prueba-fichero ()
+(with-open-file (str *fichero-compara_heurs* :direction :output :if-exists :supersede) (loop for i from 0 to 10 do (format str "~%zzzz"))))
+;; supersede es si existe lo sobreescribe
 
 ;; Función llamada cuando es el turno de la máquina de la heurística 1 en compara_heurs
 (defun jugada-maquina-ch1 (nodo-j)
 	(escribe-nodo-j *fichero-compara_heurs* nodo-j)
-	(format *fichero-compara_heurs* "~%Turno heurística 1.~&")
+	(format str "~%Turno heurística 1.~&")
 	(let ((siguiente (aplica-decision-ch *procedimiento* nodo-j)))
 		(if (es-estado-final (estado siguiente))
 			(analiza-final siguiente *fichero-compara_heurs*)
@@ -33,7 +39,7 @@
 ;; Función llamada cuando es el turno de la máquina de la heurística 2 en compara_heurs
 (defun jugada-maquina-ch2 (nodo-j)
 	(escribe-nodo-j *fichero-compara_heurs* nodo-j)
-	(format *fichero-compara_heurs* "~%Turno heurística 2.~&")
+	(format str "~%Turno heurística 2.~&")
 	(let ((siguiente (aplica-decision-ch *procedimiento2* nodo-j)))
 		(if (es-estado-final (estado siguiente))
 			(analiza-final siguiente *fichero-compara_heurs*)
