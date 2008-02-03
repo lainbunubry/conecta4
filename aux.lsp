@@ -28,9 +28,9 @@
 (juego :procedimiento (list 'minimax-a-b '3)))
 
 (setf *0t* (make-array '(6 7) :initial-contents
-             '((x nil nil nil nil nil nil)
-		(X nil nil nil nil nil nil)
-		(X nil X nil nil nil nil)
+             '((x nil nil x nil nil o)
+		(X nil nil x nil nil o)
+		(X nil X x  nil nil o)
 		(X X O O O X X)
 		(O O X O O X O)
 		(O O O X X X O))))
