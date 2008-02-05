@@ -9,18 +9,16 @@
 (defvar *procedimiento2*)
 (defvar *profundidad* 4)
 
-;; TODO - Arreglar escritura en fichero
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
-(defun compara_heurs (heuristica1 heuristica2)
-	(setf *procedimiento* (list 'minimax-a-b-ch *profundidad* 'heuristica1))
-	(setf *procedimiento2* (list 'minimax-a-b-ch *profundidad* 'heuristica2))
+(defun compara_heurs (heuristica1 heuristica2 profundidad)
+	(setf *procedimiento* (list 'minimax-a-b-ch profundidad heuristica1))
+	(setf *procedimiento2* (list 'minimax-a-b-ch profundidad heuristica2))
 	(with-open-file (str *fichero-compara_heurs* :direction :output :if-exists :supersede)
-;; TODO todo (format str "... que este dentro de este parentesis esccribirá en el *fichero-compara_heurs*
-	(crea-nodo-j-inicial 'max)
-	(es-estado-final *estado-inicial*)
-	(analiza-final *nodo-j-inicial*)
-	(jugada-maquina-ch2 *nodo-j-inicial*))) ;; MAX usa la segunda heurística
+		(crea-nodo-j-inicial 'max)
+		(if (es-estado-final *estado-inicial*)
+			(analiza-final *nodo-j-inicial* str)
+			(jugada-maquina-ch2 *nodo-j-inicial* str)))) ;; MAX usa la segunda heurística
 
 ;; TODO funcion de prueba para que escriba en el fichero
 (defun prueba-fichero ()
@@ -28,22 +26,24 @@
 ;; supersede es si existe lo sobreescribe
 
 ;; Función llamada cuando es el turno de la máquina de la heurística 1 en compara_heurs
-(defun jugada-maquina-ch1 (nodo-j)
-	(escribe-nodo-j *fichero-compara_heurs* nodo-j)
-	(format str "~%Turno heurística 1.~&")
+(defun jugada-maquina-ch1 (nodo-j canal)
+	(format t "~%DEBUG - Entrando en jugada-maquina-ch1")
+	(escribe-nodo-j nodo-j canal)
+	(format canal "~%Turno heurística 1.~&")
 	(let ((siguiente (aplica-decision-ch *procedimiento* nodo-j)))
 		(if (es-estado-final (estado siguiente))
-			(analiza-final siguiente *fichero-compara_heurs*)
-			(jugada-maquina-ch2 siguiente))))
+			(analiza-final siguiente canal)
+			(jugada-maquina-ch2 siguiente canal))))
 
 ;; Función llamada cuando es el turno de la máquina de la heurística 2 en compara_heurs
-(defun jugada-maquina-ch2 (nodo-j)
-	(escribe-nodo-j *fichero-compara_heurs* nodo-j)
-	(format str "~%Turno heurística 2.~&")
+(defun jugada-maquina-ch2 (nodo-j canal)
+	(format t "~%DEBUG - Entrando en jugada-maquina-ch2")
+	(escribe-nodo-j nodo-j canal)
+	(format canal "~%Turno heurística 2.~&")
 	(let ((siguiente (aplica-decision-ch *procedimiento2* nodo-j)))
 		(if (es-estado-final (estado siguiente))
-			(analiza-final siguiente *fichero-compara_heurs*)
-			(jugada-maquina-ch1 siguiente))))
+			(analiza-final siguiente canal)
+			(jugada-maquina-ch1 siguiente canal))))
 
 ;; Devuelve el nodo siguiente según una jugada de la IA para compara_heurs
 (defun aplica-decision-ch (procedimiento nodo-j)
@@ -53,6 +53,7 @@
 (defun minimax-a-b-ch (nodo-j profundidad heuristica
                            &optional (alfa *minimo-valor*)
                            (beta *maximo-valor*))
+  (format t "~%DEBUG - Entrando en minimax-a-b")
   (if (or (es-estado-final (estado nodo-j)) (= profundidad 0))
       (crea-nodo-j :valor (f-e-estatica-ch (estado nodo-j)
                                         (jugador nodo-j) heuristica))
