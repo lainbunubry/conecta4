@@ -29,8 +29,8 @@
   jugador
   valor) 		;; Valor heurístico de la nueva jugada
 
-;; Funcion que muestra por pantalla el nodo por el canal t (pantalla) y profundidad
-(defun escribe-nodo-j (nodo-j &optional (canal t) profundidad) ;;TODO canal no puede ser t por defecto
+;; Funcion que muestra por pantalla (u otro canal) el nodo dado
+(defun escribe-nodo-j (nodo-j &optional (canal t))
 	(format canal "~%Estado :~%")
 	(imprime-tablero (estado nodo-j) canal)
 	(format canal "~%Último movimiento : ~a" *ultimo-movimiento*)
@@ -89,7 +89,7 @@
 ;; Hay que tener en cuenta que se analiza un nodo para un jugador que ya ha echado su ficha, por eso todo
 ;; parece pensado para su contrincante
 (defun analiza-final (nodo-j-final &optional (canal t))
-  (escribe-nodo-j nodo-j-final)
+  (escribe-nodo-j nodo-j-final canal)
   (cond ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'min)
          		(format canal "~&La maquina ha ganado"))
@@ -395,10 +395,12 @@ when (not (null x)) collect x))
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; TODO - No funciona, le faltan funciones ni se la llama bien desde f-e-estatica
 ;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
 (defun heuristica-1 (tablero lista-valores jugador)
 	(loop for pos in lista-valores count (igual-color tablero pos color)))
 
+;; TODO - No funciona, le faltan funciones
 ;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
 ;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
 (defun heuristica-2 (tablero posicion color)

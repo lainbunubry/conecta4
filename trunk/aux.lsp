@@ -27,6 +27,9 @@
 (defun jr()
 (juego :procedimiento (list 'minimax-a-b '3)))
 
+(defun ch()
+(compara_heurs 'heuristica-3 'heuristica-4 3))
+
 (setf *0t* (make-array '(6 7) :initial-contents
              '((x nil nil x nil nil o)
 		(X nil nil x nil nil o)
