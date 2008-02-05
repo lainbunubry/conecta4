@@ -32,7 +32,7 @@
 ;; Funcion que muestra por pantalla el nodo por el canal t (pantalla) y profundidad
 (defun escribe-nodo-j (nodo-j &optional (canal t) profundidad) ;;TODO canal no puede ser t por defecto
 	(format canal "~%Estado :~%")
-	(imprime-tablero (estado nodo-j))
+	(imprime-tablero (estado nodo-j) canal)
 	(format canal "~%Último movimiento : ~a" *ultimo-movimiento*)
 	(format canal "~%Jugador : ~a" (jugador nodo-j)))
 
@@ -44,25 +44,25 @@
                  :jugador jugador)))
 
 ;; Muestra por pantalla el contenido de un tablero
-(defun imprime-tablero (a)
+(defun imprime-tablero (a &optional (canal t))
   (let* ((dim (array-dimensions a))
 	 (f (first dim))
 	 (c (second dim)))
-    (format t "~%  0   1   2   3   4   5   6~%")
-    (escribe-linea-aux c)
+    (format canal "~%  0   1   2   3   4   5   6~%")
+    (escribe-linea-aux c canal)
     (loop for i from 0 to (- f 1)
 	  do (loop for j from 0 to (- c 1)
 		   do (if (equal (aref a i j) NIL)
-			  (format t "|   ")
-			(format t "| ~a " (aref a i j))))
-	  (format t "| ~a~%" i)
-	  (escribe-linea-aux c))))
+			  (format canal "|   ")
+			(format canal "| ~a " (aref a i j))))
+	  (format canal "| ~a~%" i)
+	  (escribe-linea-aux c canal))))
 
 ;; Genera una línea del tablero a mostrar
-(defun escribe-linea-aux (col)
+(defun escribe-linea-aux (col canal)
        (loop for i from 0 to (- col 1)
-               do (format t "+---"))
-       (format t "+~%"))
+               do (format canal "+---"))
+       (format canal "+~%"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ARBITRACIÓN
@@ -320,6 +320,7 @@ when (not (null x)) collect x))
       (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                         (jugador nodo-j)))
       (let ((sucesores (sucesores nodo-j)))
+;; TODO - Borrar comentarios
 ;; 	   (format t "~%DEBUG - Tablero original: ")	;; DEBUG
 ;; 	   (imprime-tablero (estado nodo-j))	;; DEBUG
 ;; 	   (format t "~%DEBUG - Tableros sucesores: ")	;; DEBUG
@@ -350,8 +351,6 @@ when (not (null x)) collect x))
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) alfa)
-;; 	(format t "~%DEBUG - Mejor sucesor maximizador, jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
-;; 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
 ;; Función que busca minimizar (MIN) la puntuación con ALFA-BETA
@@ -367,8 +366,6 @@ when (not (null x)) collect x))
           (when (>= alfa beta)
                 (return)))
     (setf (valor mejor-sucesor) beta)
-;; 	(format t "~%DEBUG - Mejor sucesor minimizador, jugador ~a: "(jugador mejor-sucesor)) ;; DEBUG
-;; 	(imprime-tablero (estado mejor-sucesor)) ;; DEBUG
     mejor-sucesor))
 
 ;; Devuelve una valoración heurística para un nodo (jugada)
