@@ -158,11 +158,10 @@ when (not (null x)) collect x))
 		(t (format t "~&   ~a es ilegal. " m)
                		(jugada-humana nodo-j))))))
 
-;; TODO - No funciona bien
 ;; Función que se llama cuando se pide consejo a la máquina
 (defun solicitar-consejo (nodo-j)
   (format t "Pensando")
-  (let ((siguiente (aplica-decision *procedimiento* nodo-j)))	;; TODO - Devuelve dnd echaría la máquina, así q no tiene demasiado sentido XD
+  (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
 	(format t " - Mi recomendación: ~a" (second (compara-tableros
 							(estado nodo-j)
 							(estado siguiente))))))
@@ -320,13 +319,6 @@ when (not (null x)) collect x))
       (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                         (jugador nodo-j)))
       (let ((sucesores (sucesores nodo-j)))
-;; TODO - Borrar comentarios
-;; 	   (format t "~%DEBUG - Tablero original: ")	;; DEBUG
-;; 	   (imprime-tablero (estado nodo-j))	;; DEBUG
-;; 	   (format t "~%DEBUG - Tableros sucesores: ")	;; DEBUG
-;; 	   (loop for x in sucesores do	;; DEBUG
-;; 		(imprime-tablero (estado x))	;; DEBUG
-;; 		(format t "~%DEBUG - Jugador ~a, Valor heurístico sucesor: ~a~&" (jugador x) (f-e-estatica (estado x) (jugador x))))	;; DEBUG
         (if (null sucesores)
             (crea-nodo-j :valor (f-e-estatica (estado nodo-j)
                                               (jugador nodo-j)))
@@ -408,7 +400,6 @@ when (not (null x)) collect x))
 		(fichas-consecutivas tablero posicion color)
 		(minimo-turnos-ocupar-posicion tablero posicion)))
 
-;; Esta es la heuristica definitiva :D (TODO - Cambiar comentario XD )
 (defun heuristica-3  (tablero posicion color)
   (loop for x in (rango-accesible tablero posicion color) 
   when (> (length x) 3) 
@@ -432,7 +423,6 @@ when (not (null x)) collect x))
     (t
 	(* (- *columnas* distancia ) fichas))))
 
-;; Heuristica 4 corta la jugada del contrario
 (defun heuristica-4 (tablero posicion color)
 (let 
   ((heuristica-favor (heuristica-3 tablero posicion color))
