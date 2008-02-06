@@ -20,11 +20,6 @@
 			(analiza-final *nodo-j-inicial* str)
 			(jugada-maquina-ch2 *nodo-j-inicial* str)))) ;; MAX usa la segunda heurística
 
-;; TODO funcion de prueba para que escriba en el fichero
-(defun prueba-fichero ()
-(with-open-file (str *fichero-compara_heurs* :direction :output :if-exists :supersede) (loop for i from 0 to 10 do (format str "~%zzzz"))))
-;; supersede es si existe lo sobreescribe
-
 ;; Función llamada cuando es el turno de la máquina de la heurística 1 en compara_heurs
 (defun jugada-maquina-ch1 (nodo-j canal)
 	(format t "~%DEBUG - Entrando en jugada-maquina-ch1")
