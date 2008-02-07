@@ -385,19 +385,6 @@ when (not (null x)) collect x))
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; TODO - No funciona, le faltan funciones ni se la llama bien desde f-e-estatica
-;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
-(defun heuristica-1 (tablero lista-valores jugador)
-	(loop for pos in lista-valores count (igual-color tablero pos color)))
-
-;; TODO - No funciona, le faltan funciones
-;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
-;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo :D
-(defun heuristica-2 (tablero posicion color)
-	(-
-		(fichas-consecutivas tablero posicion color)
-		(minimo-turnos-ocupar-posicion tablero posicion)))
-
 (defun heuristica-3  (tablero posicion color)
   (loop for x in (rango-accesible tablero posicion color) 
   when (> (length x) 3) 
@@ -430,11 +417,6 @@ when (not (null x)) collect x))
 	heuristica-favor)
 	(t
     	(* -1 heuristica-contra))))) ;; El siguiente paso es para el contrario, favorecemos al contrario
-
-(defun contrincante (color)
-(if (eq color *color-humano*)
-	*color-maquina*
-	*color-humano*))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
@@ -488,6 +470,11 @@ when (not (null x)) collect x))
   (if (null (aref tablero f c))
       t ;vacia
     nil))
+
+(defun contrincante (color)
+(if (eq color *color-humano*)
+	*color-maquina*
+	*color-humano*))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES DE RANGOS DE VALORES
@@ -565,7 +552,6 @@ when (not (null x)) collect x))
 			nil
 			(list i c)))))
 
-
 (defun seccion-diagonal-izq-accesible (tablero f c color) 
     (append
 	(reverse ;; tiene que estar al revés
@@ -636,6 +622,7 @@ when (not (null x)) collect x))
 (defun jugada-maquina-ch1 (nodo-j canal)
 	(escribe-nodo-j nodo-j canal)
 	(format canal "~%Turno heurística 1.~&")
+	(format t "~%Turno heurística 1.~&")
 	(let ((siguiente (aplica-decision-ch *procedimiento* nodo-j)))
 		(if (es-estado-final (estado siguiente))
 			(analiza-final siguiente canal)
@@ -645,6 +632,7 @@ when (not (null x)) collect x))
 (defun jugada-maquina-ch2 (nodo-j canal)
 	(escribe-nodo-j nodo-j canal)
 	(format canal "~%Turno heurística 2.~&")
+	(format t "~%Turno heurística 2.~&")
 	(let ((siguiente (aplica-decision-ch *procedimiento2* nodo-j)))
 		(if (es-estado-final (estado siguiente))
 			(analiza-final siguiente canal)
@@ -673,7 +661,6 @@ when (not (null x)) collect x))
                (sort sucesores #'< :key (lambda (nodo) (f-e-estatica-ch (estado nodo) 'max heuristica)))
                profundidad alfa beta))))))
 
-;; TODO - Actualizar si se cambia el normal
 ;; Devuelve una valoración heurística para un nodo (jugada) para compara_heurs
 ;; Parece que no tenga sentido comprobar las posiciones para el color del jugador contrario, pero al igual
 ;; que es-estado-ganador o analiza-final resulta que el jugador que recibimos como parámetro no es otro que
