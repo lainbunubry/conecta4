@@ -385,6 +385,8 @@ when (not (null x)) collect x))
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Nucleo de la evaluación heuristica, valora cada posibilidad de hacer conecta4 en una
+;; fila, columna, diagonal, para una posicion dada y las suma.
 (defun heuristica-3  (tablero posicion color)
   (loop for x in (rango-accesible tablero posicion color) 
   when (> (length x) 3) 
@@ -394,6 +396,8 @@ when (not (null x)) collect x))
     (cuenta-fichas-consecutivas x) 
     (cuenta-fichas x))))
 
+;; Calcula el valor de cada una de las posibilidades representadas por una
+;; secuencia de posiciones y nil y devuelve una valoración adecuada
 (defun heuristica-3-aux (distancia consecutivas fichas)
   (cond
     ((or (null distancia) (null consecutivas))
@@ -408,6 +412,8 @@ when (not (null x)) collect x))
     (t
 	(* (- *columnas* distancia ) fichas))))
 
+;; Complemento de la heuristica que ademas nos advierte de los movimientos
+;; peligroso de nuestro contrincante
 (defun heuristica-4 (tablero posicion color)
 (let 
   ((heuristica-favor (heuristica-3 tablero posicion color))
@@ -417,6 +423,17 @@ when (not (null x)) collect x))
 	heuristica-favor)
 	(t
     	(* -1 heuristica-contra))))) ;; El siguiente paso es para el contrario, favorecemos al contrario
+
+(defun heuristica-5 (tablero posicion color)
+(let 
+  ((heuristica-favor (heuristica-3 tablero posicion color))
+    (heuristica-contra (heuristica-3 tablero posicion (contrincante color)))) ;; Le da menos prioridad a ganar él
+  (cond 
+	((< heuristica-contra heuristica-favor)
+(* -1 heuristica-contra)) ;; El siguiente paso es para el contrario, favorecemos al contrario	
+
+	(t
+heuristica-favor))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
@@ -440,6 +457,7 @@ when (not (null x)) collect x))
 			(setf aux 0))))
 	maximo))
 
+;; cuenta el numero de elementos no nulos (fichas) en una secuencia
 (defun cuenta-fichas (secuencia)
 (loop for x in secuencia count (not (null x))))
 
@@ -466,11 +484,7 @@ when (not (null x)) collect x))
 	(if (> 0 fila)
 	nil (list fila columna))))
 
-(defun posicion-ocupada (tablero f c)
-  (if (null (aref tablero f c))
-      t ;vacia
-    nil))
-
+;; Nos devuelve el contrincante del color que le pasemos
 (defun contrincante (color)
 (if (eq color *color-humano*)
 	*color-maquina*
@@ -483,12 +497,20 @@ when (not (null x)) collect x))
 ;; Genera una secuencia con el rango de valores accesibles desde una posición
 ;; en el tablero y que conecten con un color
 
+;; nos devuelve la distancia minima en columnas de una lista de posiciones a una
+;; posición dada
 (defun distancia-minima (lista pos)
   (loop for x in lista when (not (null x)) minimize (distancia x pos)))
 
+;; Nos devuelve la distancia entre dos posiciones (x y) (a b) abs (y -a)
 (defun distancia (posx posy)
 (+ (abs (- (second posx) (second posy)))))
 
+;; Esta funcion de rango en la encargada de dada una posión devolver todas posiciones
+;; interesantes y alcanzables desde el punto de vista analitico para nuestro juego.
+;; mira si la posicion es accesible y si no la corta ninguna ficha de otro color
+;; devuelve una lista de listas de posiciones donde se encuentran nuestras fichas y
+;; de nil que representan los huecos que hay entre nuestras posiciones
 (defun rango-accesible (tablero pos color)
 (loop for x in
 	(list 
@@ -515,7 +537,7 @@ when (not (null x)) collect x))
 	(> 0 c)
 	(> f *filas*)
 	(> c *columnas*)))
-
+;; devuelve la fila en la que se encuentra nuestra ficha
 (defun seccion-fila-accesible (tablero f c color)
   (append 
 	(reverse 
@@ -538,6 +560,7 @@ when (not (null x)) collect x))
 			nil
 			(list f i)))))
 
+;; devuelve la columna en la que se encuentra nuestra ficha
 (defun seccion-columna-accesible (tablero f c color)
   (append 
 	(loop for i from 0 to f until (corte (aref tablero i c) color)
@@ -552,6 +575,7 @@ when (not (null x)) collect x))
 			nil
 			(list i c)))))
 
+;; devuelve la diagonal izquierda en la que se encuentra nuestra ficha
 (defun seccion-diagonal-izq-accesible (tablero f c color) 
     (append
 	(reverse ;; tiene que estar al revés
