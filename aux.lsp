@@ -22,7 +22,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun recarga()
-;; (compile-file "conecta4.lsp")
+(compile-file "conecta4.lsp")
 (load "conecta4"))
 
 (defun jr()
