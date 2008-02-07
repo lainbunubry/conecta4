@@ -637,11 +637,8 @@ heuristica-favor))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Variables para compara_heurs
-(defvar *heuristica1*)
-(defvar *heuristica2*)
 (defvar *fichero-compara_heurs* "compara_heurs.txt")
 (defvar *procedimiento2*)
-(defvar *profundidad* 4)
 
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
@@ -651,29 +648,33 @@ heuristica-favor))))
 	(with-open-file (str *fichero-compara_heurs* :direction :output :if-exists :supersede)
 		(crea-nodo-j-inicial 'max)
 		(if (es-estado-final *estado-inicial*)
-			(analiza-final *nodo-j-inicial* str)
+			(analiza-final-ch *nodo-j-inicial* str)
 			(jugada-maquina-ch2 *nodo-j-inicial* str)))) ;; MAX usa la segunda heurística
 
 ;; Función llamada cuando es el turno de la máquina de la heurística 1 en compara_heurs
+;; Juega con *color-humano*
 (defun jugada-maquina-ch1 (nodo-j canal)
 	(escribe-nodo-j nodo-j canal)
 	(format canal "~%___________________________________________________~%")
-	(format canal "~&Turno: ~a~%" *heuristica1*)
-	(format t "~&Turno: ~a.~%" *heuristica2*)
+	(format canal "~%Turno: ~a~%" (third *procedimiento*))
+	(format t "~&Turno: ~a.~%" (third *procedimiento*))
 	(let ((siguiente (aplica-decision-ch *procedimiento* nodo-j)))
+		(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
 		(if (es-estado-final (estado siguiente))
-			(analiza-final siguiente canal)
+			(analiza-final-ch siguiente canal)
 			(jugada-maquina-ch2 siguiente canal))))
 
 ;; Función llamada cuando es el turno de la máquina de la heurística 2 en compara_heurs
+;; Juega con *color-maquina*
 (defun jugada-maquina-ch2 (nodo-j canal)
 	(escribe-nodo-j nodo-j canal)
 	(format canal "~%___________________________________________________~%")
-	(format canal "~&Turno: ~a.~%" *heuristica2*)
-	(format t "~&Turno: ~a.~%" *heuristica2*)
+	(format canal "~%Turno: ~a.~%" (third *procedimiento2*))
+	(format t "~&Turno: ~a.~%" (third *procedimiento2*))
 	(let ((siguiente (aplica-decision-ch *procedimiento2* nodo-j)))
+		(setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente)))
 		(if (es-estado-final (estado siguiente))
-			(analiza-final siguiente canal)
+			(analiza-final-ch siguiente canal)
 			(jugada-maquina-ch1 siguiente canal))))
 
 ;; Devuelve el nodo siguiente según una jugada de la IA para compara_heurs
@@ -714,3 +715,16 @@ heuristica-favor))))
     ((equal jugador *jugador-humano*)
 		(loop for posicion in (posiciones-heuristicas tablero ) summing
 	  		(funcall (symbol-function heuristica) tablero posicion *color-maquina*)))))
+
+;; Comprueba el resultado de la partida
+;; Hay que tener en cuenta que se analiza un nodo para un jugador que ya ha echado su ficha, por eso todo
+;; parece pensado para su contrincante
+(defun analiza-final-ch (nodo-j-final &optional (canal t))
+  (escribe-nodo-j nodo-j-final canal)
+  (cond ((es-estado-ganador (estado nodo-j-final)
+                            (jugador nodo-j-final) 'min)
+         		(format canal "~&La ~a ha ganado") (third *procedimiento2*)) ;; Heurística 2
+        ((es-estado-ganador (estado nodo-j-final)
+                            (jugador nodo-j-final) 'max)
+         		(format canal "~&La ~a ha ganado") (third *procedimiento*)) ;; Heurística 1
+        (t (format canal "~&Empate"))))
