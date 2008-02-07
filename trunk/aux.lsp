@@ -31,7 +31,7 @@
 
 (defun ch()
 (recarga)
-(compara_heurs 'heuristica-4 'heuristica-5 3))
+(compara_heurs 'heuristica-4 'heuristica-1 4))
 
 
 (setf *0t* (make-array '(6 7) :initial-contents
