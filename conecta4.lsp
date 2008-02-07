@@ -17,7 +17,6 @@
 (defvar *jugador-maquina* 'max)
 (defvar *color-maquina* 'X)
 (defvar *color-humano* 'O)
-(defvar *profundidad* '3)
 (defvar *ultimo-movimiento* '(0 0)) ;; Última posición donde se ha echado una ficha
 
 ;; Estructura que representa un nodo del árbol de búsqueda
@@ -629,7 +628,6 @@ heuristica-favor))))
 (defvar *heuristica2*)
 (defvar *fichero-compara_heurs* "compara_heurs.txt")
 (defvar *procedimiento2*)
-(defvar *profundidad* 4)
 
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
