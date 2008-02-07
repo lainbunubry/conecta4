@@ -698,10 +698,9 @@ heuristica-favor))))
   (cond
     ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*))
     ((es-estado-ganador tablero jugador 'max) (* -1 *columnas* *minimo-valor*))
-  (t
     ((equal jugador *jugador-maquina*)
     		(loop for posicion in (posiciones-heuristicas tablero) summing
-			(funcall (symbol-function heuristica) tablero posicion *color-humano*)))))
+			(funcall (symbol-function heuristica) tablero posicion *color-humano*)))
     ((equal jugador *jugador-humano*)
 		(loop for posicion in (posiciones-heuristicas tablero ) summing
 	  		(funcall (symbol-function heuristica) tablero posicion *color-maquina*)))))
