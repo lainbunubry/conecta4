@@ -369,10 +369,10 @@ when (not (null x)) collect x))
     ((es-estado-ganador tablero jugador 'max) *minimo-valor*)
     ((equal jugador *jugador-maquina*)
     		(loop for posicion in (posiciones-heuristicas tablero) summing
-			(heuristica-4 tablero posicion *color-humano*)))
+			(heuristica-5 tablero posicion *color-humano*)))
     ((equal jugador *jugador-humano*)
 		(loop for posicion in (posiciones-heuristicas tablero ) summing
-	  		(heuristica-4 tablero posicion *color-maquina*)))))
+	  		(heuristica-5 tablero posicion *color-maquina*)))))
 
 ;; Devuelve la lista de posiciones adecuadas por la cual se va a valorar el tablero
 (defun posiciones-heuristicas (tablero)
