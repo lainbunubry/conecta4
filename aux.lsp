@@ -150,7 +150,7 @@
 
 
 (defun heurjoke (tablero posicion color)
-	(random 10))
+	(random 7))
 
 (defun pFED (color)
 (loop for x in *tableros* do
