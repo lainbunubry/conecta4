@@ -22,7 +22,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun recarga()
-(compile-file "conecta4.lsp")
+;; (compile-file "conecta4.lsp")
 (load "conecta4"))
 
 (defun jr()
@@ -31,7 +31,7 @@
 
 (defun ch()
 (recarga)
-(compara_heurs 'heuristica-1 'heuristica-4 4))
+(compara_heurs 'heuristica-1 'heuristica-4 3))
 
 
 (setf *0t* (make-array '(6 7) :initial-contents
