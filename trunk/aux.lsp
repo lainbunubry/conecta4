@@ -30,6 +30,19 @@
 (defun ch()
 (compara_heurs 'heuristica-3 'heuristica-4 3))
 
+;; TODO - No funciona, le faltan funciones ni se la llama bien desde f-e-estatica
+;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
+(defun heuristica-1 (tablero lista-valores jugador)
+	(loop for pos in lista-valores count (igual-color tablero pos color)))
+
+;; TODO - No funciona, le faltan funciones
+;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
+;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo
+(defun heuristica-2 (tablero posicion color)
+	(-
+		(fichas-consecutivas tablero posicion color)
+		(minimo-turnos-ocupar-posicion tablero posicion)))
+
 (setf *0t* (make-array '(6 7) :initial-contents
              '((x nil nil x nil nil o)
 		(X nil nil x nil nil o)
