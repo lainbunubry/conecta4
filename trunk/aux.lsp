@@ -22,26 +22,17 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun recarga()
-(load "conecta4.lsp"))
+(compile-file "conecta4.lsp")
+(load "conecta4"))
 
 (defun jr()
-(juego :procedimiento (list 'minimax-a-b '3)))
+(recarga)
+(juego :procedimiento (list 'minimax-a-b '4)))
 
 (defun ch()
-(compara_heurs 'heuristica-3 'heuristica-4 3))
+(recarga)
+(compara_heurs 'heuristica-4 'heuristica-5 3))
 
-;; TODO - No funciona, le faltan funciones ni se la llama bien desde f-e-estatica
-;; Cuenta el numero de piezas del mismo color que hay en un rango de 3 posiciones
-(defun heuristica-1 (tablero lista-valores jugador)
-	(loop for pos in lista-valores count (igual-color tablero pos color)))
-
-;; TODO - No funciona, le faltan funciones
-;; Cuenta el numero de fichas consecutivas que habría sin colocar la nuestra y le resta
-;; el numero de turnos que tardaríamos en poner la ficha allí, 3 es lo máximo
-(defun heuristica-2 (tablero posicion color)
-	(-
-		(fichas-consecutivas tablero posicion color)
-		(minimo-turnos-ocupar-posicion tablero posicion)))
 
 (setf *0t* (make-array '(6 7) :initial-contents
              '((x nil nil x nil nil o)
@@ -107,19 +98,7 @@
 		(nil nil x o nil nil nil)
 		(nil x o o o nil nil)
 		(x o o o x o o))))
-;; +---+---+---+---+---+---+---+
-;; |   |   |   |   |   |   |   |0
-;; +---+---+---+---+---+---+---+
-;; |   |   |   |   |   |   |   |1
-;; +---+---+---+---+---+---+---+
-;; |   |   |   |   |   |   |   |2
-;; +---+---+---+---+---+---+---+
-;; |   |   |   |   |   |   |   |3
-;; +---+---+---+---+---+---+---+
-;; |   |   |   | X |   |   |   |4
-;; +---+---+---+---+---+---+---+
-;; |   |   | X | X | O | O | O |5
-;; +---+---+---+---+---+---+---+
+
 (setf *8t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
@@ -147,11 +126,6 @@
 
 (setf *tableros* (list *0t* *1t* *2t* *3t* *4t* *5t* *6t* *7t* *8t* *9t*))
 
-
-
-(defun heurjoke (tablero posicion color)
-	(random 7))
-
 (defun pFED (color)
 (loop for x in *tableros* do
 (format t "valor ~a " (feD x color))))
@@ -174,6 +148,9 @@
 ;; 	(loop for mov in (posiciones-heuristicas tablero color) collect
 	(loop for mov in (posiciones-heuristicas tablero) collect
 		(heuristica-4 tablero mov color)))
+
+(defun crea-tablero-en-blanco ()
+  (setf *tablero* (make-array '(6 7))))
 
 ;; 		(heuristicaDC tablero (list (primera-posicion-vacia tablero mov) mov) color)))
 ;; ;; Devuelve todas las posiciones no ocupadas del tablero
@@ -459,8 +436,7 @@
 
 ; Constructor del tablero
 ;------------------------------
-(defun crea-tablero-en-blanco ()
-  (setf *tablero* (make-array '(6 7))))
+
 
 ;(crea-tablero-en-blanco)
 
