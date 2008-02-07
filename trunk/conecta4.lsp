@@ -224,7 +224,7 @@ when (not (null x)) collect x))
 		nuevo-tablero))
 
 ;; Determina si el juego ha llegado a su final
-(defun es-estado-final (tablero) ;debug
+(defun es-estado-final (tablero)
 (cond ((<= (length (movimientos-legales tablero)) 0) t)
 	(t 
 	(< 0
@@ -247,7 +247,7 @@ when (not (null x)) collect x))
 ;; Valores máximos y mínimos para las variables alfa y beta
 (defvar *minimo-valor* -10080)
 (defvar *maximo-valor* 10080)
-(defvar *medio-valor* 720) ;;porque son valores facilmente divisible 2*3*4*5*6
+(defvar *medio-valor* 720) 	;; Porque son valores facilmente divisible 2*3*4*5*6
 
 ;; Para un posible nodo del árbol devuelve sus hijos
 (defun sucesores (nodo-j)
