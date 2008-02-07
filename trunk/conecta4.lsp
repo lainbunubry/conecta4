@@ -384,8 +384,20 @@ when (not (null x)) collect x))
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Nucleo de la evaluación heuristica, valora cada posibilidad de hacer conecta4 en una
-;; fila, columna, diagonal, para una posicion dada y las suma.
+;; Heuristica aleatoria
+(defun heuristica-1 (tablero lista-valores jugador)
+(random 100))
+
+;; Primer intento de heuristica, solo tiene en cuenta el numero de
+;; fichas consecutivas
+(defun heuristica-2 (tablero posicion color)
+  (loop for x in (rango-accesible tablero posicion color)
+  when (> (length x) 3) 
+  summing
+    (cuenta-fichas-consecutivas x)))
+
+;; Nucleo base de la heuristica, valora cada posibilidad por separado y suma
+;; los resultados
 (defun heuristica-3  (tablero posicion color)
   (loop for x in (rango-accesible tablero posicion color) 
   when (> (length x) 3) 
@@ -395,8 +407,8 @@ when (not (null x)) collect x))
     (cuenta-fichas-consecutivas x) 
     (cuenta-fichas x))))
 
-;; Calcula el valor de cada una de las posibilidades representadas por una
-;; secuencia de posiciones y nil y devuelve una valoración adecuada
+;; Calcula el valor de cada una de las posibilidades (representadas por una
+;; secuencia de posiciones y nil) Devuelve una valoración adecuada.
 (defun heuristica-3-aux (distancia consecutivas fichas)
   (cond
     ((or (null distancia) (null consecutivas))
@@ -411,7 +423,7 @@ when (not (null x)) collect x))
     (t
 	(* (- *columnas* distancia ) fichas))))
 
-;; Complemento de la heuristica que ademas nos advierte de los movimientos
+;; Mejora de la heuristica que ahora tiene en cuenta los movimientos
 ;; peligroso de nuestro contrincante
 (defun heuristica-4 (tablero posicion color)
 (let 
@@ -423,6 +435,9 @@ when (not (null x)) collect x))
 	(t
     	(* -1 heuristica-contra))))) ;; El siguiente paso es para el contrario, favorecemos al contrario
 
+;; Mejora de la heuristica que ademas de advertirnos de los movimientos
+;; peligroso de nuestro contrincante, es áun mas cuidadosa.
+;; es menos agresiva y pierde mas veces
 (defun heuristica-5 (tablero posicion color)
 (let 
   ((heuristica-favor (heuristica-3 tablero posicion color))
@@ -438,11 +453,9 @@ heuristica-favor))))
 ;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Secuencias es una doble lista de valores, el primer miembro es la primera
-;; parte de la lista de valores y el segundo miembro es la segunda parte de la lista
-;; Se han ordenado de esta manera para facilitar contar las fichas consecutivas
-;; partiendo de la posicion inicial que se presupone nil
-;; Devuelve el numero de fichas del mismo color consecutivas
+;; Cuenta el máximo de fichas consecutivas de de una secuencia
+;; una ficha esta representada por su posición (i j)
+;; un hueco se representa por un nil
 (defun cuenta-fichas-consecutivas (secuencia)
 (let ((maximo 0)
 	(aux 0))
