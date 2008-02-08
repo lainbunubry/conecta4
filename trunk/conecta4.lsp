@@ -1,4 +1,43 @@
-(load "aux.lsp")
+(load "aux.lsp") ;; TODO - Borrar
+
+(defun menu
+	(let ((salir nil) (opcion 0) (heur1 nil) (heur2 nil) (prof 3) (ab 0))
+		(loop until salir
+			(format t "~&~%MENÚ - CONECTA 4~%~%")
+			(format t "Elija la opción que desee:~%")
+			(format t "1.- Jugar contra la máquina~%")
+			(format t "2.- Comparar dos heurísticas~%")
+			(format t "3.- Salir~%~%Su elección: ")
+			(setf opcion (read))
+			(cond 
+				((= opcion 1)
+					(format t "~&~%¿Contra qué heurística le gustaría jugar?~%Las heurísticas disponibles son:~%~%")
+					(format t "heuristica-1~%heuristica-2~%heuristica-3~%heuristica-4~%heuristica-5~%~%")
+					(format t "Nombre de la heurística: ")
+					(setf heur1 (read))
+					(format t "~&~%Introduzca la profundidad deseada para el algoritmo minimax: ")
+					(setf prof (read))
+					(format t "~&~%Escoja la versión del algoritmo que desee:~%")
+					(format t "1.- Minimax normal empezando el jugador~%")
+					(format t "2.- Minimax con poda alfa-beta empezando el jugador~%")
+					(format t "3.- Minimax normal empezando la máquina~%")
+					(format t "4.- Minimax con poda alfa-beta empezando la máquina~%~%Su elección: ")
+					(setf ab (read))
+					(cond
+						((= ab 1)
+							(juego :procedimiento (list 'minimax prof)))
+						((= ab 2)
+							(juego :procedimiento (list 'minimax-a-b prof)))
+						((= ab 3)
+							(juego :procedimiento (list 'minimax prof) :empieza-la-maquina? t))
+						((= ab 4)
+							(juego :procedimiento (list 'minimax-a-b prof) :empieza-la-maquina? t))
+				((= opcion 2)
+					)
+				((= opcion 3)
+					(setf salir t))
+				(t
+					(format t "~&~%Opción inválida, por favor escoja de nuevo"))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; REPRESENTACIÓN DE ESTADOS
