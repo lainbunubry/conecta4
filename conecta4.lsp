@@ -1,9 +1,9 @@
 (load "aux.lsp") ;; TODO - Borrar
 
-(defun menu
+(defun menu ()
 	(let ((salir nil) (opcion 0) (heur1 nil) (heur2 nil) (prof 3) (ab 0))
-		(loop until salir
-			(format t "~&~%MENÚ - CONECTA 4~%~%")
+		(loop until salir do
+			(format t "~&~%MENÚ - CONECTA 4~%+-+-+-+-+-+-+-+-+~%~%")
 			(format t "Elija la opción que desee:~%")
 			(format t "1.- Jugar contra la máquina~%")
 			(format t "2.- Comparar dos heurísticas~%")
@@ -11,10 +11,6 @@
 			(setf opcion (read))
 			(cond 
 				((= opcion 1)
-					(format t "~&~%¿Contra qué heurística le gustaría jugar?~%Las heurísticas disponibles son:~%~%")
-					(format t "heuristica-1~%heuristica-2~%heuristica-3~%heuristica-4~%heuristica-5~%~%")
-					(format t "Nombre de la heurística: ")
-					(setf heur1 (read))
 					(format t "~&~%Introduzca la profundidad deseada para el algoritmo minimax: ")
 					(setf prof (read))
 					(format t "~&~%Escoja la versión del algoritmo que desee:~%")
@@ -32,8 +28,18 @@
 							(juego :procedimiento (list 'minimax prof) :empieza-la-maquina? t))
 						((= ab 4)
 							(juego :procedimiento (list 'minimax-a-b prof) :empieza-la-maquina? t))
+						(t
+							(format t "~&~%Opciones erróneas, por favor escoja de nuevo"))))
 				((= opcion 2)
-					)
+					(format t "~&~%Las heurísticas disponibles son:~%~%")
+					(format t "heuristica-1~%heuristica-2~%heuristica-3~%heuristica-4~%heuristica-5~%~%")
+					(format t "Nombre de la primera heurística: ")
+					(setf heur1 (read))
+					(format t "~&~%Nombre de la segunda heurística: ")
+					(setf heur2 (read))
+					(format t "~&~%Introduzca la profundidad deseada para el algoritmo minimax: ")
+					(setf prof (read))
+					(compara_heurs heur1 heur2 prof))
 				((= opcion 3)
 					(setf salir t))
 				(t
