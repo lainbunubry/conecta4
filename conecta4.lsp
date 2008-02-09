@@ -1,7 +1,7 @@
 (load "aux.lsp") ;; TODO - Borrar
 
 (defun menu ()
-	(let ((salir nil) (opcion 0) (heur1 nil) (heur2 nil) (prof 3) (ab 0))
+	(let ((salir nil) (opcion 0) (heur1 nil) (heur2 nil) (prof 3) (ab 0) (emp 0))
 		(loop until salir do
 			(format t "~&~%MENÚ - CONECTA 4~%+-+-+-+-+-+-+-+-+~%~%")
 			(format t "Elija la opción que desee:~%")
@@ -39,7 +39,18 @@
 					(setf heur2 (read))
 					(format t "~&~%Introduzca la profundidad deseada para el algoritmo minimax: ")
 					(setf prof (read))
-					(compara_heurs heur1 heur2 prof))
+					(format t "~&~%Elija qué heurística desea que empiece la partida:~%")
+					(format t "1.- ~a~%2.- ~a~%~%Su elección: " heur1 heur2)
+					(setf emp (read))
+					(cond
+						((= emp 1)
+							(format t "~&~%Comienza la partida:~%")
+							(compara_heurs heur2 heur1 prof)) ;; Empieza la 2º que es MAX
+						((= emp 2)
+							(format t "~&~%Comienza la partida:~%")
+							(compara_heurs heur1 heur2 prof)) ;; Empieza la 2º que es MAX
+						(t
+							(format t "~&~%Opciones erróneas, por favor escoja de nuevo"))))
 				((= opcion 3)
 					(setf salir t))
 				(t
@@ -597,7 +608,6 @@ heuristica-favor))))
 	(> f *filas*)
 	(> c *columnas*)))
 
-
 ;; devuelve la fila en la que se encuentra nuestra ficha
 (defun seccion-fila-accesible (tablero f c color)
   (append 
@@ -658,6 +668,7 @@ heuristica-favor))))
 		(if (null (aref tablero  (+ f i) (+ c i)))
 		nil
 		(list (+ f i) (+ c i))))))
+
 ;; devuelve la diagonal derecha en la que se encuentra nuestra ficha
 (defun seccion-diagonal-der-accesible (tablero f c color) 
     (append
