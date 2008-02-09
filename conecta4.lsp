@@ -420,8 +420,8 @@
 ;; que echó último, es decir, el jugador anterior
 (defun f-e-estatica (tablero jugador)
   (cond
-   ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*))
-   ((es-estado-ganador tablero jugador 'max) *minimo-valor*)
+   ((es-estado-ganador tablero jugador 'max) (* *columnas* *minimo-valor*)) ;; tenemos que ver si gana nuestro oponente
+   ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor)) ;; ganamos!!!!
    ((equal jugador *jugador-maquina*)
     (loop for posicion in (posiciones-heuristicas tablero) summing
           (heuristica-4 tablero posicion *color-humano*)))
@@ -501,7 +501,6 @@
     (cond 
      ((>= heuristica-contra heuristica-favor)
       (* -1 heuristica-contra)) ;; El siguiente paso es para el contrario, favorecemos al contrario	
-     
      (t
       heuristica-favor))))
 
@@ -572,9 +571,9 @@
 
 ;; Nos devuelve la distancia entre dos posiciones (x y) (a b) abs (y -a)
 (defun distancia (posx posy)
-  (if (eq (second posx) (second posy))
-      2 ;; es una columna, damos menos prioridad a las columnas
-      (+ (abs (- (second posx) (second posy))))))
+;;   (if (eq (second posx) (second posy))
+;;       2 ;; es una columna, damos menos prioridad a las columnas
+      (+ (abs (- (second posx) (second posy)))))
 
 ;; Esta funcion de rango en la encargada de dada una posión devolver todas posiciones
 ;; interesantes y alcanzables desde el punto de vista analitico para nuestro juego.
@@ -767,8 +766,8 @@
 ;; que echó último, es decir, el jugador anterior
 (defun f-e-estatica-ch (tablero jugador heuristica)
   (cond
-    ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*))
-    ((es-estado-ganador tablero jugador 'max) *minimo-valor*)
+    ((es-estado-ganador tablero jugador 'max) (* *columnas* *minimo-valor*)) ;; Vemos si gana nuestro contrincante
+    ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*)) ;; Vemos si ganamos nosotros
     ((equal jugador *jugador-maquina*)
      (loop for posicion in (posiciones-heuristicas tablero) summing
            (funcall (symbol-function heuristica) tablero posicion *color-humano*)))
