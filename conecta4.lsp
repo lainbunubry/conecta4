@@ -426,7 +426,7 @@ when (not (null x)) collect x))
     		(loop for posicion in (posiciones-heuristicas tablero) summing
 			(heuristica-4 tablero posicion *color-humano*)))
     ((equal jugador *jugador-humano*)
-		(loop for posicion in (posiciones-heuristicas tablero ) summing
+		(loop for posicion in (posiciones-heuristicas tablero) summing
 	  		(heuristica-4 tablero posicion *color-maquina*)))))
 
 ;; Devuelve la lista de posiciones adecuadas por la cual se va a valorar el tablero
@@ -773,7 +773,7 @@ heuristica-favor))))
     		(loop for posicion in (posiciones-heuristicas tablero) summing
 			(funcall (symbol-function heuristica) tablero posicion *color-humano*)))
     ((equal jugador *jugador-humano*)
-		(loop for posicion in (posiciones-heuristicas tablero ) summing
+		(loop for posicion in (posiciones-heuristicas tablero) summing
 	  		(funcall (symbol-function heuristica) tablero posicion *color-maquina*)))))
 
 ;; Comprueba el resultado de la partida
