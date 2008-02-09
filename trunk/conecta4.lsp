@@ -784,10 +784,10 @@ heuristica-favor))))
   (cond ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'min)
 			(format t "~&La ~a ha ganado~%" (third *procedimiento2*))
-         		(format canal "~%La ~a ha ganado~%" (third *procedimiento2*))) ;; Heurística 2 gana
+         		(format canal "~%~%La ~a ha ganado~%" (third *procedimiento2*))) ;; Heurística 2 gana
         ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'max)
 			(format t "~&La ~a ha ganado~%" (third *procedimiento*))
-         		(format canal "~%La ~a ha ganado~%" (third *procedimiento*))) ;; Heurística 1 gana
+         		(format canal "~%~%La ~a ha ganado~%" (third *procedimiento*))) ;; Heurística 1 gana
         (t (format t "~&Empate~%")
-	   (format canal "~%Empate~%"))))
+	   (format canal "~%~%Empate~%"))))
