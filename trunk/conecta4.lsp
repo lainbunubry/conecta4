@@ -430,6 +430,10 @@
     (loop for posicion in (posiciones-heuristicas tablero) summing
           (heuristica-4 tablero posicion *color-maquina*)))))
 
+;; Nota: Por algún motivo, cuando se trata de profundidades pares en el algoritmo minimax,
+;; la IA se comporta de una forma muy ineficaz. Hemos comprobado experimentalmente que
+;; para profundidades impares funciona decentemente pero para las pares juega muy mal.
+
 ;; Devuelve la lista de posiciones adecuadas por la cual se va a valorar el tablero
 (defun posiciones-heuristicas (tablero)
   (loop for i from 0 to *columnas* collect
