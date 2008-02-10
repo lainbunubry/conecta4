@@ -1,23 +1,25 @@
-;; Interfaz de la aplicación, permite escoger de una forma comoda todas las posibilidades del juego
+;; Se ha evitado escribir tildes a proposito, para evitar los posibles conflictos que pueden
+;; provocar al ser caracteres especiales
 
+;; Interfaz de la aplicacion, permite escoger de una forma comoda todas las posibilidades del juego
 (defun menu ()
   (let ((salir nil) (opcion 0) (heur1 nil) (heur2 nil) (prof 3) (ab 0) (emp 0))
     (loop until salir do
-          (format t "~&~%MENÚ - CONECTA 4~%+-+-+-+-+-+-+-+-+~%~%")
-          (format t "Elija la opción que desee:~%")
-          (format t "1.- Jugar contra la máquina~%")
-          (format t "2.- Comparar dos heurísticas~%")
-          (format t "3.- Salir~%~%Su elección: ")
+          (format t "~&~%MENU - CONECTA 4~%+-+-+-+-+-+-+-+-+~%~%")
+          (format t "Elija la opcion que desee:~%")
+          (format t "1.- Jugar contra la maquina~%")
+          (format t "2.- Comparar dos heuristicas~%")
+          (format t "3.- Salir~%~%Su eleccion: ")
           (setf opcion (read))
           (cond 
            ((= opcion 1)
             (format t "~&~%Introduzca la profundidad deseada para el algoritmo minimax: ")
             (setf prof (read))
-            (format t "~&~%Escoja la versión del algoritmo que desee:~%")
+            (format t "~&~%Escoja la version del algoritmo que desee:~%")
             (format t "1.- Minimax normal empezando el jugador~%")
             (format t "2.- Minimax con poda alfa-beta empezando el jugador~%")
-            (format t "3.- Minimax normal empezando la máquina~%")
-            (format t "4.- Minimax con poda alfa-beta empezando la máquina~%~%Su elección: ")
+            (format t "3.- Minimax normal empezando la maquina~%")
+            (format t "4.- Minimax con poda alfa-beta empezando la maquina~%~%Su eleccion: ")
             (setf ab (read))
             (cond
              ((= ab 1)
@@ -29,18 +31,18 @@
              ((= ab 4)
               (juego :procedimiento (list 'minimax-a-b prof) :empieza-la-maquina? t))
              (t
-              (format t "~&~%Opciones erróneas, por favor escoja de nuevo"))))
+              (format t "~&~%Opciones erroneas, por favor escoja de nuevo"))))
            ((= opcion 2)
-            (format t "~&~%Las heurísticas disponibles son:~%~%")
+            (format t "~&~%Las heuristicas disponibles son:~%~%")
             (format t "heuristica-1~%heuristica-2~%heuristica-3~%heuristica-4~%~%")
-            (format t "Nombre de la primera heurística: ")
+            (format t "Nombre de la primera heuristica: ")
             (setf heur1 (read))
-            (format t "~&~%Nombre de la segunda heurística: ")
+            (format t "~&~%Nombre de la segunda heuristica: ")
             (setf heur2 (read))
             (format t "~&~%Introduzca la profundidad deseada para el algoritmo minimax: ")
             (setf prof (read))
-            (format t "~&~%Elija qué heurística desea que empiece la partida:~%")
-            (format t "1.- ~a~%2.- ~a~%~%Su elección: " heur1 heur2)
+            (format t "~&~%Elija que heuristica desea que empiece la partida:~%")
+            (format t "1.- ~a~%2.- ~a~%~%Su eleccion: " heur1 heur2)
             (setf emp (read))
             (cond
              ((= emp 1)
@@ -50,18 +52,18 @@
               (format t "~&~%Comienza la partida:~%")
               (compara_heurs heur1 heur2 prof)) ;; Empieza la 2º que es MAX
              (t
-              (format t "~&~%Opciones erróneas, por favor escoja de nuevo"))))
+              (format t "~&~%Opciones erroneas, por favor escoja de nuevo"))))
            ((= opcion 3)
             (setf salir t))
            (t
-            (format t "~&~%Opción inválida, por favor escoja de nuevo"))))))
+            (format t "~&~%Opcion invalida, por favor escoja de nuevo"))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; REPRESENTACIÓN DE ESTADOS
+;;; REPRESENTACIoN DE ESTADOS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Se ha elegido una representación a partir de una matriz, en donde las fichas
-;; de cada bando se representan por X u O respectivamente, y las casillas vacías
+;; Se ha elegido una representacion a partir de una matriz, en donde las fichas
+;; de cada bando se representan por X u O respectivamente, y las casillas vacias
 ;; mediante NIL
 
 ;; Definicion de variables
@@ -73,24 +75,24 @@
 (defvar *jugador-maquina* 'max)
 (defvar *color-maquina* 'X)
 (defvar *color-humano* 'O)
-(defvar *ultimo-movimiento* '(0 0)) ;; Última posición donde se ha echado una ficha
+(defvar *ultimo-movimiento* '(0 0)) ;; ultima posicion donde se ha echado una ficha
 
-;; Estructura que representa un nodo del árbol de búsqueda
+;; Estructura que representa un nodo del arbol de busqueda
 (defstruct (nodo-j (:constructor crea-nodo-j)
                    (:conc-name nil)
                    (:print-function escribe-nodo-j))
   estado 		;; Tablero modificado
   jugador
-  valor) 		;; Valor heurístico de la nueva jugada
+  valor) 		;; Valor heuristico de la nueva jugada
 
 ;; Funcion que muestra por pantalla (u otro canal) el nodo dado
 (defun escribe-nodo-j (nodo-j &optional (canal t))
   (format canal "~%Estado :~%")
   (imprime-tablero (estado nodo-j) canal)
-  (format canal "~%Último movimiento : ~a" *ultimo-movimiento*))
+  (format canal "~%ultimo movimiento : ~a" *ultimo-movimiento*))
 ;; 	(format canal "~%Jugador : ~a" (jugador nodo-j)))
 
-;; Función que inicializa *nodo-j-inicial*
+;; Funcion que inicializa *nodo-j-inicial*
 (defun crea-nodo-j-inicial (jugador)
   (setf *estado-inicial* (make-array '(6 7)))
   (setf *nodo-j-inicial*
@@ -112,17 +114,17 @@
 	  (format canal "| ~a~%" i)
 	  (escribe-linea-aux c canal))))
 
-;; Genera una línea del tablero a mostrar
+;; Genera una linea del tablero a mostrar
 (defun escribe-linea-aux (col canal)
   (loop for i from 0 to (- col 1)
         do (format canal "+---"))
        (format canal "+~%"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; ARBITRACIÓN
+;;; ARBITRACIoN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Variable con la información del algoritmo a usar
+;; Variable con la informacion del algoritmo a usar
 (defvar *procedimiento*)
 (defvar *movimientos* '(0 1 2 3 4 5 6))		;; Lista con las columnas en las que echar una ficha
 
@@ -152,7 +154,7 @@
          (format canal "~&El humano ha ganado"))
         (t (format canal "~&Empate"))))
 
-;; Función llamada cuando es el turno de la máquina
+;; Funcion llamada cuando es el turno de la maquina
 (defun jugada-maquina (nodo-j)
   (escribe-nodo-j nodo-j)
   (format t "~%Mi turno.~&")
@@ -162,7 +164,7 @@
         (analiza-final siguiente)
         (jugada-humana siguiente))))
 
-;; Devuelve para un determinado estado qué movimientos son posibles
+;; Devuelve para un determinado estado que movimientos son posibles
 (defun movimientos-legales (estado)
   (loop for m in *movimientos*
         when (primera-posicion-vacia estado m)
@@ -183,7 +185,7 @@
               (format t "   Col ~a (Tecla ~a)" m m))
           (setf numero (+ numero 1)))))
 
-;; Función llamada cuando es el turno del humano
+;; Funcion llamada cuando es el turno del humano
 ;; Modificado para permitir al humano solicitar consejo
 (defun jugada-humana (nodo-j)
   (escribe-nodo-j nodo-j)
@@ -202,7 +204,7 @@
                       (let ((siguiente (crea-nodo-j
 					:estado nuevo-estado
 					:jugador 'max))) 
-                        (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;;Elección del humano
+                        (setf *ultimo-movimiento* (compara-tableros (estado nodo-j) (estado siguiente))) ;;Eleccion del humano
                         (if (es-estado-final nuevo-estado)
                             (analiza-final siguiente)
                             (jugada-maquina siguiente))))
@@ -211,19 +213,19 @@
             (t (format t "~&   ~a es ilegal. " m)
                (jugada-humana nodo-j))))))
 
-;; Función que se llama cuando se pide consejo a la máquina
+;; Funcion que se llama cuando se pide consejo a la maquina
 (defun solicitar-consejo (nodo-j)
   (format t "Pensando")
   (let ((siguiente (aplica-decision *procedimiento* nodo-j)))
-    (format t " - Mi recomendación: ~a" (second (compara-tableros
+    (format t " - Mi recomendacion: ~a" (second (compara-tableros
 							(estado nodo-j)
 							(estado siguiente))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; FUNCIONES AUXILIARES DE ARBITRACIÓN
+;;; FUNCIONES AUXILIARES DE ARBITRACIoN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Compara dos tableros, tales que el segundo es el mismo que el primero pero con una jugada más,
+;; Compara dos tableros, tales que el segundo es el mismo que el primero pero con una jugada mas,
 ;; y devuelve el movimiento que lleva del primer tablero al segundo
 (defun compara-tableros (viejo nuevo)
   (let ((resultado nil))
@@ -234,7 +236,7 @@
                     nil)))
     resultado))
 
-;; Determina si ha ganado algún jugador la partida
+;; Determina si ha ganado algun jugador la partida
 ;; Hay que tener en cuenta que se analiza un nodo para un jugador que ya ha echado su ficha, por eso todo
 ;; parece pensado para su contrincante
 (defun es-estado-ganador (tablero jugador turno)
@@ -242,7 +244,7 @@
 		(cond			
 		 ((and (equal jugador *jugador-humano*)
                               (equal turno 'min))
-                         t) ;; Gana máquina
+                         t) ;; Gana maquina
 		 ((and (equal jugador *jugador-maquina*)
                               (equal turno 'max))
                          t) ;; Gana humano
@@ -251,17 +253,17 @@
 		 (t nil))
 		nil))
 
-;; Comprueba si la ficha de la posición dada es del color dado
+;; Comprueba si la ficha de la posicion dada es del color dado
 (defun mismo-color (tablero posicion color)
   (if (eq (aref tablero (first posicion) (second posicion)) color)
       t 
       nil))
 
-;; Devuelve el nodo siguiente según una jugada de la IA
+;; Devuelve el nodo siguiente segun una jugada de la IA
 (defun aplica-decision (procedimiento nodo-j)
   (funcall (symbol-function (first procedimiento)) nodo-j (first (rest procedimiento))))
 
-;; Devuelve el estado siguiente según el movimiento dado por el jugador, sin alterar el tablero original
+;; Devuelve el estado siguiente segun el movimiento dado por el jugador, sin alterar el tablero original
 (defun aplica-movimiento (columna tablero color)
   (let ((posicion (primera-posicion-vacia tablero columna))
         (nuevo-tablero (duplica-tablero tablero)))
@@ -301,12 +303,12 @@
 ;;; ALGORITMO MINIMAX
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Valores máximos y mínimos para las variables alfa y beta
+;; Valores maximos y minimos para las variables alfa y beta
 (defvar *minimo-valor* -10080)
 (defvar *maximo-valor* 10080)
 (defvar *medio-valor* 720) ;;porque son valores facilmente divisible 2*3*4*5*6
 
-;; Para un posible nodo del árbol devuelve sus hijos
+;; Para un posible nodo del arbol devuelve sus hijos
 (defun sucesores (nodo-j)
   (let ((resultado ()))
     (loop for movimiento in *movimientos* do
@@ -341,7 +343,7 @@
                 (maximizador sucesores profundidad)
                 (minimizador sucesores profundidad))))))
 
-;; Función que busca maximizar (MAX) la puntuación
+;; Funcion que busca maximizar (MAX) la puntuacion
 (defun maximizador (sucesores profundidad)
   (let ((mejor-sucesor (first sucesores))
         (mejor-valor *minimo-valor*))
@@ -353,7 +355,7 @@
     (setf (valor mejor-sucesor) mejor-valor)
     mejor-sucesor))
 
-;; Función que busca minimizar (MIN) la puntuación
+;; Funcion que busca minimizar (MIN) la puntuacion
 (defun minimizador (sucesores profundidad)
   (let ((mejor-sucesor (first sucesores))
         (mejor-valor *maximo-valor*))
@@ -384,7 +386,7 @@
                  (sort sucesores #'< :key (lambda (nodo) (f-e-estatica (estado nodo) 'max)))
                  profundidad alfa beta))))))
 
-;; Función que busca maximizar (MAX) la puntuación con ALFA-BETA
+;; Funcion que busca maximizar (MAX) la puntuacion con ALFA-BETA
 (defun maximizador-a-b (sucesores profundidad alfa beta)
   (let ((mejor-sucesor (first sucesores))
         (valor 0))
@@ -399,7 +401,7 @@
     (setf (valor mejor-sucesor) alfa)
     mejor-sucesor))
 
-;; Función que busca minimizar (MIN) la puntuación con ALFA-BETA
+;; Funcion que busca minimizar (MIN) la puntuacion con ALFA-BETA
 (defun minimizador-a-b (sucesores profundidad alfa beta)
   (let ((mejor-sucesor (first sucesores))
         (valor 0))
@@ -414,11 +416,11 @@
     (setf (valor mejor-sucesor) beta)
     mejor-sucesor))
 
-;; Devuelve una valoración heurística para un nodo (jugada)
+;; Devuelve una valoracion heuristica para un nodo (jugada)
 ;; Parece que no tenga sentido comprobar las posiciones para el color del jugador contrario, pero al igual
-;; que es-estado-ganador o analiza-final resulta que el jugador que recibimos como parámetro no es otro que
-;; el del último nodo creado, un nodo sucesor del cual queremos conocer su heurística pero para el jugador
-;; que echó último, es decir, el jugador anterior
+;; que es-estado-ganador o analiza-final resulta que el jugador que recibimos como parametro no es otro que
+;; el del ultimo nodo creado, un nodo sucesor del cual queremos conocer su heuristica pero para el jugador
+;; que echo ultimo, es decir, el jugador anterior
 (defun f-e-estatica (tablero jugador)
   (cond
    ((es-estado-ganador tablero jugador 'max) *minimo-valor*) ;; tenemos que ver si gana nuestro oponente
@@ -430,7 +432,7 @@
     (loop for posicion in (posiciones-heuristicas tablero) summing
           (heuristica-4 tablero posicion *color-maquina*)))))
 
-;; Nota: Por algún motivo, cuando se trata de profundidades pares en el algoritmo minimax,
+;; Nota: Por algun motivo, cuando se trata de profundidades pares en el algoritmo minimax,
 ;; la IA se comporta de una forma muy ineficaz. Hemos comprobado experimentalmente que
 ;; para profundidades impares funciona decentemente pero para las pares juega muy mal.
 
@@ -442,7 +444,7 @@
             (primera-posicion-vacia tablero i))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; FUNCIONES HEURÍSTICAS
+;;; FUNCIONES HEURiSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Nucleo base de la heuristica, valora cada posibilidad por separado y suma
 ;; los resultados
@@ -457,7 +459,7 @@
          (centrado (second posicion)))))
 
 ;; Calcula el valor de cada una de las posibilidades (representadas por una
-;; secuencia de posiciones y nil) Devuelve una valoración adecuada.
+;; secuencia de posiciones y nil) Devuelve una valoracion adecuada.
 (defun nucleo-aux (distancia consecutivas fichas centrado)
   (cond
    ((= 1 consecutivas) ;;Tablero vacio
@@ -473,7 +475,7 @@
     (* (- (* *columnas* fichas ) distancia)))))
 
 ;; Nucleo base de la heuristica para el contrincante
-;; valora mucho más los movimientos peligrosos del contrario
+;; valora mucho mas los movimientos peligrosos del contrario
 ;; para evitar que gane a toda costa
 
 (defun nucleo-contrincante (tablero posicion color)
@@ -487,7 +489,7 @@
          (centrado (second posicion)))))
 
 ;; Calcula el valor de cada una de las posibilidades (representadas por una
-;; secuencia de posiciones y nil) Devuelve una valoración adecuada.
+;; secuencia de posiciones y nil) Devuelve una valoracion adecuada.
 (defun nucleo-contrincante-aux (distancia consecutivas fichas centrado)
   (cond
    ((= 1 consecutivas) ;;Tablero vacio
@@ -524,18 +526,18 @@
 (defun heuristica-4 (tablero posicion color)
   (let 
       ((heuristica-favor (nucleo tablero posicion color))
-       (heuristica-contra (nucleo-contrincante tablero posicion color))) ;; Le da menos prioridad a ganar él
+       (heuristica-contra (nucleo-contrincante tablero posicion color))) ;; Le da menos prioridad a ganar el
     (if (> heuristica-favor (abs heuristica-contra))
      heuristica-favor 
      heuristica-contra)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
+;; FUNCIONES AUXILIARES DE LA HEURiSTICA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Cuenta el máximo de fichas consecutivas de de una secuencia
-;; una ficha esta representada por su posición (i j)
+;; Cuenta el maximo de fichas consecutivas de de una secuencia
+;; una ficha esta representada por su posicion (i j)
 ;; un hueco se representa por un nil
 (defun cuenta-fichas-consecutivas (secuencia)
   (let ((maximo 0)
@@ -554,14 +556,14 @@
 (defun cuenta-fichas (secuencia)
   (loop for x in secuencia count (not (null x))))
 
-;; Devuelve el maximo entero de la lista, y si la lista es vacía devuelve 0
+;; Devuelve el maximo entero de la lista, y si la lista es vacia devuelve 0
 (defun maximo (lista)
   (if  (null lista)
       0
       (apply #'max
              (loop for x in lista when (not (null x)) collect x)))) ;; Hay que filtrar los nil ya que max no los reconoce
 
-;; Devuelve la posición de la primera casillla ocupada de la columna
+;; Devuelve la posicion de la primera casillla ocupada de la columna
 (defun primera-posicion-ocupada (tablero columna)
   (let ((fila 
          (loop for i from 0 to *filas* until (aref tablero i columna) count t)))
@@ -569,7 +571,7 @@
 	nil
 	(list fila columna))))
 
-;; Devuelve la posición de la primera casillla vacía de la columna
+;; Devuelve la posicion de la primera casillla vacia de la columna
 (defun primera-posicion-vacia (tablero columna)
   (let (( fila 
           (- *filas* (loop for i from *filas* downto 0 
@@ -587,11 +589,11 @@
 ;;; FUNCIONES DE RANGOS DE VALORES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Genera una secuencia con el rango de valores accesibles desde una posición
+;; Genera una secuencia con el rango de valores accesibles desde una posicion
 ;; en el tablero y que conecten con un color
 
 ;; nos devuelve la distancia minima en columnas de una lista de posiciones a una
-;; posición dada
+;; posicion dada
 (defun distancia-minima (lista pos)
   (loop for x in lista when (not (null x)) minimize (distancia x pos)))
 
@@ -607,7 +609,7 @@
 (mod columna (/ *columnas* 2))
 (- *columnas* columna)))
 
-;; Esta funcion de rango en la encargada de dada una posión devolver todas posiciones
+;; Esta funcion de rango en la encargada de dada una posion devolver todas posiciones
 ;; interesantes y alcanzables desde el punto de vista analitico para nuestro juego.
 ;; mira si la posicion es accesible y si no la corta ninguna ficha de otro color
 ;; devuelve una lista de listas de posiciones donde se encuentran nuestras fichas y
@@ -623,13 +625,13 @@
 	when (< 3 (length x)) collect x) ;; filtro que tenga un tamaño minimo de 4
    nil))
 
-;; Función que dice si la posicion inferior esta ocupada o no
+;; Funcion que dice si la posicion inferior esta ocupada o no
 (defun inacesible (tablero f c)
   (if (pos-invalida (+ f 1) c)
       nil ;;tamos en el fondo del tablero
       (null (aref tablero (+ f 1) c))))
 
-;; Función de corte,devuelve T sólo si es distinto color
+;; Funcion de corte,devuelve T solo si es distinto color
 (defun corte (x y)
   (not (or (eq x y) (null x))))
 
@@ -684,7 +686,7 @@
 ;; devuelve la diagonal izquierda en la que se encuentra nuestra ficha
 (defun seccion-diagonal-izq-accesible (tablero f c color) 
   (append
-   (reverse ;; tiene que estar al revés
+   (reverse ;; tiene que estar al reves
     (loop for i from 1 to (max *filas* *columnas*)  ;;tiene en cuenta el centro
           until (or 
                  (pos-invalida (- f i) (- c i)) 
@@ -708,7 +710,7 @@
 ;; devuelve la diagonal derecha en la que se encuentra nuestra ficha
 (defun seccion-diagonal-der-accesible (tablero f c color) 
   (append
-   (reverse ;; tiene que estar al revés
+   (reverse ;; tiene que estar al reves
     (loop for i from 1 to *columnas* ;; tiene en cuenta el centro
           until (or 
                  (pos-invalida (+ f i) (- c i)) 
@@ -730,7 +732,7 @@
              (list (- f i) (+ c i))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; FUNCIONES PARA COMPARAR HEURÍSTICAS
+;;; FUNCIONES PARA COMPARAR HEURiSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Variables para compara_heurs
@@ -738,8 +740,8 @@
 (defvar *procedimiento2*)
 
 
-;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
-;; resulta si MIN utiliza la primera heurística y MAX la segunda
+;; Recibe los nombres de dos funciones heuristicas y genere un fichero de texto con la partida que
+;; resulta si MIN utiliza la primera heuristica y MAX la segunda
 ;; NOTA no funciona, gana siempre la que pones primera
 (defun compara_heurs (heuristica1 heuristica2 profundidad)
   (setf *procedimiento* (list 'minimax-a-b-ch profundidad heuristica1))
@@ -748,9 +750,9 @@
                   (crea-nodo-j-inicial 'max)
                   (if (es-estado-final *estado-inicial*)
                       (analiza-final-ch *nodo-j-inicial* str)
-                      (jugada-maquina-ch2 *nodo-j-inicial* str)))) ;; MAX usa la segunda heurística
+                      (jugada-maquina-ch2 *nodo-j-inicial* str)))) ;; MAX usa la segunda heuristica
 
-;; Función llamada cuando es el turno de la máquina de la heurística 1 en compara_heurs
+;; Funcion llamada cuando es el turno de la maquina de la heuristica 1 en compara_heurs
 ;; Juega con *color-humano*
 (defun jugada-maquina-ch1 (nodo-j canal)
   (escribe-nodo-j nodo-j canal)
@@ -763,7 +765,7 @@
         (analiza-final-ch siguiente canal)
         (jugada-maquina-ch2 siguiente canal))))
 
-;; Función llamada cuando es el turno de la máquina de la heurística 2 en compara_heurs
+;; Funcion llamada cuando es el turno de la maquina de la heuristica 2 en compara_heurs
 ;; Juega con *color-maquina*
 (defun jugada-maquina-ch2 (nodo-j canal)
   (escribe-nodo-j nodo-j canal)
@@ -776,7 +778,7 @@
         (analiza-final-ch siguiente canal)
         (jugada-maquina-ch1 siguiente canal))))
 
-;; Devuelve el nodo siguiente según una jugada de la IA para compara_heurs
+;; Devuelve el nodo siguiente segun una jugada de la IA para compara_heurs
 (defun aplica-decision-ch (procedimiento nodo-j)
   (funcall (symbol-function (first procedimiento)) nodo-j (first (rest procedimiento)) (second (rest procedimiento))))
 
@@ -799,11 +801,11 @@
                  (sort sucesores #'< :key (lambda (nodo) (f-e-estatica-ch (estado nodo) 'max heuristica)))
                  profundidad alfa beta))))))
 
-;; Devuelve una valoración heurística para un nodo (jugada) para compara_heurs
+;; Devuelve una valoracion heuristica para un nodo (jugada) para compara_heurs
 ;; Parece que no tenga sentido comprobar las posiciones para el color del jugador contrario, pero al igual
-;; que es-estado-ganador o analiza-final resulta que el jugador que recibimos como parámetro no es otro que
-;; el del último nodo creado, un nodo sucesor del cual queremos conocer su heurística pero para el jugador
-;; que echó último, es decir, el jugador anterior
+;; que es-estado-ganador o analiza-final resulta que el jugador que recibimos como parametro no es otro que
+;; el del ultimo nodo creado, un nodo sucesor del cual queremos conocer su heuristica pero para el jugador
+;; que echo ultimo, es decir, el jugador anterior
 (defun f-e-estatica-ch (tablero jugador heuristica)
   (cond
     ((es-estado-ganador tablero jugador 'max) *minimo-valor*) ;; Vemos si gana nuestro contrincante
@@ -825,19 +827,19 @@
   (cond ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'min)
          (format t "~&La ~a ha ganado~%" (third *procedimiento2*))
-         (format canal "~%~%La ~a ha ganado~%" (third *procedimiento2*))) ;; Heurística 2 gana
+         (format canal "~%~%La ~a ha ganado~%" (third *procedimiento2*))) ;; Heuristica 2 gana
         ((es-estado-ganador (estado nodo-j-final)
                             (jugador nodo-j-final) 'max)
          (format t "~&La ~a ha ganado~%" (third *procedimiento*))
-         (format canal "~%~%La ~a ha ganado~%" (third *procedimiento*))) ;; Heurística 1 gana
+         (format canal "~%~%La ~a ha ganado~%" (third *procedimiento*))) ;; Heuristica 1 gana
         (t (format t "~&Empate~%")
 	   (format canal "~%~%Empate~%"))))
 
-;; Lanza el menu de la aplicación compilado
+;; Lanza el menu de la aplicacion compilado
 (defun lanzador()
 (compile-file "conecta4.lsp")
 (load "conecta4")
 (menu))
 
-;; Lanzador automatico de la aplicación
+;; Lanzador automatico de la aplicacion
 (menu)
