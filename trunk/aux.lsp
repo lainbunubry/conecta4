@@ -20,6 +20,7 @@
 ;Agustín Riscos Núñez
 ;ariscosn@us.es
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun recarga()
 (compile-file "conecta4.lsp")
@@ -56,6 +57,22 @@
 		(nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
 		(nil nil nil x nil nil nil)
+		(nil nil x x nil nil nil))))
+
+(setf *21t* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil x nil nil nil)
+		(nil nil x x o nil nil))))
+
+(setf *22t* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil o x nil nil nil)
 		(nil nil x x nil nil nil))))
 
 
@@ -99,6 +116,30 @@
 		(nil x o o o nil nil)
 		(x o o o x o o))))
 
+(setf *71t* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil x nil nil o nil)
+		(nil nil x o nil x nil)
+		(nil x o o o x nil)
+		(x o o o x o o))))
+
+(setf *72t* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil x nil nil nil)
+		(nil nil x o nil nil nil)
+		(nil x o o o nil nil)
+		(x o o o x o o))))
+
+(setf *73t* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil x nil nil nil nil)
+		(nil nil x o nil nil nil)
+		(nil x o o o x nil)
+		(x o o o x o o))))
+
 (setf *8t* (make-array '(6 7) :initial-contents
              '((nil nil nil nil nil nil nil)
 		(nil nil nil nil nil nil nil)
@@ -123,8 +164,16 @@
 		(nil nil nil nil nil nil nil)
 		(nil x nil o nil nil nil))))
 
+(setf *91t* (make-array '(6 7) :initial-contents
+             '((nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil nil nil nil nil)
+		(nil nil nil x nil nil nil))))
 
-(setf *tableros* (list *0t* *1t* *2t* *3t* *4t* *5t* *6t* *7t* *8t* *9t*))
+
+(setf *tableros* (list *0t* *1t* *2t* *21t* *22t* *3t* *4t* *5t* *6t* *7t* *71t* *72t* *73t* *8t* *80t* *9t* *91t*))
 
 (defun pFED (color)
 (loop for x in *tableros* do
@@ -445,3 +494,113 @@
 
 
 ;(posicion-vacia *tablero* 1 1)
+
+
+(defun rango (tablero pos color)
+(loop for x in
+	(list 
+		(seccion-fila tablero (first pos) (second pos) color) 
+		(seccion-columna tablero (first pos) (second pos) color) 
+		(seccion-diagonal-izq tablero (first pos) (second pos) color) 
+		(seccion-diagonal-der tablero (first pos) (second pos) color))
+	when (< 3 (length x)) collect x)) ;; filtro que tenga un tamaño minimo de 4
+
+;; Función que dice si la posicion inferior esta ocupada o no
+
+;; devuelve la fila en la que se encuentra nuestra ficha
+(defun seccion-fila (tablero f c color)
+  (append 
+	(reverse 
+	(loop for i from c downto 0  ;;tiene en cuenta el centro
+		until 
+			(corte (aref tablero f i) color) 		
+    	collect
+		(if (null (aref tablero f i))
+			nil
+			(list f i))))
+	(loop for i from (+ 1 c) to *columnas* 
+		until 
+			(corte (aref tablero f i) color) 			
+    		collect
+		(if (null (aref tablero f i))
+			nil
+			(list f i)))))
+
+;; devuelve la columna en la que se encuentra nuestra ficha
+(defun seccion-columna (tablero f c color)
+  (append 
+	(loop for i from 0 to f until (corte (aref tablero i c) color)
+	  collect
+	  (if (null (aref tablero i c))
+	    nil
+	    (list i c)))
+ ;; las posiciones arriba no estan ocupadas
+	(loop for i from (+ 1 f) to *filas* until (corte (aref tablero i c) color)
+    		collect
+		(if (null (aref tablero i c))
+			nil
+			(list i c)))))
+
+;; devuelve la diagonal izquierda en la que se encuentra nuestra ficha
+(defun seccion-diagonal-izq (tablero f c color) 
+    (append
+	(reverse ;; tiene que estar al revés
+	(loop for i from 0 to *maximo-valor*  ;;tiene en cuenta el centro
+		until (or 
+			(pos-invalida (- f i) (- c i)) 
+			(corte (aref tablero (- f i) (- c i)) color)) 
+	collect
+		(if (null (aref tablero  (- f i) (- c i)))
+		nil
+		(list(- f i) (- c i)))))
+	(loop for i from 1 to *maximo-valor* 
+		until (or 
+			(pos-invalida (+ f i) (+ c i)) 
+			(corte (aref tablero (+ f i) (+ c i)) color) )
+	collect
+		(if (null (aref tablero  (+ f i) (+ c i)))
+		nil
+		(list (+ f i) (+ c i))))))
+;; devuelve la diagonal derecha en la que se encuentra nuestra ficha
+(defun seccion-diagonal-der (tablero f c color) 
+    (append
+	(reverse ;; tiene que estar al revés
+	(loop for i from 0 to *maximo-valor* ;; tiene en cuenta el centro
+		until (or 
+			(pos-invalida (+ f i) (- c i)) 
+			(corte (aref tablero (+ f i) (- c i)) color) )			
+	collect
+		(if (null (aref tablero  (+ f i) (- c i)))
+		nil
+		(list (+ f i) (- c i)))))
+	(loop for i from 1 to *maximo-valor* 
+		until (or 
+			(pos-invalida (- f i) (+ c i)) 
+			(corte (aref tablero (- f i) (+ c i)) color) )
+	collect
+		(if (null (aref tablero  (- f i) (+ c i)))
+		nil
+		(list (- f i) (+ c i))))))
+
+(defun heuristica-3Bis  (tablero posicion color)
+  (loop for x in (rango tablero posicion color) 
+  when (> (length x) 3) 
+  summing
+    (heuristica-3-aux 
+    (distancia-minima x posicion) 
+    (cuenta-fichas-consecutivas x) 
+    (cuenta-fichas x))))
+
+(defun heuristica-3-auxBIS (distancia consecutivas fichas)
+  (cond
+    ((or (null distancia) (null consecutivas))
+	0)
+    ((< 2 consecutivas)
+	;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
+	(/ *maximo-valor* (max 1 distancia)))
+    ((= 2 consecutivas)
+;; 	(* (/ *medio-valor* (max 1 distancia)) fichas))
+	(/ *medio-valor* (max 1 distancia)))
+;; 		da mucha prioridad a cuando tienes dos consecutivas
+    (t
+	(* (- *columnas* distancia ) fichas))))
