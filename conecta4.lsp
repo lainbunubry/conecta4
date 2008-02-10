@@ -242,13 +242,14 @@
 		(cond
                  ((not (movimientos-legales tablero))
                   nil) ;; Empate
-			((and (equal jugador *jugador-humano*)
+			;; TODO - Si se gana con la última ficha esto peta y dice empate
+		 ((and (equal jugador *jugador-humano*)
                               (equal turno 'min))
                          t) ;; Gana máquina
-			((and (equal jugador *jugador-maquina*)
+		 ((and (equal jugador *jugador-maquina*)
                               (equal turno 'max))
                          t) ;; Gana humano
-			(t nil))
+		 (t nil))
 		nil))
 
 ;; Comprueba si la ficha de la posición dada es del color dado
@@ -420,7 +421,7 @@
 ;; que echó último, es decir, el jugador anterior
 (defun f-e-estatica (tablero jugador)
   (cond
-   ((es-estado-ganador tablero jugador 'max) (* *columnas* *minimo-valor*)) ;; tenemos que ver si gana nuestro oponente
+   ((es-estado-ganador tablero jugador 'max) *minimo-valor*) ;; tenemos que ver si gana nuestro oponente
    ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*)) ;; ganamos!!!!
    ((equal jugador *jugador-maquina*)
     (loop for posicion in (posiciones-heuristicas tablero) summing
@@ -800,7 +801,7 @@
 ;; que echó último, es decir, el jugador anterior
 (defun f-e-estatica-ch (tablero jugador heuristica)
   (cond
-    ((es-estado-ganador tablero jugador 'max) (* *columnas* *minimo-valor*)) ;; Vemos si gana nuestro contrincante
+    ((es-estado-ganador tablero jugador 'max) *minimo-valor*) ;; Vemos si gana nuestro contrincante
     ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*)) ;; Vemos si ganamos nosotros
     ((equal jugador *jugador-maquina*)
      (loop for posicion in (posiciones-heuristicas tablero) summing
