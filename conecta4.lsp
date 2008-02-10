@@ -32,7 +32,7 @@
               (format t "~&~%Opciones erróneas, por favor escoja de nuevo"))))
            ((= opcion 2)
             (format t "~&~%Las heurísticas disponibles son:~%~%")
-            (format t "heuristica-1~%heuristica-2~%heuristica-3~%heuristica-4~%heuristica-5~%~%")
+            (format t "heuristica-1~%heuristica-2~%heuristica-3~%heuristica-4~%~%")
             (format t "Nombre de la primera heurística: ")
             (setf heur1 (read))
             (format t "~&~%Nombre de la segunda heurística: ")
@@ -421,7 +421,7 @@
 (defun f-e-estatica (tablero jugador)
   (cond
    ((es-estado-ganador tablero jugador 'max) (* *columnas* *minimo-valor*)) ;; tenemos que ver si gana nuestro oponente
-   ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor)) ;; ganamos!!!!
+   ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*)) ;; ganamos!!!!
    ((equal jugador *jugador-maquina*)
     (loop for posicion in (posiciones-heuristicas tablero) summing
           (heuristica-4 tablero posicion *color-humano*)))
@@ -439,6 +439,64 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; FUNCIONES HEURÍSTICAS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Nucleo base de la heuristica, valora cada posibilidad por separado y suma
+;; los resultados
+(defun nucleo  (tablero posicion color)
+  (loop for x in (rango-accesible tablero posicion color) 
+        when (> (length x) 3) 
+        summing
+        (nucleo-aux 
+         (distancia-minima x posicion) 
+         (cuenta-fichas-consecutivas x) 
+         (cuenta-fichas x)
+         (centrado (second posicion)))))
+
+;; Calcula el valor de cada una de las posibilidades (representadas por una
+;; secuencia de posiciones y nil) Devuelve una valoración adecuada.
+(defun nucleo-aux (distancia consecutivas fichas centrado)
+  (cond
+   ((= 1 consecutivas) ;;Tablero vacio
+    centrado)
+   ((< 3 consecutivas)
+    ;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
+    (/ *maximo-valor* distancia))
+   ((= 3 consecutivas)
+    ;; 	(* (/ *medio-valor* (max 1 distancia)) fichas))
+    (/ *medio-valor* distancia))
+   ;; 		da mucha prioridad a cuando tienes dos consecutivas
+   (t
+    (* (- (* *columnas* fichas ) distancia)))))
+
+;; Nucleo base de la heuristica para el contrincante
+;; valora mucho más los movimientos peligrosos del contrario
+;; para evitar que gane a toda costa
+
+(defun nucleo-contrincante (tablero posicion color)
+  (loop for x in (rango-accesible tablero posicion (contrincante color) )
+        when (> (length x) 3) 
+        summing
+        (nucleo-contrincante-aux 
+         (distancia-minima x posicion) 
+         (cuenta-fichas-consecutivas x) 
+         (cuenta-fichas x)
+         (centrado (second posicion)))))
+
+;; Calcula el valor de cada una de las posibilidades (representadas por una
+;; secuencia de posiciones y nil) Devuelve una valoración adecuada.
+(defun nucleo-contrincante-aux (distancia consecutivas fichas centrado)
+  (cond
+   ((= 1 consecutivas) ;;Tablero vacio
+    centrado)
+   ((< 3 consecutivas)
+    ;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
+    (/ (* *columnas* *minimo-valor*) distancia))
+   ((= 3 consecutivas)
+    ;; 	(* (/ *medio-valor* (max 1 distancia)) fichas))
+    (* -1 (/ (* *columnas* *medio-valor*) distancia)))
+   ;; 		da mucha prioridad a cuando tienes dos consecutivas
+   (t
+    (* -1 (- (* *columnas* fichas) distancia)))))
+
 
 ;; Heuristica aleatoria
 (defun heuristica-1 (tablero lista-valores jugador)
@@ -452,57 +510,20 @@
         summing
         (cuenta-fichas-consecutivas x)))
 
-;; Nucleo base de la heuristica, valora cada posibilidad por separado y suma
-;; los resultados
-(defun heuristica-3  (tablero posicion color)
-  (loop for x in (rango-accesible tablero posicion color) 
-        when (> (length x) 3) 
-        summing
-        (heuristica-3-aux 
-         (distancia-minima x posicion) 
-         (cuenta-fichas-consecutivas x) 
-         (cuenta-fichas x))))
-
-;; Calcula el valor de cada una de las posibilidades (representadas por una
-;; secuencia de posiciones y nil) Devuelve una valoración adecuada.
-(defun heuristica-3-aux (distancia consecutivas fichas)
-  (cond
-   ((or (null distancia) (null consecutivas))
-    0)
-   ((< 2 consecutivas)
-    ;; Si hay tres del mismo color en linea desde esa posicion hemos ganado
-    (/ *maximo-valor* (max 1 distancia)))
-   ((= 2 consecutivas)
-    ;; 	(* (/ *medio-valor* (max 1 distancia)) fichas))
-    (/ *medio-valor* (max 1 distancia)))
-   ;; 		da mucha prioridad a cuando tienes dos consecutivas
-   (t
-    (* (- *columnas* distancia ) fichas))))
+;; Valora adecuadamente si el tablero es beneficioso para nosotros
+(defun heuristica-3 (tablero posicion color)
+  (nucleo tablero posicion color))
 
 ;; Mejora de la heuristica que ahora tiene en cuenta los movimientos
 ;; peligroso de nuestro contrincante
 (defun heuristica-4 (tablero posicion color)
   (let 
-      ((heuristica-favor (heuristica-3 tablero posicion color))
-       (heuristica-contra (heuristica-3 tablero posicion (contrincante color)))) ;; Le da menos prioridad a ganar él
-    (cond 
-     ((< heuristica-contra heuristica-favor)
-      heuristica-favor)
-     (t
-      (* -1 heuristica-contra))))) ;; El siguiente paso es para el contrario, favorecemos al contrario
+      ((heuristica-favor (nucleo tablero posicion color))
+       (heuristica-contra (nucleo-contrincante tablero posicion color))) ;; Le da menos prioridad a ganar él
+    (if (> heuristica-favor (abs heuristica-contra))
+     heuristica-favor 
+     heuristica-contra)))
 
-;; Mejora de la heuristica que ademas de advertirnos de los movimientos
-;; peligroso de nuestro contrincante, es áun mas cuidadosa.
-;; es menos agresiva y pierde mas veces
-(defun heuristica-5 (tablero posicion color)
-  (let 
-      ((heuristica-favor (heuristica-3 tablero posicion color))
-       (heuristica-contra (heuristica-3 tablero posicion (contrincante color)))) ;; Le da menos prioridad a ganar él
-    (cond 
-     ((>= heuristica-contra heuristica-favor)
-      (* -1 heuristica-contra)) ;; El siguiente paso es para el contrario, favorecemos al contrario	
-     (t
-      heuristica-favor))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCIONES AUXILIARES DE LA HEURÍSTICA
@@ -571,9 +592,15 @@
 
 ;; Nos devuelve la distancia entre dos posiciones (x y) (a b) abs (y -a)
 (defun distancia (posx posy)
-;;   (if (eq (second posx) (second posy))
-;;       2 ;; es una columna, damos menos prioridad a las columnas
-      (+ (abs (- (second posx) (second posy)))))
+ (cond 
+  ((equal posx posy) *columnas*)
+  ((eq (second posx) (second posy)) 1)
+  (t (abs (- (second posx) (second posy))))))
+
+(defun centrado (columna)
+(if (< columna (/ *columnas* 2))
+(mod columna (/ *columnas* 2))
+(- *columnas* columna)))
 
 ;; Esta funcion de rango en la encargada de dada una posión devolver todas posiciones
 ;; interesantes y alcanzables desde el punto de vista analitico para nuestro juego.
@@ -581,13 +608,15 @@
 ;; devuelve una lista de listas de posiciones donde se encuentran nuestras fichas y
 ;; de nil que representan los huecos que hay entre nuestras posiciones
 (defun rango-accesible (tablero pos color)
+(if (or (null (aref tablero (first pos) (second pos))) (eq (aref tablero (first pos) (second pos)) color))
   (loop for x in
 	(list 
          (seccion-fila-accesible tablero (first pos) (second pos) color) 
          (seccion-columna-accesible tablero (first pos) (second pos) color) 
          (seccion-diagonal-izq-accesible tablero (first pos) (second pos) color) 
          (seccion-diagonal-der-accesible tablero (first pos) (second pos) color))
-	when (< 3 (length x)) collect x)) ;; filtro que tenga un tamaño minimo de 4
+	when (< 3 (length x)) collect x) ;; filtro que tenga un tamaño minimo de 4
+   nil))
 
 ;; Función que dice si la posicion inferior esta ocupada o no
 (defun inacesible (tablero f c)
@@ -611,7 +640,7 @@
 (defun seccion-fila-accesible (tablero f c color)
   (append 
    (reverse 
-    (loop for i from c downto 0  ;;tiene en cuenta el centro
+    (loop for i from (- c 1) downto 0  ;;tiene en cuenta el centro
           until 
           (or 
            (corte (aref tablero f i) color) 
@@ -620,6 +649,7 @@
           (if (null (aref tablero f i))
               nil
               (list f i))))
+   (list (list f c)) ;; contamos el centro como una ficha de nuestro color	
    (loop for i from (+ 1 c) to *columnas* 
          until 
          (or 
@@ -633,11 +663,12 @@
 ;; devuelve la columna en la que se encuentra nuestra ficha
 (defun seccion-columna-accesible (tablero f c color)
   (append 
-   (loop for i from 0 to f until (corte (aref tablero i c) color)
+   (loop for i from 0 to (- f 1) until (corte (aref tablero i c) color)
          collect
          (if (null (aref tablero i c))
              nil
              (list i c)))
+   (list (list f c)) ;; contamos el centro como una ficha de nuestro color	
    ;; las posiciones arriba no estan ocupadas
    (loop for i from (+ 1 f) to *filas* until (corte (aref tablero i c) color)
          collect
@@ -649,7 +680,7 @@
 (defun seccion-diagonal-izq-accesible (tablero f c color) 
   (append
    (reverse ;; tiene que estar al revés
-    (loop for i from 0 to *maximo-valor*  ;;tiene en cuenta el centro
+    (loop for i from 1 to (max *filas* *columnas*)  ;;tiene en cuenta el centro
           until (or 
                  (pos-invalida (- f i) (- c i)) 
                  (corte (aref tablero (- f i) (- c i)) color) 
@@ -658,7 +689,8 @@
           (if (null (aref tablero  (- f i) (- c i)))
               nil
               (list(- f i) (- c i)))))
-   (loop for i from 1 to *maximo-valor* 
+   (list (list f c));; contamos el centro como una ficha de nuestro color
+   (loop for i from 1 to *filas* 
          until (or 
                 (pos-invalida (+ f i) (+ c i)) 
                 (corte (aref tablero (+ f i) (+ c i)) color) 
@@ -672,7 +704,7 @@
 (defun seccion-diagonal-der-accesible (tablero f c color) 
   (append
    (reverse ;; tiene que estar al revés
-    (loop for i from 0 to *maximo-valor* ;; tiene en cuenta el centro
+    (loop for i from 1 to *columnas* ;; tiene en cuenta el centro
           until (or 
                  (pos-invalida (+ f i) (- c i)) 
                  (corte (aref tablero (+ f i) (- c i)) color) 
@@ -681,7 +713,8 @@
           (if (null (aref tablero  (+ f i) (- c i)))
               nil
               (list (+ f i) (- c i)))))
-   (loop for i from 1 to *maximo-valor* 
+   (list (list f c));; contamos el centro como una ficha de nuestro color
+   (loop for i from 1 to *filas* 
          until (or 
                 (pos-invalida (- f i) (+ c i)) 
                 (corte (aref tablero (- f i) (+ c i)) color) 
@@ -699,6 +732,7 @@
 (defvar *fichero-compara_heurs* "compara_heurs.txt")
 (defvar *procedimiento2*)
 
+;;TODO no funciona ni a tiros tio, gana siempre la que pones primera, y esta vez no he tocao nada de nada!!!!!
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
 (defun compara_heurs (heuristica1 heuristica2 profundidad)
@@ -770,9 +804,11 @@
     ((es-estado-ganador tablero jugador 'min) (* *columnas* *maximo-valor*)) ;; Vemos si ganamos nosotros
     ((equal jugador *jugador-maquina*)
      (loop for posicion in (posiciones-heuristicas tablero) summing
+;;      (loop for posicion in (fila-superior tablero) summing
            (funcall (symbol-function heuristica) tablero posicion *color-humano*)))
     ((equal jugador *jugador-humano*)
      (loop for posicion in (posiciones-heuristicas tablero) summing
+;;      (loop for posicion in (fila-superior tablero) summing
            (funcall (symbol-function heuristica) tablero posicion *color-maquina*)))))
 
 ;; Comprueba el resultado de la partida
