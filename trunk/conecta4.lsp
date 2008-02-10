@@ -1,4 +1,4 @@
-(load "aux.lsp") ;; TODO - Borrar
+;; Interfaz de la aplicación, permite escoger de una forma comoda todas las posibilidades del juego
 
 (defun menu ()
   (let ((salir nil) (opcion 0) (heur1 nil) (heur2 nil) (prof 3) (ab 0) (emp 0))
@@ -179,8 +179,8 @@
     (loop for m in movimientos
           do
           (if (= (mod numero 3) 0)
-              (format t "~%   Col ~a (Tecla ~a)" m numero)
-              (format t "   Col ~a (Tecla ~a)" m numero))
+              (format t "~%   Col ~a (Tecla ~a)" m m)
+              (format t "   Col ~a (Tecla ~a)" m m))
           (setf numero (+ numero 1)))))
 
 ;; Función llamada cuando es el turno del humano
@@ -195,9 +195,9 @@
              (solicitar-consejo nodo-j)
              (format t "~%Tu turno : ")		;; Hay que volver a leer la m una vez dado el consejo
              (setf m (read))))
-      (cond ((and (integerp m) (< -1 m (length movimientos)))
+      (cond ((and (integerp m) (member m movimientos))
              (let ((nuevo-estado
-                    (aplica-movimiento (nth m movimientos) (estado nodo-j) *color-humano*)))
+                    (aplica-movimiento (nth m *movimientos*) (estado nodo-j) *color-humano*)))
                (cond (nuevo-estado
                       (let ((siguiente (crea-nodo-j
 					:estado nuevo-estado
@@ -239,16 +239,15 @@
 ;; parece pensado para su contrincante
 (defun es-estado-ganador (tablero jugador turno)
 	(if (es-estado-final tablero)
-		(cond
-                 ((not (movimientos-legales tablero))
-                  nil) ;; Empate
-			;; TODO - Si se gana con la última ficha esto peta y dice empate
+		(cond			
 		 ((and (equal jugador *jugador-humano*)
                               (equal turno 'min))
                          t) ;; Gana máquina
 		 ((and (equal jugador *jugador-maquina*)
                               (equal turno 'max))
                          t) ;; Gana humano
+		((not (movimientos-legales tablero))
+                  nil) ;; Empate
 		 (t nil))
 		nil))
 
@@ -290,6 +289,7 @@
                          (> (maximo-conecta-4 (rango-accesible tablero x *color-humano*)) 3)	;; Se tiene en cuenta el centro del tablero
                          (> (maximo-conecta-4 (rango-accesible tablero x *color-maquina*)) 3)))))))
 
+;; De una lista de listas de fichas devuelve el numero maximo de fichas consecutivas encontrados
 (defun maximo-conecta-4 (listas)
   (if (listp listas)
       (maximo
@@ -733,9 +733,10 @@
 (defvar *fichero-compara_heurs* "compara_heurs.txt")
 (defvar *procedimiento2*)
 
-;;TODO no funciona ni a tiros tio, gana siempre la que pones primera, y esta vez no he tocao nada de nada!!!!!
+
 ;; Recibe los nombres de dos funciones heurísticas y genere un fichero de texto con la partida que
 ;; resulta si MIN utiliza la primera heurística y MAX la segunda
+;; NOTA no funciona, gana siempre la que pones primera
 (defun compara_heurs (heuristica1 heuristica2 profundidad)
   (setf *procedimiento* (list 'minimax-a-b-ch profundidad heuristica1))
   (setf *procedimiento2* (list 'minimax-a-b-ch profundidad heuristica2))
@@ -828,4 +829,11 @@
         (t (format t "~&Empate~%")
 	   (format canal "~%~%Empate~%"))))
 
+;; Lanza el menu de la aplicación compilado
+(defun lanzador()
+(compile-file "conecta4.lsp")
+(load "conecta4")
+(menu))
 
+;; Lanzador automatico de la aplicación
+(menu)
