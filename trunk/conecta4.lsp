@@ -1,3 +1,10 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TRABAJO IA1 - CONECTA 4   ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Alejandro Blanco Escudero ;;
+;; Manuel Gomar Acosta       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Se ha evitado escribir tildes a proposito, para evitar los posibles conflictos que pueden
 ;; provocar al ser caracteres especiales
 
