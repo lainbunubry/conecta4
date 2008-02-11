@@ -54,10 +54,10 @@
             (cond
              ((= emp 1)
               (format t "~&~%Comienza la partida:~%")
-              (compara_heurs heur2 heur1 prof)) ;; Empieza la 2º que es MAX
+              (compara_heurs heur2 heur1 prof)) ;; Empieza la segunda que es MAX
              ((= emp 2)
               (format t "~&~%Comienza la partida:~%")
-              (compara_heurs heur1 heur2 prof)) ;; Empieza la 2º que es MAX
+              (compara_heurs heur1 heur2 prof)) ;; Empieza la primera que es MAX
              (t
               (format t "~&~%Opciones erroneas, por favor escoja de nuevo"))))
            ((= opcion 3)
@@ -289,7 +289,7 @@
     nuevo-tablero))
 
 ;; Determina si el juego ha llegado a su final
-(defun es-estado-final (tablero) ;debug
+(defun es-estado-final (tablero)
   (cond ((<= (length (movimientos-legales tablero)) 0) t)
 	(t 
          (< 0
@@ -629,7 +629,7 @@
          (seccion-columna-accesible tablero (first pos) (second pos) color) 
          (seccion-diagonal-izq-accesible tablero (first pos) (second pos) color) 
          (seccion-diagonal-der-accesible tablero (first pos) (second pos) color))
-	when (< 3 (length x)) collect x) ;; filtro que tenga un tamaño minimo de 4
+	when (< 3 (length x)) collect x) ;; filtro que tenga longitud minimo de 4
    nil))
 
 ;; Funcion que dice si la posicion inferior esta ocupada o no
@@ -844,9 +844,9 @@
 
 ;; Lanza el menu de la aplicacion compilado
 (defun lanzador()
-(compile-file "conecta4.lsp")
-(load "conecta4")
-(menu))
+  (compile-file "conecta4.lsp")
+  (load "conecta4")
+  (menu))
 
 ;; Lanzador automatico de la aplicacion
 (menu)
