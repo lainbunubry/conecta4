@@ -25,6 +25,7 @@
 ;; provocar al ser caracteres especiales
 
 ;; Interfaz de la aplicacion, permite escoger de una forma comoda todas las posibilidades del juego
+;;Didactico
 (defun menu ()
   (let ((salir nil) (opcion 0) (heur1 nil) (heur2 nil) (prof 3) (ab 0) (emp 0))
     (loop until salir do
@@ -77,6 +78,26 @@
              (t
               (format t "~&~%Opciones erroneas, por favor escoja de nuevo"))))
            ((= opcion 3)
+            (setf salir t))
+           (t
+            (format t "~&~%Opcion invalida, por favor escoja de nuevo"))))))
+
+;; Interfaz del juego
+(defun competicion ()
+  (let ((salir nil) (opcion 0))
+    (loop until salir do
+          (format t "~&~%MENU - CONECTA 4~%+-+-+-+-+-+-+-+-+~%~%")
+          (format t "Elija la opcion que desee:~%")
+          (format t "1.- Empieza la maquina~%")
+          (format t "2.- Empieza contrincante~%")
+          (format t "3.- Salir~%~%Su eleccion: ")
+          (setf opcion (read))
+          (cond 
+           ((= opcion 1)
+		 (juego :procedimiento (list 'minimax-a-b 3) :empieza-la-maquina? t))
+   	   ((= opcion 2)
+		 (juego :procedimiento (list 'minimax-a-b 3)))
+	   ((= opcion 3)
             (setf salir t))
            (t
             (format t "~&~%Opcion invalida, por favor escoja de nuevo"))))))
@@ -859,10 +880,19 @@
 	   (format canal "~%~%Empate~%"))))
 
 ;; Lanza el menu de la aplicacion compilado
-(defun lanzador()
+(defun jugar()
+  (compile-file "conecta4.lsp")
+  (load "conecta4")
+  (competicion))
+
+(defun lanzar()
   (compile-file "conecta4.lsp")
   (load "conecta4")
   (menu))
 
 ;; Lanzador automatico de la aplicacion
-(menu)
+(defun info ()
+(format t "~%Teclea (jugar) para iniciar una partida rápida contra la máquina")
+(format t "~%Teclea (lanzar) para probar todas las posibilidades del juego"))
+
+(info)
